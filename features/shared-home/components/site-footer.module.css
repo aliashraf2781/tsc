@@ -1,0 +1,116 @@
+.rotatedOverlay {
+  pointer-events: none;
+  position: absolute;
+  mix-blend-mode: overlay;
+  width: 1600px;
+  height: 2000px;
+  left: 50%;
+  top: -362px;
+  transform: translateX(-50%) rotate(90deg);
+  opacity: 0.15;
+  z-index: 0;
+}
+
+.ctaWrapper {
+  display: flex;
+  justify-content: center;
+  padding: 82px 0;
+  position: relative;
+  z-index: 2;
+}
+
+.ctaCard {
+  width: 1312px;
+  height: 393px;
+  background: linear-gradient(180deg, #398DB3 0%, #2D7494 100%);
+  box-shadow: 0px 42px 107px rgba(123, 190, 255, 0.34), 0px 24.7206px 32.2574px rgba(75, 183, 231, 0.1867), 0px 10.2677px 13.3981px rgba(75, 183, 231, 0.22), 0px 3.71362px 4.84582px rgba(75, 183, 231, 0.1533), 0px 0px 0px 4px #C2E3FA, 0px 0px 0px 5px #FFFFFF, inset 0px 1px 18px 2px #E5F3FD, inset 0px 1px 4px 2px #C2E3FA;
+  border-radius: 32px;
+  position: relative;
+  overflow: hidden;
+}
+
+.ctaInner {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+  height: 100%;
+  padding-top: 28px;
+}
+
+.ctaTag {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background: rgba(64, 160, 202, 0.5);
+  border-radius: 8px;
+  color: #ffffff;
+  font-size: 12px;
+}
+
+.ctaTitle {
+  font-family: 'Encode Sans Narrow', sans-serif;
+  font-weight: 700;
+  font-size: 36px;
+  line-height: 1.5;
+  color: #FFFFFF;
+  text-align: center;
+}
+
+.ctaDesc {
+  color: #F5F5F5;
+  text-align: center;
+  max-width: 500px;
+}
+
+.ctaButtons {
+  display: flex;
+  gap: 16px;
+  margin-top: 12px;
+}
+
+.ctaBtnFaq {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background: #FFFFFF;
+  color: #006EA8;
+  border-radius: 12px;
+  font-weight: 500;
+  box-shadow: inset 0px 1px 4px 2px #C2DDFF;
+}
+
+.ctaBtnContact {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background: linear-gradient(180deg, #006EA8 0%, #005685 100%);
+  color: #FFFFFF;
+  border-radius: 12px;
+  font-weight: 500;
+  box-shadow: 0px 42px 107px rgba(123, 190, 255, 0.34), 0px 24.7206px 32.2574px rgba(0, 86, 133, 0.1867), 0px 10.2677px 13.3981px rgba(0, 86, 133, 0.22), 0px 3.71362px 4.84582px rgba(0, 86, 133, 0.1533), 0px 0px 0px 4px #E8F2FF, 0px 0px 0px 5px #FFFFFF, inset 0px 1px 18px 2px #E8F2FF, inset 0px 1px 4px 2px #C2DDFF;
+}
+
+.ctaIcon {
+  width: 20px;
+  height: 20px;
+}
+
+.bgLinear {
+  background: linear-gradient(180deg, #041B2D 0%, #001A2E 52%, #001525 100%);
+}
+
+.bgRadial {
+  background: radial-gradient(44% 80% at 88% 26%, rgba(64, 160, 202, 0.34) 0%, rgba(64, 160, 202, 0) 72%), radial-gradient(58% 92% at 0% 100%, rgba(0, 86, 133, 0.2) 0%, rgba(0, 86, 133, 0) 72%);
+}
+
+.noiseBg {
+  background-image: url('/footer/noise-bg.png');
+  background-size: 100% 100%;
+  background-repeat: repeat;
+}

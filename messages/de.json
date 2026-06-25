@@ -1,0 +1,1084 @@
+{
+  "HomePage": {
+    "title": "Zum Starten bearbeite die Datei page.tsx.",
+    "descriptionPrefix": "Du suchst einen Einstieg oder weitere Anleitungen? Schau dir",
+    "templates": "Vorlagen",
+    "descriptionMiddle": "oder das",
+    "learningCenter": "Lernzentrum",
+    "descriptionSuffix": "an.",
+    "deployNow": "Jetzt bereitstellen",
+    "documentation": "Dokumentation",
+    "switchToEnglish": "Englisch",
+    "switchToArabic": "Arabisch",
+    "switchToGerman": "Deutsch",
+    "metaTitle": "Talent Seeker",
+    "metaDescription": "Talent Seeker Plattform fuer Jobs, Relocation-Support und Karrierechancen in Deutschland."
+  },
+  "Auth": {
+    "signIn": {
+      "title": "Willkommen bei Talent Seeker",
+      "description": "Melde dich an, um deine Karriere- oder Recruiting-Reise zu verwalten",
+      "logoAlt": "Talent Seeker Logo",
+      "submit": "Anmelden",
+      "loading": "Anmeldung läuft...",
+      "forgotPassword": "Passwort vergessen",
+      "back": "Zurück",
+      "userTab": "Nutzer",
+      "companyTab": "Unternehmen",
+      "accountTypeTabs": "Kontotyp",
+      "noAccount": "Noch kein Konto?",
+      "signUp": "Registrieren",
+      "alternateAction": "Noch kein Konto? Jetzt erstellen",
+      "fields": {
+        "emailLabel": "E-Mail",
+        "emailPlaceholder": "Deine E-Mail",
+        "passwordLabel": "Passwort",
+        "passwordPlaceholder": "Passwort"
+      }
+    },
+    "signUp": {
+      "title": "Konto erstellen",
+      "description": "Registriere dich und starte deine berufliche Reise mit Talent Seeker.",
+      "logoAlt": "Talent Seeker Logo",
+      "submit": "Registrieren",
+      "back": "Zurück",
+      "userTab": "Nutzer",
+      "companyTab": "Unternehmen",
+      "accountTypeTabs": "Kontotyp",
+      "hasAccount": "Hast du bereits ein Konto?",
+      "signIn": "Anmelden",
+      "alternateAction": "Du hast bereits ein Konto? Anmelden",
+      "fields": {
+        "fullNameLabel": "Vollständiger Name",
+        "fullNamePlaceholder": "Vollständiger Name",
+        "emailLabel": "E-Mail",
+        "emailPlaceholder": "Deine E-Mail",
+        "passwordLabel": "Passwort",
+        "passwordPlaceholder": "Passwort",
+        "showPassword": "Passwort anzeigen",
+        "hidePassword": "Passwort ausblenden",
+        "phonePlaceholder": "Telefonnummer",
+        "confirmPasswordPlaceholder": "Passwort bestätigen",
+        "companyNamePlaceholder": "Firmenname",
+        "termsLabel": "Ich akzeptiere die <termsLink>AGB</termsLink> und <privacyLink>Datenschutzrichtlinie</privacyLink>"
+      }
+    },
+    "forgotPassword": {
+      "title": "Passwort zurücksetzen",
+      "description": "Gib deine E-Mail ein — wir senden dir einen Bestätigungscode.",
+      "logoAlt": "Talent Seeker Logo",
+      "submit": "Link senden",
+      "step1": "Code senden",
+      "step2": "Code bestätigen",
+      "step3": "Neues Passwort",
+      "back": "Zurück",
+      "rememberPassword": "Passwort wieder eingefallen?",
+      "signIn": "Anmelden",
+      "alternateAction": "Zurück zur Anmeldung",
+      "fields": {
+        "emailLabel": "E-Mail",
+        "emailPlaceholder": "Deine E-Mail",
+        "codePlaceholder": "6-stelliger Code",
+        "passwordPlaceholder": "Neues Passwort",
+        "confirmPlaceholder": "Passwort bestätigen"
+      }
+    },
+    "verifyEmail": {
+      "title": "E-Mail bestätigen",
+      "description": "Gib den Code ein, den wir dir per E-Mail gesendet haben.",
+      "logoAlt": "Talent Seeker Logo",
+      "submit": "Bestätigen",
+      "resend": "Code erneut senden",
+      "back": "Zurück",
+      "hasAccount": "Bereits ein Konto?",
+      "signIn": "Anmelden",
+      "fields": {
+        "codePlaceholder": "Bestätigungscode"
+      }
+    }
+  },
+  "Ui": {
+    "common": {
+      "loading": "Wird geladen...",
+      "pleaseWait": "Bitte warten...",
+      "newTicket": "Neues Ticket"
+    },
+    "dialog": {
+      "close": "Schließen",
+      "description": "Dialog-Inhalt"
+    }
+  },
+  "Landing": {
+    "hero": {
+      "brand": "Talent Seeker",
+      "eyebrow": "Dein Tor zu einem neuen Leben",
+      "title": "Dein kompletter Weg zur Karriere in Deutschland",
+      "description": "Wir finden nicht nur einen Job für dich, wir bauen deine Zukunft auf. Von der Vermittlung an Top-Arbeitgeber in Deutschland bis zu Visa und Wohnung begleiten wir dich bei jedem Schritt.",
+      "cta": "Chancen entdecken",
+      "login": "Anmelden",
+      "nav": {
+        "home": "Start",
+        "about": "Über uns",
+        "services": "Services",
+        "jobs": "Jobs",
+        "news": "News",
+        "contact": "Kontakt"
+      },
+      "languageAria": "Sprache wechseln",
+      "locale": {
+        "en": "Englisch",
+        "ar": "Arabisch",
+        "de": "Deutsch"
+      },
+      "card": {
+        "caption": "Bereits veröffentlichte Jobs",
+        "metric": "13k+",
+        "description": "Kontinuierlich neue Chancen"
+      }
+    },
+    "categories": {
+      "eyebrow": "Unsere Kategorien",
+      "title": "Finde die perfekte Rolle für deine Expertise",
+      "description": "Wir vernetzen dich mit führenden deutschen Unternehmen aus wichtigen Branchen. Wähle dein Fachgebiet und entdecke passende Chancen.",
+      "metricLabel": "Bereits veröffentlichte Jobs",
+      "showMore": "Mehr anzeigen",
+      "vacancies": "offene Stellen",
+      "items": {
+        "business": {
+          "label": "Business & Marketing",
+          "vacancy": "250 Stellen"
+        },
+        "design": {
+          "label": "Design",
+          "vacancy": "250 Stellen"
+        },
+        "development": {
+          "label": "Entwicklung",
+          "vacancy": "250 Stellen"
+        },
+        "medical": {
+          "label": "Medizin",
+          "vacancy": "250 Stellen"
+        },
+        "sales": {
+          "label": "Vertrieb",
+          "vacancy": "250 Stellen"
+        },
+        "hr": {
+          "label": "HR",
+          "vacancy": "250 Stellen"
+        },
+        "finance": {
+          "label": "Finanzen",
+          "vacancy": "250 Stellen"
+        }
+      }
+    },
+    "process": {
+      "eyebrow": "Nahtloser Prozess",
+      "title": "Deine Reise nach Deutschland, vereinfacht",
+      "description": "Von der ersten Bewerbung bis zur Ankunft übernehmen wir die Komplexität, damit du dich auf deine neue Karriere konzentrieren kannst.",
+      "steps": {
+        "createAccount": {
+          "title": "Konto erstellen",
+          "description": "Ein Konto zu eröffnen und zu starten ist ganz einfach."
+        },
+        "completeProfile": {
+          "title": "Profil vervollständigen",
+          "description": "Vervollständige dein Profil, damit passende Arbeitgeber auf dich aufmerksam werden."
+        },
+        "apply": {
+          "title": "Auf Jobs bewerben",
+          "description": "Bewirb dich auf bevorzugte Jobs mit allen Anforderungen an einem Ort."
+        }
+      }
+    },
+    "jobs": {
+      "eyebrow": "Premium-Chancen",
+      "title": "Dein nächster Karriereschritt wartet",
+      "description": "Entdecke aktuelle Chancen in allen Bereichen und finde die passende Stelle für deine Expertise im deutschen Markt.",
+      "filters": {
+        "all": "Alle Kategorien",
+        "design": "Design",
+        "development": "Entwicklung",
+        "marketing": "Marketing",
+        "medical": "Medizin"
+      },
+      "moreDetails": "Mehr Details",
+      "showAll": "Alle Jobs anzeigen",
+      "salaryPeriod": "/Monat",
+      "items": {
+        "frontend": {
+          "department": "IT",
+          "title": "Frontend-Entwickler",
+          "company": "TechNova - Softwareunternehmen",
+          "type": "Vollzeit"
+        },
+        "marketing": {
+          "department": "Marketing",
+          "title": "Digital Marketer",
+          "company": "Marketify - Marketingagentur",
+          "type": "Teilzeit"
+        },
+        "uiux": {
+          "department": "Design",
+          "title": "UI/UX-Designer",
+          "company": "Creative Lab - Designstudio",
+          "type": "Remote"
+        },
+        "sales": {
+          "department": "Vertrieb",
+          "title": "Sales Executive",
+          "company": "SalesPro - Vertriebsunternehmen",
+          "type": "Vollzeit"
+        },
+        "hr": {
+          "department": "HR",
+          "title": "HR-Spezialist",
+          "company": "PeopleHub - HR Services",
+          "type": "Teilzeit"
+        },
+        "accounting": {
+          "department": "Finanzen",
+          "title": "Buchhalter",
+          "company": "FinCore - Finanzdienstleistungen",
+          "type": "Remote"
+        }
+      }
+    },
+    "jobsPage": {
+      "languageAria": "Sprache wechseln",
+      "searchPlaceholder": "Nach Jobtitel oder Standort suchen",
+      "search": "Suchen",
+      "allJobs": "Alle Jobs",
+      "allJobsCount": "190",
+      "filter": "Filter",
+      "department": "Abteilung",
+      "postedAgo": "vor 14 Stunden",
+      "salaryPeriod": " /Monat",
+      "employmentFullTime": "Vollzeit",
+      "companyName": "Firmenname",
+      "companySubLabel": "Standort",
+      "noResults": "Keine Stellen entsprechen Ihren Filtern. Passen Sie die Suche an oder setzen Sie die Filter zurück.",
+      "closeFilters": "Schließen",
+      "description": "Stellenbeschreibung",
+      "requirements": "Anforderungen",
+      "responsibilities": "Aufgaben",
+      "applyNow": "Jetzt bewerben",
+      "vacancies": "offene Stellen",
+      "detail": {
+        "lookingFor": "Wir suchen eine/n...",
+        "shareWith": "Teilen über:",
+        "monthly": "Monatlich",
+        "details": "Details",
+        "industry": "Branche",
+        "employmentType": "Beschäftigungsart",
+        "vacancy": "Stellen",
+        "gender": "Geschlecht",
+        "age": "Alter",
+        "applicationDeadline": "Bewerbungsfrist",
+        "applyForJob": "Jetzt bewerben",
+        "relatedJobs": "Ähnliche Jobs",
+        "placeholderOne": "Wir suchen eine motivierte Fachkraft, die unser wachsendes Team unterstützt und zu unseren Zielen beiträgt.",
+        "placeholderTwo": "Sie arbeiten eng mit verschiedenen Teams zusammen und übernehmen Verantwortung in Planung und Umsetzung.",
+        "placeholderThree": "Wir bieten ein unterstützendes Umfeld mit Entwicklungsmöglichkeiten und klaren Prozessen."
+      },
+      "filterPanel": {
+        "title": "Filter",
+        "clearAll": "Alles löschen",
+        "state": "Bundesland",
+        "categories": "Kategorien",
+        "salary": "Gehalt",
+        "salaryMin": "$1",
+        "salaryMax": "$10k",
+        "from": "Von",
+        "to": "Bis",
+        "stateOptions": {
+          "hassan": "Hassan",
+          "alle": "Alle"
+        },
+        "categoryOptions": {
+          "marketing": "Marketing",
+          "design": "Design",
+          "it": "IT",
+          "medical": "Medizin"
+        }
+      }
+    },
+    "testimonials": {
+      "eyebrow": "Echter Impact",
+      "title": "Erfolgsgeschichten aus unserer Community",
+      "description": "Entdecke, wie wir Talente und Arbeitgeber beim Wachstum im deutschen Arbeitsmarkt unterstützt haben.",
+      "items": {
+        "jacob": {
+          "initials": "JJ",
+          "name": "Jacob Jones",
+          "role": "Medizinischer Assistent, 29, Marokko",
+          "quote": "Talent SC hat nicht nur einen Job gefunden, sondern meinen gesamten Umzug nach Deutschland begleitet."
+        },
+        "ronald": {
+          "initials": "RR",
+          "name": "Ronald Richards",
+          "role": "Marketing Coordinator, 32, Jemen",
+          "quote": "Der Prozess war von Anfang an klar und das Team hat jedes Detail professionell übernommen."
+        },
+        "albert": {
+          "initials": "AF",
+          "name": "Albert Flores",
+          "role": "Web Designer, 25, Ägypten",
+          "quote": "Ich habe eine Stelle gefunden, die perfekt zu meinen Fähigkeiten passt."
+        },
+        "lina": {
+          "initials": "LH",
+          "name": "Lina Hassan",
+          "role": "Pflegekraft, 27, Jordanien",
+          "quote": "Von den Unterlagen bis zum Onboarding war jeder Schritt klar und unterstützend."
+        },
+        "youssef": {
+          "initials": "YE",
+          "name": "Youssef El Amrani",
+          "role": "Elektriker, 31, Marokko",
+          "quote": "Ich bekam praxisnahe Unterstützung und fand eine Stelle, die zu meiner Erfahrung passt."
+        },
+        "nora": {
+          "initials": "NA",
+          "name": "Nora Ali",
+          "role": "HR-Spezialistin, 30, Ägypten",
+          "quote": "Der gesamte Umzugsprozess war reibungslos und die Kommunikation stets professionell."
+        }
+      }
+    },
+    "news": {
+      "eyebrow": "Bleib informiert",
+      "title": "Einblicke in den deutschen Arbeitsmarkt",
+      "description": "Aktuelle News zu Visa-Regeln, Karrieretipps und Branchentrends, damit du in Deutschland erfolgreich bist.",
+      "readMore": "Mehr lesen",
+      "viewAll": "Alle News anzeigen",
+      "items": {
+        "first": {
+          "title": "CBS Evening News",
+          "description": "Nützliche Updates und praktische Hinweise für Jobsuchende vor dem Umzug.",
+          "date": "28. Juni 2026"
+        },
+        "second": {
+          "title": "CBS This Morning: Saturday",
+          "description": "Ein genauer Blick auf Einstellungsentwicklungen und gefragte Rollen.",
+          "date": "28. Juni 2026"
+        },
+        "third": {
+          "title": "Visa- und Arbeitserlaubnis-Updates",
+          "description": "Wichtige Verfahrensänderungen und ihre Bedeutung für Bewerber.",
+          "date": "28. Juni 2026"
+        },
+        "fourth": {
+          "title": "Karrierewachstum in Deutschland",
+          "description": "So positionierst du dein Profil für langfristigen Erfolg nach der Einstellung.",
+          "date": "28. Juni 2026"
+        }
+      }
+    },
+    "newsPage": {
+      "languageAria": "Sprache wechseln",
+      "backToNews": "Zurück zu den News",
+      "empty": "Derzeit sind keine Artikel verfügbar. Bitte später erneut versuchen.",
+      "relatedTitle": "Verwandte News",
+      "shareWith": "Teilen mit",
+      "featured": {
+        "title": "CBS Evening News",
+        "date": "28. Juni 2026",
+        "imageAlt": "Deutsche Flagge vor einem historischen Gebäude"
+      },
+      "content": {
+        "opening": "Arbeiten im deutschen Gesundheitssystem bietet starke Chancen für internationale Fachkräfte. Deutschland hat eines der am besten entwickelten Gesundheitssysteme Europas mit stabiler Nachfrage nach qualifiziertem Personal.",
+        "sectionOneTitle": "1. Vielfältige Karrierechancen",
+        "sectionOneBody": "Pflegekräfte werden in der Altenpflege, in Krankenhäusern und in der pädiatrischen Versorgung weiterhin stark gesucht. Auch medizinische Spezialisten, Therapeuten und technische Fachkräfte sind gefragt.",
+        "sectionTwoTitle": "2. Gefragte Rollen",
+        "sectionTwoBody": "Häufig gesuchte Positionen sind Assistenzärzte, klinische Forscher, Physiotherapeuten, Ergotherapeuten, Psychologen, Laborspezialisten und Radiologie-Fachkräfte.",
+        "sectionThreeTitle": "3. Anforderungen für internationale Bewerber",
+        "sectionThreeBody": "Die meisten Arbeitgeber erwarten eine formale medizinische Qualifikation sowie eine anerkannte Gleichwertigkeitsprüfung vor dem Arbeitsbeginn.",
+        "sectionFourTitle": "4. Sprache und Integration",
+        "sectionFourBody": "Für die direkte Patientenkommunikation und die tägliche Zusammenarbeit im Team wird in der Regel ein Deutschniveau um B2 vorausgesetzt."
+      },
+      "items": {
+        "first": {
+          "title": "CBS This Morning: Saturday",
+          "description": "Die Nachfrage im deutschen Gesundheitsbereich bleibt hoch, vor allem in Kliniken und regionalen Krankenhäusern.",
+          "date": "28. Juni 2026",
+          "imageAlt": "Feuerwehrkräfte in Schutzkleidung"
+        },
+        "second": {
+          "title": "CBS This Morning: Saturday",
+          "description": "Praktische Anforderungen für Relocation, berufliche Anerkennung und das Onboarding im ersten Monat.",
+          "date": "28. Juni 2026",
+          "imageAlt": "Bauarbeiter mit gelben Helmen"
+        },
+        "third": {
+          "title": "CBS This Morning: Saturday",
+          "description": "Wie internationale Fachkräfte ihre Profile auf die Erwartungen deutscher Arbeitgeber abstimmen.",
+          "date": "28. Juni 2026",
+          "imageAlt": "Porträt eines Arbeiters in Schutzkleidung"
+        },
+        "fourth": {
+          "title": "CBS This Morning: Saturday",
+          "description": "Die Nachfrage im deutschen Gesundheitsbereich bleibt hoch, vor allem in Kliniken und regionalen Krankenhäusern.",
+          "date": "28. Juni 2026",
+          "imageAlt": "Feuerwehrkräfte in Schutzkleidung"
+        },
+        "fifth": {
+          "title": "CBS This Morning: Saturday",
+          "description": "Praktische Anforderungen für Relocation, berufliche Anerkennung und das Onboarding im ersten Monat.",
+          "date": "28. Juni 2026",
+          "imageAlt": "Bauarbeiter mit gelben Helmen"
+        },
+        "sixth": {
+          "title": "CBS This Morning: Saturday",
+          "description": "Wie internationale Fachkräfte ihre Profile auf die Erwartungen deutscher Arbeitgeber abstimmen.",
+          "date": "28. Juni 2026",
+          "imageAlt": "Porträt eines Arbeiters in Schutzkleidung"
+        }
+      }
+    },
+    "support": {
+      "eyebrow": "Immer an deiner Seite",
+      "title": "Brauchst du Hilfe? Wir sind für dich da",
+      "description": "Egal ob konkrete Frage oder technische Unterstützung, unser Support-Team hilft dir gerne weiter.",
+      "actions": {
+        "faqs": "FAQs",
+        "contact": "Kontakt"
+      }
+    },
+    "about": {
+      "intro": {
+        "eyebrow": "Unsere Identitaet",
+        "title": "Die Bruecke zwischen Talenten und Deutschland",
+        "descriptionOne": "Willkommen bei Talent Seeker, deiner vertrauten Plattform, um talentierte Fachkraefte mit starken Chancen auf dem deutschen Arbeitsmarkt zu verbinden.",
+        "descriptionTwo": "Wir unterstuetzen Talente und Unternehmen in jedem Schritt - von der Rollenvermittlung ueber Relocation bis zur nachhaltigen Integration."
+      },
+      "story": {
+        "eyebrow": "Unsere Mission",
+        "title": "Die Bruecke zwischen Talenten und Exzellenz",
+        "tabs": {
+          "mission": "Unsere Mission",
+          "vision": "Unsere Vision",
+          "development": "Entwicklung"
+        },
+        "descriptionOne": "Wir handeln als Partner, der internationale Kandidaten mit den Anforderungen moderner deutscher Unternehmen zusammenbringt.",
+        "descriptionTwo": "Durch persoenliche Begleitung und intelligente Matching-Prozesse helfen wir Kandidaten und Unternehmen, langfristig die richtige Verbindung zu finden."
+      }
+    },
+    "footer": {
+      "brand": "Talent Seeker",
+      "description": "Dein verlässlicher Partner für Relocation und erfolgreiche Einstellungen in Deutschland.",
+      "quickLinks": {
+        "title": "Schnellzugriffe",
+        "items": {
+          "about": "Über uns",
+          "jobs": "Jobs",
+          "services": "Services",
+          "contact": "Kontakt"
+        }
+      },
+      "contact": {
+        "title": "Kontakt",
+        "phone": "+49 (0) 15156350852",
+        "email": "info@talent-sc.com",
+        "address": "Stein Str. 81-83, 35390 Gießen"
+      },
+      "copyright": "2026 Jobs-Tsc. Alle Rechte vorbehalten.",
+      "terms": "Nutzungsbedingungen",
+      "faqs": "FAQs",
+      "privacy": "Datenschutz"
+    },
+    "contact": {
+      "eyebrow": "Kontakt",
+      "title": "Lassen Sie uns ein Gespraech starten",
+      "description": "Haben Sie Fragen zu unseren Leistungen oder brauchen Sie technische Unterstuetzung? Unser Team begleitet Sie auf dem Weg zu Ihren Zielen im deutschen Markt.",
+      "mapAlt": "Karte des Buerostandorts",
+      "form": {
+        "title": "Senden Sie uns eine Nachricht",
+        "nameLabel": "Name",
+        "namePlaceholder": "Geben Sie Ihren Namen ein",
+        "emailLabel": "E-Mail",
+        "emailPlaceholder": "Geben Sie Ihre E-Mail ein",
+        "phoneLabel": "Telefon",
+        "phonePlaceholder": "Geben Sie Ihre Telefonnummer ein",
+        "subjectLabel": "Betreff",
+        "subjectPlaceholder": "Betreff eingeben",
+        "messageLabel": "Nachricht",
+        "messagePlaceholder": "Schreiben Sie Ihre Nachricht",
+        "send": "Senden",
+        "sending": "Wird gesendet...",
+        "success": "Ihre Nachricht wurde erfolgreich gesendet!",
+        "error": "Ein Fehler ist aufgetreten. Bitte versuchen Sie es erneut."
+      },
+      "info": {
+        "phoneLabel": "Telefonnummer",
+        "emailLabel": "E-Mail-Adresse",
+        "addressLabel": "Bueroadresse"
+      },
+      "faq": {
+        "eyebrow": "Schnelle Antworten",
+        "title": "Alles, was Sie wissen muessen",
+        "description": "Nicht gefunden, wonach Sie suchen? Hier sind die haeufigsten Fragen zum Karrierestart in Deutschland.",
+        "items": {
+          "fees": {
+            "question": "Gibt es versteckte Gebuehren fuer Jobsuchende?",
+            "answer": "Nein, unsere Leistungen fuer Kandidaten sind vollstaendig kostenlos. Wir werden von unseren Partnerunternehmen verguetet."
+          },
+          "language": {
+            "question": "Muss ich vor der Bewerbung Deutsch sprechen?",
+            "answer": "Nicht immer. Das haengt von der Stelle ab. Wir beraten Sie zu den Sprachanforderungen und dem passenden Vorbereitungsweg."
+          },
+          "timeline": {
+            "question": "Wie lange dauert der gesamte Relocation-Prozess?",
+            "answer": "Die Dauer variiert je nach Stelle und Visumtyp. Mit vollstaendigen Unterlagen schaffen es die meisten Kandidaten in wenigen Monaten."
+          },
+          "documents": {
+            "question": "Welche Unterlagen sollte ich zuerst vorbereiten?",
+            "answer": "Bereiten Sie Ihren aktuellen Lebenslauf, Reisepass, Zeugnisse und Referenzen vor. Unser Team prueft alles und gibt Ihnen eine klare Checkliste."
+          }
+        }
+      },
+      "footerDescription": "Lorem ipsum dolor sit amet consectetur. Curabitur blandit amet morbi montes dui quis. Eget ultrices iaculis in ac porta. Libero nunc fermentum non id etiam volutpat at malesuada nulla.",
+      "legal": {
+        "terms": "Nutzungsbedingungen",
+        "faqs": "FAQs",
+        "privacy": "Datenschutz"
+      }
+    }
+  },
+  "CompanyJobs": {
+    "title": "Stelle erstellen",
+    "listTitle": "Meine Stellen",
+    "addJob": "+ Stelle hinzufügen",
+    "empty": "Sie haben noch keine Stellen veröffentlicht",
+    "loadError": "Stellen konnten nicht geladen werden",
+    "cancel": "Abbrechen",
+    "back": "Zurück",
+    "next": "Weiter",
+    "submit": "Veröffentlichen",
+    "submitting": "Wird veröffentlicht...",
+    "compressing": "Bild wird optimiert...",
+    "imageSizeHint": "Bilder werden vor dem Upload komprimiert. JPG, PNG oder WebP bis 12 MB.",
+    "delete": "Löschen",
+    "stop": "Stoppen",
+    "applications": "Bewerbungen",
+    "confirmDelete": "Diese Stelle löschen?",
+    "steps": {
+      "basic": "Grundinformationen",
+      "info": "Stelleninformationen",
+      "description": "Stellenbeschreibung"
+    },
+    "fields": {
+      "title": "Titel",
+      "category": "Kategorie",
+      "subCategory": "Unterkategorie",
+      "sameAsCategory": "Wie Kategorie",
+      "state": "Bundesland / Region",
+      "vacancy": "Stellen",
+      "gender": "Geschlecht",
+      "deadline": "Bewerbungsfrist",
+      "salary": "Gehalt",
+      "age": "Alter",
+      "description": "Beschreibung",
+      "responsibilities": "Aufgaben",
+      "requirements": "Anforderungen",
+      "image": "Stellen-Bannerbild",
+      "employmentType": "Beschäftigungsart"
+    },
+    "placeholders": {
+      "title": "Stellentitel",
+      "image": "Klicken zum Hochladen oder Ändern",
+      "select": "Auswählen",
+      "salaryFrom": "von €",
+      "salaryTo": "bis €",
+      "ageFrom": "von",
+      "ageTo": "bis"
+    },
+    "gender": {
+      "Male": "Männlich",
+      "Female": "Weiblich",
+      "All": "Alle"
+    },
+    "jobType": {
+      "full_time": "Vollzeit",
+      "part_time": "Teilzeit"
+    },
+    "status": {
+      "pending": "Ausstehend",
+      "approved": "Aktiv",
+      "rejected": "Abgelehnt",
+      "stopped": "Gestoppt"
+    },
+    "menu": {
+      "applications": "Bewerbungen",
+      "review": "Anzeigen",
+      "stop": "Stoppen",
+      "activate": "Aktivieren",
+      "delete": "Löschen"
+    },
+    "review": {
+      "title": "Stellenvorschau",
+      "backToJobs": "Zurück zu allen Stellen",
+      "viewApplications": "Bewerbungen anzeigen",
+      "companyFallback": "Ihr Unternehmen",
+      "industryFallback": "Branche",
+      "notFound": "Diese Stelle wurde nicht gefunden oder ist nicht mehr verfügbar."
+    },
+    "applicationsPage": {
+      "title": "Bewerbungen",
+      "backToJobs": "Zurück zu allen Stellen",
+      "candidate": "Kandidat",
+      "statusLabel": "Status",
+      "actionsLabel": "Aktionen",
+      "approve": "Genehmigen",
+      "reject": "Ablehnen",
+      "details": "Details",
+      "empty": "Noch keine Bewerbungen für diese Stelle.",
+      "unknownCandidate": "Bewerber",
+      "processing": "Wird verarbeitet...",
+      "approvedSuccess": "Bewerbung erfolgreich genehmigt",
+      "rejectedSuccess": "Bewerbung abgelehnt",
+      "errorGeneral": "Fehler bei der Verarbeitung der Bewerbung",
+      "status": {
+        "pending": "Ausstehend",
+        "accepted": "Genehmigt",
+        "rejected": "Abgelehnt"
+      }
+    },
+    "columns": {
+      "title": "Stellentitel",
+      "category": "Kategorie",
+      "status": "Status",
+      "applications": "Bewerber",
+      "deadline": "Frist",
+      "actions": "Aktionen",
+      "details": "Details"
+    },
+    "errors": {
+      "title": "Stellentitel eingeben",
+      "category": "Kategorie wählen",
+      "subCategory": "Unterkategorie wählen",
+      "categoriesUnavailable": "Kategorien konnten nicht vom Server geladen werden. API-Verbindung prüfen und Seite neu laden.",
+      "state": "Bundesland wählen",
+      "vacancy": "Anzahl der Stellen eingeben",
+      "gender": "Geschlecht wählen",
+      "deadline": "Frist wählen",
+      "salary": "Gehaltsbereich eingeben",
+      "salaryRange": "Gehalt von muss kleiner als bis sein",
+      "age": "Altersbereich eingeben",
+      "ageRange": "Alter von muss kleiner als bis sein",
+      "description": "Beschreibung eingeben",
+      "responsibilities": "Aufgaben eingeben",
+      "requirements": "Anforderungen eingeben",
+      "image": "Bitte ein Bannerbild hochladen",
+      "imageSize": "Bild darf maximal 12 MB groß sein",
+      "imageCompress": "Bild konnte nicht verarbeitet werden. Bitte andere Datei wählen.",
+      "employmentType": "Beschäftigungsart wählen"
+    },
+    "removeImage": "Entfernen"
+  },
+  "LegalPages": {
+    "privacy": {
+      "eyebrow": "Datenschutz",
+      "title": "Datenschutzerklärung",
+      "description": "Wir erfassen die Informationen, die zur Bereitstellung von Onboarding, Matching und Kontounterstützung erforderlich sind.",
+      "termsAction": "Nutzungsbedingungen",
+      "contactAction": "Kontaktieren Sie uns"
+    },
+    "terms": {
+      "eyebrow": "Bedingungen",
+      "title": "Nutzungsbedingungen",
+      "description": "Die Nutzung der Plattform unterliegt diesen Bedingungen.",
+      "privacyAction": "Datenschutzerklärung",
+      "contactAction": "Kontaktieren Sie uns"
+    }
+  },
+  "Pages": {
+    "legal": {
+      "faq": {
+        "faq": {
+          "eyebrow": "Hilfe",
+          "title": "Häufig gestellte Fragen",
+          "description": "Häufige Fragen zur Nutzung der Plattform.",
+          "contactAction": "Kontaktieren Sie uns"
+        },
+        "items": {
+          "one": {
+            "q": "Wie bewerbe ich mich?",
+            "a": "Sie können sich über die Seite mit den Jobdetails bewerben."
+          },
+          "two": {
+            "q": "Unterstützen Sie Umzüge?",
+            "a": "Ja, wir bieten Unterstützung beim Umzug."
+          }
+        }
+      }
+    }
+  },
+  "admin": {
+    "title": "Admin-Bereich",
+    "description": "Plattform-Übersicht und Verwaltungswerkzeuge"
+  },
+  "Admin": {
+    "dashboard": {
+      "title": "Admin-Dashboard",
+      "description": "Plattformübersicht",
+      "kpi": {
+        "users": "Benutzer",
+        "companies": "Unternehmen",
+        "jobs": "Stellen",
+        "pending": "Ausstehende Stellen"
+      },
+      "pendingTable": "Ausstehende Stellen zur Prüfung",
+      "viewAll": "Alle anzeigen",
+      "noPending": "Keine ausstehenden Stellen",
+      "col": {
+        "job": "Stelle",
+        "company": "Unternehmen",
+        "category": "Kategorie",
+        "status": "Status",
+        "actions": "Aktionen"
+      },
+      "status": {
+        "pending": "Ausstehend"
+      }
+    },
+    "jobs": {
+      "title": "Stellenverwaltung",
+      "description": "Stellen prüfen, genehmigen oder ablehnen",
+      "tabs": {
+        "pending": "Ausstehend",
+        "approved": "Veröffentlicht",
+        "rejected": "Abgelehnt",
+        "all": "Alle"
+      },
+      "columns": {
+        "title": "Stelle",
+        "company": "Unternehmen",
+        "category": "Kategorie",
+        "publishedAt": "Veröffentlichungsdatum",
+        "applicants": "Bewerber",
+        "salary": "Gehalt",
+        "status": "Status",
+        "actions": "Aktionen"
+      },
+      "status": {
+        "pending": "Ausstehend",
+        "approved": "Veröffentlicht",
+        "rejected": "Abgelehnt"
+      },
+      "summary": {
+        "total": "Alle Stellen",
+        "pending": "Ausstehend",
+        "published": "Veröffentlicht",
+        "rejected": "Abgelehnt"
+      },
+      "viewDetails": "Details anzeigen",
+      "viewApplications": "Bewerbungen anzeigen",
+      "more": "Mehr",
+      "stop": "Stoppen",
+      "activate": "Aktivieren",
+      "delete": "Löschen",
+      "searchPlaceholder": "Stellen suchen...",
+      "search": "Suchen",
+      "backToJobs": "Zurück zu den Stellen",
+      "details": "Stellendetails",
+      "companyLabel": "Unternehmen",
+      "locationLabel": "Standort",
+      "postedOnLabel": "Veröffentlicht am",
+      "deadlineLabel": "Frist",
+      "applicationsLabel": "Bewerbungen",
+      "rejectReasonTitle": "Ablehnungsgrund",
+      "rejectReasonHint": "Fügen Sie vor dem Bestätigen einen kurzen Grund hinzu.",
+      "reasonLabel": "Ablehnungsgrund",
+      "reasonPlaceholder": "Schreiben Sie hier den Ablehnungsgrund",
+      "rejecting": "Wird abgelehnt",
+      "approve": "Genehmigen",
+      "reject": "Ablehnen",
+      "applicationsPage": {
+        "title": "Bewerbungen",
+        "backToDetail": "Zurück zu den Details",
+        "backToJobs": "Zurück zur Admin-Stellen",
+        "summary": "Bewerber",
+        "candidate": "Kandidat",
+        "actions": "Aktionen",
+        "actionsLabel": "Aktionen",
+        "statusLabel": "Status",
+        "appliedAt": "Bewerbung am",
+        "email": "E-Mail",
+        "empty": "Für diese Stelle gibt es noch keine Bewerbungen.",
+        "unknownCandidate": "Unbenannter Kandidat",
+        "viewCv": "Lebenslauf anzeigen",
+        "status": {
+          "pending": "Ausstehend",
+          "accepted": "Akzeptiert",
+          "rejected": "Abgelehnt"
+        }
+      },
+      "empty": "Keine Stellen",
+      "error": "Aktion fehlgeschlagen"
+    },
+    "users": {
+      "title": "Benutzer",
+      "description": "Benutzer- und Unternehmenskonten verwalten",
+      "filters": {
+        "all": "Alle",
+        "user": "Benutzer",
+        "company": "Unternehmen",
+        "admin": "Admin"
+      },
+      "columns": {
+        "name": "Name",
+        "email": "E-Mail",
+        "phone": "Telefon",
+        "country": "Land",
+        "category": "Kategorie",
+        "status": "Status",
+        "role": "Rolle",
+        "actions": "Aktionen"
+      },
+      "roles": {
+        "user": "Benutzer",
+        "company": "Unternehmen",
+        "admin": "Admin"
+      },
+      "delete": "Löschen",
+      "deleteConfirm": "Diesen Benutzer löschen?",
+      "empty": "Keine Benutzer",
+      "error": "Löschen fehlgeschlagen"
+    },
+    "companies": {
+      "title": "Unternehmen",
+      "description": "Unternehmenskonten verwalten",
+      "columns": {
+        "name": "Unternehmen",
+        "email": "E-Mail",
+        "phone": "Telefon",
+        "employees": "Mitarbeiter",
+        "country": "Land",
+        "status": "Status",
+        "actions": "Aktionen"
+      },
+      "delete": "Löschen",
+      "deleteConfirm": "Dieses Unternehmen löschen?",
+      "empty": "Keine Unternehmen",
+      "error": "Löschen fehlgeschlagen"
+    },
+    "successStories": {
+      "title": "Erfolgsgeschichten",
+      "description": "Erfolgsgeschichten auf der Startseite verwalten",
+      "hint": "Geschichten in der aktuellen Sprache hinzufügen oder bearbeiten und ein Bild anhängen.",
+      "loadError": "Erfolgsgeschichten konnten nicht geladen werden",
+      "columns": {
+        "image": "Bild",
+        "name": "Name",
+        "role": "Rolle",
+        "location": "Ort",
+        "quote": "Zitat",
+        "actions": "Aktionen"
+      },
+      "fields": {
+        "name": "Name",
+        "role": "Rolle",
+        "quote": "Zitat",
+        "location": "Ort",
+        "image": "Bild"
+      },
+      "add": "+ Geschichte hinzufügen",
+      "createTitle": "Neue Geschichte",
+      "editTitle": "Geschichte bearbeiten",
+      "currentLanguageOnly": "Der Inhalt wird nur in der aktuellen Sprache gespeichert.",
+      "save": "Speichern",
+      "saving": "Speichern…",
+      "cancel": "Abbrechen",
+      "edit": "Bearbeiten",
+      "delete": "Löschen",
+      "deleteConfirm": "Diese Geschichte löschen?",
+      "empty": "Keine Erfolgsgeschichten",
+      "error": "Speichern fehlgeschlagen",
+      "locationRequired": "Ort ist erforderlich"
+    },
+    "faqs": {
+      "title": "Häufig gestellte Fragen (FAQs)",
+      "description": "Verwalten Sie die auf der Plattform veröffentlichten häufig gestellten Fragen (FAQs).",
+      "columns": {
+        "question": "Frage",
+        "answer": "Antwort",
+        "actions": "Aktionen"
+      },
+      "add": "+ Frage hinzufügen",
+      "empty": "Keine FAQs",
+      "delete": "Löschen",
+      "error": "Aktion fehlgeschlagen",
+      "titles": {
+        "details": "FAQ Details"
+      },
+      "labels": {
+        "language": "Sprache:"
+      },
+      "fields": {
+        "question": "Frage",
+        "answer": "Antwort"
+      },
+      "actions": {
+        "saving": "Speichern...",
+        "create": "Erstellen",
+        "saveChanges": "Änderungen speichern",
+        "back": "Zurück"
+      },
+      "messages": {
+        "saved": "✓ Erfolgreich gespeichert"
+      },
+      "errors": {
+        "atLeastOneQuestion": "Mindestens eine arabische Frage ist erforderlich",
+        "save": "Speichern fehlgeschlagen"
+      }
+    },
+    "home": {
+      "title": "Startseiteninhalt",
+      "description": "Aktualisieren Sie Hero, Prozessschritte und die Abschnittstitel auf der öffentlichen Startseite.",
+      "hint": "Der Inhalt wird nur in der aktuellen Sprache gespeichert.",
+      "success": "Startseiteninhalt gespeichert.",
+      "loadError": "Startseiteninhalt konnte nicht vom API geladen werden",
+      "error": "Speichern fehlgeschlagen",
+      "save": "Speichern",
+      "saving": "Speichern…",
+      "status": {
+        "editing": "Startseitenabschnitte bearbeiten",
+        "section": "Aktiver Abschnitt"
+      },
+      "helper": {
+        "hero": "Bearbeiten Sie den Hauptbanner-Text, der oben auf der Startseite erscheint.",
+        "categories": "Aktualisieren Sie Titel und Beschreibung des Kategorienfilters auf der Startseite.",
+        "process": "Verwalten Sie die drei Schritte, die erklären, wie Nutzer starten und sich bewerben können.",
+        "jobs": "Aktualisieren Sie den Text des Jobabschnitts auf der Startseite.",
+        "successStories": "Aktualisieren Sie den Erfolgsgeschichten-Block und seine Überschrift.",
+        "news": "Aktualisieren Sie die Überschrift und Einführung des News-Abschnitts auf der Startseite.",
+        "footer": "Aktualisieren Sie den Support-Aufruf, der im Footer-Bereich der Startseite erscheint.",
+        "processIcon": "Ersetzen Sie dieses Schritt-Symbol durch einen lokalen Pfad oder eine öffentliche URL."
+      },
+      "labels": {
+        "processStep": "Schritt"
+      },
+      "fields": {
+        "heroTitle": "Hauptbereichstitel",
+        "heroDescription": "Hauptbereichsbeschreibung",
+        "heroImage": "Hero-Bild",
+        "sectionCategoriesTitle": "Titel des Kategorienabschnitts",
+        "sectionCategoriesDescription": "Beschreibung des Kategorienabschnitts",
+        "sectionJobsTitle": "Titel des Jobabschnitts",
+        "sectionJobsDescription": "Beschreibung des Jobabschnitts",
+        "sectionTestimonialsTitle": "Titel des Erfolgsgeschichten-Abschnitts",
+        "sectionTestimonialsDescription": "Beschreibung des Erfolgsgeschichten-Abschnitts",
+        "sectionNewsTitle": "Titel des News-Abschnitts",
+        "sectionNewsDescription": "Beschreibung des News-Abschnitts",
+        "sectionFooterTitle": "Titel des Support-Abschnitts",
+        "sectionFooterDescription": "Beschreibung des Support-Abschnitts",
+        "stepTitle": "Titel des Schritts",
+        "stepIcon": "Symbolpfad",
+        "uploadIcon": "Symboldatei hochladen",
+        "removeImage": "Entfernen",
+        "preview": "Vorschau",
+        "stepDescription": "Beschreibung des Schritts"
+      },
+      "sectionLabels": {
+        "hero": "Hauptbereich",
+        "process": "Schritte",
+        "categories": "Kategorien",
+        "jobs": "Jobs",
+        "successStories": "Erfolgsgeschichten",
+        "news": "News",
+        "footer": "Support"
+      }
+    },
+    "about": {
+      "title": "Inhalte der About-Seite",
+      "description": "Verwalten Sie den Hero- und Story-Inhalt auf der öffentlichen About-Seite.",
+      "summary": "Das Formular synchronisiert die About-Seite mit dem öffentlichen /about-Endpunkt und behält Ihre hochgeladenen Bilder bei.",
+      "fields": {
+        "title": "Hero-Titel",
+        "descriptionLeft": "Einführungsbeschreibung links",
+        "descriptionRight": "Einführungsbeschreibung rechts",
+        "secondTitle": "Story-Titel",
+        "secondDescription": "Story-Beschreibung",
+        "image": "Hero-Bild",
+        "secondImage": "Sekundäres Bild"
+      },
+      "currentImage": "Aktuelles Hero-Bild",
+      "currentSecondaryImage": "Aktuelles sekundäres Bild",
+      "save": "Speichern",
+      "saving": "Wird gespeichert…",
+      "loadError": "Die About-Inhalte konnten nicht vom API geladen werden",
+      "error": "Speichern fehlgeschlagen"
+    },
+    "settings": {
+      "title": "Einstellungen & Inhalte",
+      "description": "Website-Einstellungen, News und Benachrichtigungen",
+      "tabs": {
+        "settings": "Website-Einstellungen",
+        "news": "News",
+        "notifications": "Benachrichtigungen"
+      },
+      "settingsEmpty": "Keine Einstellungen vom API",
+      "edit": "Bearbeiten",
+      "save": "Speichern",
+      "addNews": "+ Neuer Artikel",
+      "newsTitle": "Titel",
+      "newsDesc": "Beschreibung",
+      "newsImage": "Artikelbild",
+      "saveNews": "Veröffentlichen",
+      "newsColTitle": "Titel",
+      "newsColDate": "Datum",
+      "newsColActions": "Aktionen",
+      "newsEmpty": "Keine News",
+      "notificationsEmpty": "Keine Benachrichtigungen",
+      "markAllRead": "Alle als gelesen markieren",
+      "markRead": "Gelesen",
+      "unread": "Neu",
+      "delete": "Löschen",
+      "deleteConfirm": "Diesen Artikel löschen?",
+      "error": "Etwas ist schiefgelaufen"
+    }
+  },
+  "Ui": {
+    "common": {
+      "loading": "Wird geladen",
+      "pleaseWait": "Bitte warten..."
+    },
+    "dialog": {
+      "close": "Schließen",
+      "description": "Inhalt des Dialogs"
+    },
+    "sheet": {
+      "title": "Seitenleisten-Drawer",
+      "close": "Schließen"
+    },
+    "sidebar": {
+      "title": "Seitenleiste",
+      "mobileDescription": "Zeigt die mobile Seitenleiste an.",
+      "toggle": "Seitenleiste umschalten"
+    },
+    "breadcrumb": {
+      "label": "Brotkrumenpfad",
+      "more": "Mehr"
+    },
+    "carousel": {
+      "previousSlide": "Vorherige Folie",
+      "nextSlide": "Nächste Folie"
+    },
+    "pagination": {
+      "navigation": "Seitennavigation",
+      "previous": "Zurück",
+      "next": "Weiter",
+      "goToPrevious": "Zur vorherigen Seite",
+      "goToNext": "Zur nächsten Seite",
+      "morePages": "Weitere Seiten"
+    },
+    "common": {
+      "loading": "Wird geladen...",
+      "pleaseWait": "Bitte warten...",
+      "openTicket": "Ticket erstellen"
+    }
+  }
+}

@@ -1,0 +1,1083 @@
+{
+  "HomePage": {
+    "title": "To get started, edit the page.tsx file.",
+    "descriptionPrefix": "Looking for a starting point or more instructions? Head over to",
+    "templates": "Templates",
+    "descriptionMiddle": "or the",
+    "learningCenter": "Learning",
+    "descriptionSuffix": "center.",
+    "deployNow": "Deploy Now",
+    "documentation": "Documentation",
+    "switchToEnglish": "English",
+    "switchToArabic": "Arabic",
+    "switchToGerman": "German",
+    "metaTitle": "Talent Seeker",
+    "metaDescription": "Talent Seeker platform for jobs, relocation support, and career opportunities in Germany."
+  },
+  "Auth": {
+    "signIn": {
+      "title": "Welcome to Talenet Seeker",
+      "description": "Log in to your account to manage your professional journey or recruitment",
+      "logoAlt": "Talent Seeker logo",
+      "submit": "Login",
+      "loading": "Logging in...",
+      "forgotPassword": "Forget Password",
+      "back": "Back",
+      "userTab": "User",
+      "companyTab": "Company",
+      "accountTypeTabs": "Account type",
+      "noAccount": "Don't have account?",
+      "signUp": "Sign Up",
+      "alternateAction": "Don't have an account? Create one",
+      "fields": {
+        "emailLabel": "Email",
+        "emailPlaceholder": "Your Email",
+        "passwordLabel": "Password",
+        "passwordPlaceholder": "Password"
+      }
+    },
+    "signUp": {
+      "title": "Create your account",
+      "description": "Sign up to start your professional journey with Talent Seeker.",
+      "logoAlt": "Talent Seeker logo",
+      "submit": "Sign Up",
+      "back": "Back",
+      "userTab": "User",
+      "companyTab": "Company",
+      "accountTypeTabs": "Account type",
+      "hasAccount": "Already have account?",
+      "signIn": "Sign In",
+      "alternateAction": "Already have an account? Sign in",
+      "fields": {
+        "fullNameLabel": "Full name",
+        "fullNamePlaceholder": "Full Name",
+        "emailLabel": "Email",
+        "emailPlaceholder": "Your Email",
+        "passwordLabel": "Password",
+        "passwordPlaceholder": "Password",
+        "showPassword": "Show password",
+        "hidePassword": "Hide password",
+        "phonePlaceholder": "Phone number",
+        "confirmPasswordPlaceholder": "Confirm password",
+        "companyNamePlaceholder": "Company name",
+        "termsLabel": "I accept the <termsLink>terms</termsLink> and <privacyLink>privacy policy</privacyLink>"
+      }
+    },
+    "forgotPassword": {
+      "title": "Reset your password",
+      "description": "Enter your email and we will send a verification code.",
+      "logoAlt": "Talent Seeker logo",
+      "submit": "Send Reset Link",
+      "step1": "Send code",
+      "step2": "Verify code",
+      "step3": "New password",
+      "back": "Back",
+      "rememberPassword": "Remember your password?",
+      "signIn": "Sign In",
+      "alternateAction": "Back to sign in",
+      "fields": {
+        "emailLabel": "Email",
+        "emailPlaceholder": "Your Email",
+        "codePlaceholder": "6-digit code",
+        "passwordPlaceholder": "New password",
+        "confirmPlaceholder": "Confirm password"
+      }
+    },
+    "verifyEmail": {
+      "title": "Verify your email",
+      "description": "Enter the code sent to your email.",
+      "logoAlt": "Talent Seeker logo",
+      "submit": "Verify",
+      "resend": "Resend code",
+      "back": "Back",
+      "hasAccount": "Already have an account?",
+      "signIn": "Sign In",
+      "fields": {
+        "codePlaceholder": "Verification code"
+      }
+    }
+  },
+  "Ui": {
+    "common": {
+      "loading": "Loading...",
+      "pleaseWait": "Please wait...",
+      "newTicket": "New Ticket"
+    },
+    "dialog": {
+      "close": "Close",
+      "description": "Dialog content"
+    }
+  },
+  "Landing": {
+    "hero": {
+      "brand": "Talent Seeker",
+      "eyebrow": "Your Gateway to a New Life",
+      "title": "Your Complete Path to a Career in Germany",
+      "description": "We don't just find you a job; we build your future. From matching you with top German employers to handling visas and housing, we are with you every step of the way.",
+      "cta": "Explore Opportunities",
+      "login": "Login",
+      "nav": {
+        "home": "Home",
+        "about": "About Us",
+        "services": "Services",
+        "jobs": "Jobs",
+        "news": "News",
+        "contact": "Contact Us"
+      },
+      "languageAria": "Switch language",
+      "locale": {
+        "en": "English",
+        "ar": "Arabic",
+        "de": "German"
+      },
+      "card": {
+        "caption": "Jobs already posted",
+        "metric": "13k+",
+        "description": "New opportunities added continuously"
+      }
+    },
+    "categories": {
+      "eyebrow": "Our Categories",
+      "title": "Find the Perfect Role for Your Expertise",
+      "description": "We connect you with top German companies across vital industries. Select your field to discover opportunities tailored to your skills.",
+      "metricLabel": "Job already posted",
+      "showMore": "Show More",
+      "vacancies": "open positions",
+      "items": {
+        "business": {
+          "label": "Business & Marketing",
+          "vacancy": "250 Vacancy"
+        },
+        "design": {
+          "label": "Design",
+          "vacancy": "250 Vacancy"
+        },
+        "development": {
+          "label": "Development",
+          "vacancy": "250 Vacancy"
+        },
+        "medical": {
+          "label": "Medical",
+          "vacancy": "250 Vacancy"
+        },
+        "sales": {
+          "label": "Sales",
+          "vacancy": "250 Vacancy"
+        },
+        "hr": {
+          "label": "HR",
+          "vacancy": "250 Vacancy"
+        },
+        "finance": {
+          "label": "Finance",
+          "vacancy": "250 Vacancy"
+        }
+      }
+    },
+    "process": {
+      "eyebrow": "Seamless Process",
+      "title": "Your Journey to Germany, Simplified",
+      "description": "From your first application to your final arrival, we handle the complexity so you can focus on your new career.",
+      "steps": {
+        "createAccount": {
+          "title": "Create Account",
+          "description": "It is very easy to open an account and start your journey."
+        },
+        "completeProfile": {
+          "title": "Complete your profile",
+          "description": "Complete your profile with all the info to get attention of employers."
+        },
+        "apply": {
+          "title": "Apply job or hire",
+          "description": "Apply and get your preferred jobs with all requirements in one place."
+        }
+      }
+    },
+    "jobs": {
+      "eyebrow": "Premium Opportunities",
+      "title": "Your Next Career Move Awaits",
+      "description": "Explore the latest opportunities across all sectors and find the perfect match for your expertise in the German market.",
+      "filters": {
+        "all": "All Categories",
+        "design": "Design",
+        "development": "Development",
+        "marketing": "Marketing",
+        "medical": "Medical"
+      },
+      "moreDetails": "More Details",
+      "showAll": "Show All Jobs",
+      "salaryPeriod": "/month",
+      "items": {
+        "frontend": {
+          "department": "IT",
+          "title": "Frontend Developer",
+          "company": "TechNova - Software Company",
+          "type": "Full Time"
+        },
+        "marketing": {
+          "department": "Marketing",
+          "title": "Digital Marketer",
+          "company": "Marketify - Marketing Agency",
+          "type": "Part Time"
+        },
+        "uiux": {
+          "department": "Design",
+          "title": "UI/UX Designer",
+          "company": "Creative Lab - Design Studio",
+          "type": "Remote"
+        },
+        "sales": {
+          "department": "Sales",
+          "title": "Sales Executive",
+          "company": "SalesPro - Sales Company",
+          "type": "Full Time"
+        },
+        "hr": {
+          "department": "HR",
+          "title": "HR Specialist",
+          "company": "PeopleHub - HR Services",
+          "type": "Part Time"
+        },
+        "accounting": {
+          "department": "Finance",
+          "title": "Accountant",
+          "company": "FinCore - Financial Services",
+          "type": "Remote"
+        }
+      }
+    },
+    "jobsPage": {
+      "languageAria": "Switch language",
+      "searchPlaceholder": "Search by job title or location",
+      "search": "Search",
+      "allJobs": "All Jobs",
+      "allJobsCount": "190",
+      "filter": "Filter",
+      "department": "Department",
+      "postedAgo": "14 hours ago",
+      "salaryPeriod": " /month",
+      "employmentFullTime": "Full-time",
+      "companyName": "Company name",
+      "companySubLabel": "Title",
+      "noResults": "No jobs match your filters. Try adjusting your search or clearing filters.",
+      "closeFilters": "Close",
+      "description": "Job description",
+      "requirements": "Requirements",
+      "responsibilities": "Responsibilities",
+      "applyNow": "Apply now",
+      "vacancies": "open positions",
+      "detail": {
+        "lookingFor": "We're looking for a...",
+        "shareWith": "Share With:",
+        "monthly": "Monthly",
+        "details": "Details",
+        "industry": "Industry",
+        "employmentType": "Employment Type",
+        "vacancy": "Vacancy",
+        "gender": "Gender",
+        "age": "Age",
+        "applicationDeadline": "Application Deadline",
+        "applyForJob": "Apply for a job",
+        "relatedJobs": "Related Jobs",
+        "placeholderOne": "We are looking for a motivated professional to join our growing team and help us deliver excellent results.",
+        "placeholderTwo": "You will collaborate with cross-functional teams and contribute to planning, execution, and reporting.",
+        "placeholderThree": "Our culture values clarity, ownership, and continuous improvement in a supportive environment."
+      },
+      "filterPanel": {
+        "title": "Filter",
+        "clearAll": "Clear all",
+        "state": "State",
+        "categories": "Categories",
+        "salary": "Salary",
+        "salaryMin": "$1",
+        "salaryMax": "$10k",
+        "from": "From",
+        "to": "To",
+        "stateOptions": {
+          "hassan": "Hassan",
+          "alle": "Alle"
+        },
+        "categoryOptions": {
+          "marketing": "Marketing",
+          "design": "Design",
+          "it": "IT",
+          "medical": "Medical"
+        }
+      }
+    },
+    "testimonials": {
+      "eyebrow": "Real Impact",
+      "title": "Success Stories from Our Community",
+      "description": "Discover how we have empowered both talents and employers to thrive and grow within the German job market.",
+      "items": {
+        "jacob": {
+          "initials": "JJ",
+          "name": "Jacob Jones",
+          "role": "Medical Assistant, 29, Morocco",
+          "quote": "Talent SC did not just find me a job. They managed my entire transition to Germany."
+        },
+        "ronald": {
+          "initials": "RR",
+          "name": "Ronald Richards",
+          "role": "Marketing Coordinator, 32, Yemen",
+          "quote": "The process was clear from day one and the team handled every detail professionally."
+        },
+        "albert": {
+          "initials": "AF",
+          "name": "Albert Flores",
+          "role": "Web Designer, 25, Egypt",
+          "quote": "I found a role that matches my skills and moved with confidence."
+        },
+        "lina": {
+          "initials": "LH",
+          "name": "Lina Hassan",
+          "role": "Nurse, 27, Jordan",
+          "quote": "From paperwork to onboarding, every step was clear and supportive."
+        },
+        "youssef": {
+          "initials": "YE",
+          "name": "Youssef El Amrani",
+          "role": "Electrician, 31, Morocco",
+          "quote": "I received practical guidance and secured a role that fits my experience."
+        },
+        "nora": {
+          "initials": "NA",
+          "name": "Nora Ali",
+          "role": "HR Specialist, 30, Egypt",
+          "quote": "The transition process was smooth and the communication was always professional."
+        }
+      }
+    },
+    "news": {
+      "eyebrow": "Stay Informed",
+      "title": "Insights into the German Job Market",
+      "description": "The latest news on visa regulations, career tips, and industry trends to help you succeed in Germany.",
+      "readMore": "Read More",
+      "viewAll": "View all news",
+      "items": {
+        "first": {
+          "title": "CBS Evening News",
+          "description": "Useful updates and practical guidance for job seekers preparing for relocation.",
+          "date": "28 June 2026"
+        },
+        "second": {
+          "title": "CBS This Morning: Saturday",
+          "description": "A closer look at hiring trends and role demand across German industries.",
+          "date": "28 June 2026"
+        },
+        "third": {
+          "title": "Visa & Work Permit Updates",
+          "description": "Important procedural updates and what they mean for applicants.",
+          "date": "28 June 2026"
+        },
+        "fourth": {
+          "title": "Career Growth in Germany",
+          "description": "How to position your profile for long-term growth after hiring.",
+          "date": "28 June 2026"
+        }
+      }
+    },
+    "newsPage": {
+      "languageAria": "Switch language",
+      "backToNews": "Back to news",
+      "empty": "No articles are available right now. Please check again later.",
+      "relatedTitle": "Related News",
+      "shareWith": "Share With",
+      "featured": {
+        "title": "CBS Evening News",
+        "date": "28 June 2026",
+        "imageAlt": "German flag in front of a historic building"
+      },
+      "content": {
+        "opening": "Working in the German healthcare system offers strong opportunities for international professionals. Germany has one of Europe's most developed healthcare ecosystems with stable demand for skilled workers.",
+        "sectionOneTitle": "1. Diverse Career Opportunities",
+        "sectionOneBody": "Nursing professionals are needed across elderly care, hospitals, and pediatric services. Medical specialists, therapists, and technical healthcare staff also remain in high demand.",
+        "sectionTwoTitle": "2. Key Roles in Demand",
+        "sectionTwoBody": "Common roles include assistant doctors, clinical researchers, physiotherapists, occupational therapists, psychologists, medical laboratory specialists, and radiology staff.",
+        "sectionThreeTitle": "3. Requirements for International Candidates",
+        "sectionThreeBody": "Most employers require formal healthcare education and verified qualification recognition before onboarding.",
+        "sectionFourTitle": "4. Language and Integration",
+        "sectionFourBody": "A German language level around B2 is generally expected for direct patient communication and daily team collaboration."
+      },
+      "items": {
+        "first": {
+          "title": "CBS This Morning: Saturday",
+          "description": "Healthcare hiring in Germany remains active, led by clinics and regional hospitals.",
+          "date": "28 June 2026",
+          "imageAlt": "Firefighters in safety uniforms"
+        },
+        "second": {
+          "title": "CBS This Morning: Saturday",
+          "description": "Practical requirements for relocation, licensing, and first-month onboarding.",
+          "date": "28 June 2026",
+          "imageAlt": "Construction workers wearing yellow helmets"
+        },
+        "third": {
+          "title": "CBS This Morning: Saturday",
+          "description": "How foreign professionals can align their profiles with employer expectations.",
+          "date": "28 June 2026",
+          "imageAlt": "Worker portrait in protective clothing"
+        },
+        "fourth": {
+          "title": "CBS This Morning: Saturday",
+          "description": "Healthcare hiring in Germany remains active, led by clinics and regional hospitals.",
+          "date": "28 June 2026",
+          "imageAlt": "Firefighters in safety uniforms"
+        },
+        "fifth": {
+          "title": "CBS This Morning: Saturday",
+          "description": "Practical requirements for relocation, licensing, and first-month onboarding.",
+          "date": "28 June 2026",
+          "imageAlt": "Construction workers wearing yellow helmets"
+        },
+        "sixth": {
+          "title": "CBS This Morning: Saturday",
+          "description": "How foreign professionals can align their profiles with employer expectations.",
+          "date": "28 June 2026",
+          "imageAlt": "Worker portrait in protective clothing"
+        }
+      }
+    },
+    "support": {
+      "eyebrow": "Always by your side",
+      "title": "Need Help? We Have You Covered",
+      "description": "Whether you have a specific question or need technical guidance, our support team is ready to assist you.",
+      "actions": {
+        "faqs": "FAQs",
+        "contact": "Contact Us"
+      }
+    },
+    "about": {
+      "intro": {
+        "eyebrow": "Our Identity",
+        "title": "The Bridge Between Talent and Germany",
+        "descriptionOne": "Welcome to Talent Seeker, your trusted platform for connecting talented professionals with opportunities in the German job market.",
+        "descriptionTwo": "We support both candidates and employers from first match to long-term success through relocation support and guided onboarding."
+      },
+      "story": {
+        "eyebrow": "Our Mission",
+        "title": "The Bridge Between Talent And Excellence",
+        "tabs": {
+          "mission": "Our Mission",
+          "vision": "Our Vision",
+          "development": "Development"
+        },
+        "descriptionOne": "We combine human support with practical hiring workflows to create strong matches between global professionals and German companies.",
+        "descriptionTwo": "By aligning goals, skills, and market needs, we help both sides move forward with confidence and build lasting outcomes."
+      }
+    },
+    "footer": {
+      "brand": "Talent Seeker",
+      "description": "Your trusted partner for talent relocation and hiring success in Germany.",
+      "quickLinks": {
+        "title": "Quick links",
+        "items": {
+          "about": "About Us",
+          "jobs": "Jobs",
+          "services": "Services",
+          "contact": "Contact Us"
+        }
+      },
+      "contact": {
+        "title": "Contact Us",
+        "phone": "+49 (0) 15156350852",
+        "email": "info@talent-sc.com",
+        "address": "Stein Str. 81-83, 35390 Gießen"
+      },
+      "copyright": "2026 Jobs-Tsc. All rights reserved.",
+      "terms": "Terms of service",
+      "faqs": "FAQs",
+      "privacy": "Privacy policy"
+    },
+    "contact": {
+      "eyebrow": "Contact Us",
+      "title": "Let's Start a Conversation",
+      "description": "Have questions about our services or need technical support? Our team is ready to guide you towards your goals in the German market.",
+      "mapAlt": "Office location map",
+      "form": {
+        "title": "Send Us a message",
+        "nameLabel": "Name",
+        "namePlaceholder": "Enter your name",
+        "emailLabel": "Email",
+        "emailPlaceholder": "Enter your email",
+        "phoneLabel": "Phone",
+        "phonePlaceholder": "Enter your phone",
+        "subjectLabel": "Subject",
+        "subjectPlaceholder": "Enter the subject",
+        "messageLabel": "Message",
+        "messagePlaceholder": "Write your message",
+        "send": "Send",
+        "sending": "Sending...",
+        "success": "Your message has been sent successfully!",
+        "error": "An error occurred. Please try again."
+      },
+      "info": {
+        "phoneLabel": "Phone Number",
+        "emailLabel": "Email Address",
+        "addressLabel": "Office Address"
+      },
+      "faq": {
+        "eyebrow": "Quick Answers",
+        "title": "Everything You Need to Know",
+        "description": "Can't find what you're looking for? Here are the most common questions about starting your career in Germany.",
+        "items": {
+          "fees": {
+            "question": "Are there any hidden fees I need to pay as a job seeker ?",
+            "answer": "No, our services for candidates are completely free. We are compensated by our partner employers, not the talents."
+          },
+          "language": {
+            "question": "Do I need to speak German before applying?",
+            "answer": "Not always. It depends on the role. We guide you on language expectations and the right preparation path for each opportunity."
+          },
+          "timeline": {
+            "question": "How long does the full relocation process usually take?",
+            "answer": "Processing times vary by role and visa type, but most successful candidates complete the process in a few months with proper documents."
+          },
+          "documents": {
+            "question": "Which documents should I prepare first?",
+            "answer": "Prepare your updated CV, passport, certificates, and work references. Our team reviews everything and gives you a clear checklist."
+          }
+        }
+      },
+      "footerDescription": "Lorem ipsum dolor sit amet consectetur. Curabitur blandit amet morbi montes dui quis. Eget ultrices iaculis in ac porta. Libero nunc fermentum non id etiam volutpat at malesuada nulla.",
+      "legal": {
+        "terms": "Terms Of Service",
+        "faqs": "FAQs",
+        "privacy": "Privacy Policy"
+      }
+    }
+  },
+  "CompanyJobs": {
+    "title": "Create Job",
+    "listTitle": "My Jobs",
+    "addJob": "+ Add Job",
+    "empty": "You have not posted any jobs yet",
+    "loadError": "Failed to load jobs",
+    "cancel": "Cancel",
+    "back": "Back",
+    "next": "Next",
+    "submit": "Submit",
+    "submitting": "Publishing...",
+    "compressing": "Optimizing image...",
+    "imageSizeHint": "Images are compressed before upload for faster publishing. JPG, PNG, or WebP up to 12 MB.",
+    "delete": "Delete",
+    "stop": "Stop",
+    "applications": "Applications",
+    "confirmDelete": "Delete this job?",
+    "steps": {
+      "basic": "Basic Information",
+      "info": "Job Information",
+      "description": "Job Description"
+    },
+    "fields": {
+      "title": "Title",
+      "category": "Category",
+      "subCategory": "Sub Category",
+      "sameAsCategory": "Same as category",
+      "state": "State / Region",
+      "vacancy": "Vacancy",
+      "gender": "Gender",
+      "deadline": "Application Deadline",
+      "salary": "Salary",
+      "age": "Age",
+      "description": "Description",
+      "responsibilities": "Responsibilities",
+      "requirements": "Requirements",
+      "image": "Job banner image",
+      "employmentType": "Employment Type"
+    },
+    "placeholders": {
+      "title": "Job title",
+      "image": "Click to upload or change image",
+      "select": "Select",
+      "salaryFrom": "$ from",
+      "salaryTo": "$ to",
+      "ageFrom": "from",
+      "ageTo": "to"
+    },
+    "gender": {
+      "Male": "Male",
+      "Female": "Female",
+      "All": "All"
+    },
+    "jobType": {
+      "full_time": "Full-time",
+      "part_time": "Part-time"
+    },
+    "status": {
+      "pending": "Pending",
+      "approved": "Active",
+      "rejected": "Rejected",
+      "stopped": "Stopped"
+    },
+    "menu": {
+      "applications": "Applications",
+      "review": "Show",
+      "stop": "Stop",
+      "activate": "Activate",
+      "delete": "Delete"
+    },
+    "review": {
+      "title": "Job preview",
+      "backToJobs": "Back to all jobs",
+      "viewApplications": "View applications",
+      "companyFallback": "Your company",
+      "industryFallback": "Industry",
+      "notFound": "This job was not found or is no longer available."
+    },
+    "applicationsPage": {
+      "title": "Job applications",
+      "backToJobs": "Back to all jobs",
+      "candidate": "Candidate",
+      "statusLabel": "Status",
+      "actionsLabel": "Actions",
+      "approve": "Approved",
+      "reject": "Reject",
+      "details": "Details",
+      "empty": "No applications for this job yet.",
+      "unknownCandidate": "Applicant",
+      "processing": "Processing...",
+      "approvedSuccess": "Application approved successfully",
+      "rejectedSuccess": "Application rejected",
+      "errorGeneral": "Failed to process application",
+      "status": {
+        "pending": "Pending",
+        "accepted": "Approved",
+        "rejected": "Rejected"
+      }
+    },
+    "columns": {
+      "title": "Job Title",
+      "category": "Category",
+      "status": "Status",
+      "applications": "Applied Candidate",
+      "deadline": "Deadline",
+      "actions": "Actions",
+      "details": "Details"
+    },
+    "errors": {
+      "title": "Enter job title",
+      "category": "Select category",
+      "subCategory": "Select sub category",
+      "categoriesUnavailable": "Could not load categories from the server. Check the API connection and reload the page.",
+      "state": "Select state",
+      "vacancy": "Enter vacancy count",
+      "gender": "Select gender",
+      "deadline": "Select deadline",
+      "salary": "Enter salary range",
+      "salaryRange": "Salary from must be less than to",
+      "age": "Enter age range",
+      "ageRange": "Age from must be less than to",
+      "description": "Enter description",
+      "responsibilities": "Enter responsibilities",
+      "requirements": "Enter requirements",
+      "image": "Upload a job banner image",
+      "imageSize": "Image must be 12MB or smaller",
+      "imageCompress": "Could not process this image. Try another file.",
+      "employmentType": "Select employment type"
+    },
+    "removeImage": "Remove"
+  },
+  "LegalPages": {
+    "privacy": {
+      "eyebrow": "Privacy",
+      "title": "Privacy Policy",
+      "description": "We collect the information needed to provide onboarding, matching, and account support.",
+      "termsAction": "Terms of Service",
+      "contactAction": "Contact Us"
+    },
+    "terms": {
+      "eyebrow": "Terms",
+      "title": "Terms of Service",
+      "description": "Use of the platform is subject to these terms.",
+      "privacyAction": "Privacy Policy",
+      "contactAction": "Contact Us"
+    }
+  },
+  "Pages": {
+    "legal": {
+      "faq": {
+        "faq": {
+          "eyebrow": "Help",
+          "title": "Frequently Asked Questions",
+          "description": "Common questions about using the platform.",
+          "contactAction": "Contact Us"
+        },
+        "items": {
+          "one": {
+            "q": "How do I apply?",
+            "a": "You can apply via the job details page."
+          },
+          "two": {
+            "q": "Do you support relocation?",
+            "a": "Yes, we provide relocation support."
+          }
+        }
+      }
+    }
+  },
+  "admin": {
+    "title": "Admin Dashboard",
+    "description": "Platform overview and management tools"
+  },
+  "Admin": {
+    "dashboard": {
+      "title": "Admin Dashboard",
+      "description": "Platform overview",
+      "kpi": {
+        "users": "Users",
+        "companies": "Companies",
+        "jobs": "Jobs",
+        "pending": "Pending Jobs"
+      },
+      "pendingTable": "Pending jobs for review",
+      "viewAll": "View all",
+      "noPending": "No pending jobs",
+      "col": {
+        "job": "Job",
+        "company": "Company",
+        "category": "Category",
+        "status": "Status",
+        "actions": "Actions"
+      },
+      "status": {
+        "pending": "Pending"
+      }
+    },
+    "jobs": {
+      "title": "Jobs management",
+      "description": "Review, approve, or reject job postings",
+      "tabs": {
+        "pending": "Pending",
+        "approved": "Published",
+        "rejected": "Rejected",
+        "all": "All"
+      },
+      "columns": {
+        "title": "Job",
+        "company": "Company",
+        "category": "Category",
+        "publishedAt": "Publish date",
+        "applicants": "Applicants",
+        "salary": "Salary",
+        "status": "Status",
+        "actions": "Actions"
+      },
+      "status": {
+        "pending": "Pending",
+        "approved": "Published",
+        "rejected": "Rejected"
+      },
+      "summary": {
+        "total": "Total jobs",
+        "pending": "Pending",
+        "published": "Published",
+        "rejected": "Rejected"
+      },
+      "viewDetails": "View details",
+      "viewApplications": "View applications",
+      "more": "More",
+      "stop": "Stop",
+      "activate": "Activate",
+      "delete": "Delete",
+      "searchPlaceholder": "Search jobs...",
+      "search": "Search",
+      "backToJobs": "Back to jobs",
+      "details": "Job details",
+      "companyLabel": "Company",
+      "locationLabel": "Location",
+      "postedOnLabel": "Posted on",
+      "deadlineLabel": "Deadline",
+      "applicationsLabel": "Applications",
+      "rejectReasonTitle": "Rejection reason",
+      "rejectReasonHint": "Add a short reason before confirming the rejection.",
+      "reasonLabel": "Rejection reason",
+      "reasonPlaceholder": "Write the rejection reason here",
+      "rejecting": "Rejecting",
+      "approve": "Approve",
+      "reject": "Reject",
+      "applicationsPage": {
+        "title": "Job applications",
+        "backToDetail": "Back to details",
+        "backToJobs": "Back to admin jobs",
+        "summary": "Applicants",
+        "candidate": "Candidate",
+        "actions": "Actions",
+        "actionsLabel": "Actions",
+        "statusLabel": "Status",
+        "appliedAt": "Applied at",
+        "email": "Email",
+        "empty": "No applications for this job yet.",
+        "unknownCandidate": "Unnamed candidate",
+        "viewCv": "View CV",
+        "status": {
+          "pending": "Pending",
+          "accepted": "Accepted",
+          "rejected": "Rejected"
+        }
+      },
+      "empty": "No jobs",
+      "error": "Action failed"
+    },
+    "users": {
+      "title": "Users",
+      "description": "Manage user and company accounts",
+      "filters": {
+        "all": "All",
+        "user": "User",
+        "company": "Company",
+        "admin": "Admin"
+      },
+      "columns": {
+        "name": "Name",
+        "email": "Email",
+        "phone": "Phone",
+        "country": "Country",
+        "category": "Category",
+        "status": "Status",
+        "role": "Role",
+        "actions": "Actions"
+      },
+      "roles": {
+        "user": "User",
+        "company": "Company",
+        "admin": "Admin"
+      },
+      "delete": "Delete",
+      "deleteConfirm": "Delete this user?",
+      "empty": "No users",
+      "error": "Delete failed"
+    },
+    "companies": {
+      "title": "Companies",
+      "description": "Manage company accounts",
+      "columns": {
+        "name": "Company",
+        "email": "Email",
+        "phone": "Phone",
+        "employees": "Employees",
+        "country": "Country",
+        "status": "Status",
+        "actions": "Actions"
+      },
+      "delete": "Delete",
+      "deleteConfirm": "Delete this company?",
+      "empty": "No companies",
+      "error": "Delete failed"
+    },
+    "successStories": {
+      "title": "Success stories",
+      "description": "Manage homepage success stories",
+      "hint": "Add or edit stories for the current language and add an image.",
+      "loadError": "Could not load success stories from the API",
+      "columns": {
+        "image": "Image",
+        "name": "Name",
+        "role": "Role",
+        "location": "Location",
+        "quote": "Quote",
+        "actions": "Actions"
+      },
+      "fields": {
+        "name": "Name",
+        "role": "Role",
+        "quote": "Quote",
+        "location": "Location",
+        "image": "Image"
+      },
+      "add": "+ Add story",
+      "createTitle": "New story",
+      "editTitle": "Edit story",
+      "currentLanguageOnly": "The content will be saved only in the current language.",
+      "save": "Save",
+      "saving": "Saving…",
+      "cancel": "Cancel",
+      "edit": "Edit",
+      "delete": "Delete",
+      "deleteConfirm": "Delete this story?",
+      "empty": "No success stories",
+      "error": "Save failed",
+      "locationRequired": "Location is required"
+    },
+    "faqs": {
+      "title": "Frequently Asked Questions",
+      "description": "Manage frequently asked questions (FAQs) on the platform.",
+      "columns": {
+        "question": "Question",
+        "answer": "Answer",
+        "actions": "Actions"
+      },
+      "add": "+ Add FAQ",
+      "empty": "No FAQs",
+      "delete": "Delete",
+      "error": "Action failed",
+      "titles": {
+        "details": "FAQ Details"
+      },
+      "labels": {
+        "language": "Language:"
+      },
+      "fields": {
+        "question": "Question",
+        "answer": "Answer"
+      },
+      "actions": {
+        "saving": "Saving...",
+        "create": "Create",
+        "saveChanges": "Save Changes",
+        "back": "Back"
+      },
+      "messages": {
+        "saved": "✓ Saved successfully"
+      },
+      "errors": {
+        "atLeastOneQuestion": "At least Arabic question is required",
+        "save": "Failed to save"
+      }
+    },
+    "home": {
+      "title": "Homepage content",
+      "description": "Update the hero, process steps, and homepage section titles shown on the public homepage.",
+      "hint": "The content will be saved only in the current language.",
+      "success": "Homepage content saved.",
+      "loadError": "Could not load homepage content from the API",
+      "error": "Save failed",
+      "save": "Save",
+      "saving": "Saving…",
+      "status": {
+        "editing": "Editing homepage sections",
+        "section": "Active section"
+      },
+      "helper": {
+        "hero": "Edit the main banner text that appears at the top of the homepage.",
+        "categories": "Update the title and description used by the homepage categories filter.",
+        "process": "Manage the three steps that explain how users can start and apply.",
+        "jobs": "Update the jobs section copy shown on the homepage.",
+        "successStories": "Update the success stories block and its heading.",
+        "news": "Update the homepage news section heading and introduction.",
+        "footer": "Update the support callout that appears in the homepage footer area.",
+        "processIcon": "Replace this step icon with a local path or a public URL."
+      },
+      "labels": {
+        "processStep": "Step"
+      },
+      "fields": {
+        "heroTitle": "Main section title",
+        "heroDescription": "Main section description",
+        "heroImage": "Hero image",
+        "sectionCategoriesTitle": "Categories section title",
+        "sectionCategoriesDescription": "Categories section description",
+        "sectionJobsTitle": "Jobs section title",
+        "sectionJobsDescription": "Jobs section description",
+        "sectionTestimonialsTitle": "Success stories section title",
+        "sectionTestimonialsDescription": "Success stories section description",
+        "sectionNewsTitle": "News section title",
+        "sectionNewsDescription": "News section description",
+        "sectionFooterTitle": "Support section title",
+        "sectionFooterDescription": "Support section description",
+        "stepTitle": "Step title",
+        "stepIcon": "Icon path",
+        "uploadIcon": "Upload icon file",
+        "removeImage": "Remove",
+        "preview": "Preview",
+        "stepDescription": "Step description"
+      },
+      "sectionLabels": {
+        "hero": "Main section",
+        "process": "Steps",
+        "categories": "Categories",
+        "jobs": "Jobs",
+        "successStories": "Success stories",
+        "news": "News",
+        "footer": "Support"
+      }
+    },
+    "about": {
+      "title": "About page content",
+      "description": "Manage the hero and story content shown on the public About page.",
+      "summary": "The form syncs the About page with the public /about endpoint and keeps your uploaded images.",
+      "fields": {
+        "title": "Hero title",
+        "descriptionLeft": "Intro description left",
+        "descriptionRight": "Intro description right",
+        "secondTitle": "Story title",
+        "secondDescription": "Story description",
+        "image": "Hero image",
+        "secondImage": "Secondary image"
+      },
+      "currentImage": "Current hero image",
+      "currentSecondaryImage": "Current secondary image",
+      "save": "Save",
+      "saving": "Saving…",
+      "loadError": "Could not load About content from the API",
+      "error": "Save failed"
+    },
+    "settings": {
+      "title": "Settings & content",
+      "description": "Site settings, news, and notifications",
+      "tabs": {
+        "settings": "Site settings",
+        "news": "News",
+        "notifications": "Notifications"
+      },
+      "settingsEmpty": "No settings returned from API",
+      "edit": "Edit",
+      "save": "Save",
+      "addNews": "+ New article",
+      "newsTitle": "Title",
+      "newsDesc": "Description",
+      "newsImage": "Article image",
+      "saveNews": "Publish",
+      "newsColTitle": "Title",
+      "newsColDate": "Date",
+      "newsColActions": "Actions",
+      "newsEmpty": "No news",
+      "notificationsEmpty": "No notifications",
+      "markAllRead": "Mark all as read",
+      "markRead": "Mark read",
+      "unread": "New",
+      "delete": "Delete",
+      "deleteConfirm": "Delete this article?",
+      "error": "Something went wrong"
+    }
+  },
+  "Ui": {
+    "common": {
+      "loading": "Loading"
+    },
+    "dialog": {
+      "close": "Close",
+      "description": "Dialog content"
+    },
+    "sheet": {
+      "title": "Sidebar drawer",
+      "close": "Close"
+    },
+    "sidebar": {
+      "title": "Sidebar",
+      "mobileDescription": "Displays the mobile sidebar.",
+      "toggle": "Toggle Sidebar"
+    },
+    "breadcrumb": {
+      "label": "breadcrumb",
+      "more": "More"
+    },
+    "carousel": {
+      "previousSlide": "Previous slide",
+      "nextSlide": "Next slide"
+    },
+    "pagination": {
+      "navigation": "pagination",
+      "previous": "Previous",
+      "next": "Next",
+      "goToPrevious": "Go to previous page",
+      "goToNext": "Go to next page",
+      "morePages": "More pages"
+    },
+    "common": {
+      "loading": "Loading...",
+      "pleaseWait": "Please wait...",
+      "openTicket": "Open Ticket"
+    }
+  }
+}

@@ -1,0 +1,562 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+@import "flag-icons/css/flag-icons.min.css";
+
+@custom-variant dark (&:is(.dark *));
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+  --card: #ffffff;
+  --card-foreground: #171717;
+  --popover: #ffffff;
+  --popover-foreground: #171717;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --info-foreground: #ffffff;
+  --info-soft: #e7d7fa;
+  --border: #dadada;
+  --input: #dadada;
+  --ring: #40a0ca;
+  --chart-1: #40a0ca;
+  --chart-2: #006ea8;
+  --chart-3: #34c759;
+  --chart-4: #fcb304;
+  --chart-5: #f53334;
+  --radius: 0.75rem;
+  --sidebar: #fafafa;
+  --sidebar-foreground: #262626;
+  --sidebar-primary: #40a0ca;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #e5f3fd;
+  --sidebar-accent-foreground: #002b46;
+  --sidebar-border: #dadada;
+  --sidebar-ring: #40a0ca;
+}
+
+@layer components {
+  .hero-design {
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* Full-bleed soft gradient behind hero */
+  .hero-design::before {
+    content: "";
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    top: -60px; /* Restored original top position */
+    width: 1400px; /* Restored original width */
+    height: 380px; /* Restored original height */
+    background: linear-gradient(180deg, #001222 0%, #19B8FF 100%); /* Restored original background */
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.6; /* Restored original opacity */
+    filter: blur(26px); /* Restored original filter */
+  }
+
+  /* Rotated splash image layer (decorative) */
+  .hero-design .hero-splash {
+    position: absolute;
+    width: 900px;
+    height: 420px;
+    left: 50%;
+    top: 42%;
+    transform: translate(-50%, -50%) rotate(0deg); /* Restored original transform */
+    background-image: url('/home/splash.png'); /* Restored original image */
+    background-size: contain; /* Restored original size */
+    background-repeat: no-repeat; /* Restored original repeat */
+    mix-blend-mode: screen; /* Restored original blend mode */
+    opacity: 0.95; /* Restored original opacity */
+    pointer-events: none;
+    z-index: 2; /* Restored original z-index */
+  }
+
+  /* Vertical bars effect: repeating stripes faded with a mask */
+  .hero-design .hero-bars {
+    pointer-events: none;
+    z-index: 0;
+    opacity: 1;
+    filter: blur(16px) saturate(140%);
+    /* stronger blue bars, slightly wider repeat for desktop visual */
+    background-image: repeating-linear-gradient(
+      90deg,
+      rgba(0,0,0,0) 0px,
+      rgba(0,0,0,0) 80px,
+      rgba(64,160,202,0.28) 80px,
+      rgba(64,160,202,0.28) 160px
+    );
+    background-size: 160px 100%;
+    background-position: bottom;
+    background-repeat: repeat-x;
+    mix-blend-mode: multiply;
+    /* fade the bars out sooner toward the top so the spotlight dominates */
+    -webkit-mask-image: linear-gradient(to top, rgba(0,0,0,1) 0%, rgba(0,0,0,0.9) 45%, rgba(0,0,0,0) 100%);
+    mask-image: linear-gradient(to top, rgba(0,0,0,1) 0%, rgba(0,0,0,0.9) 45%, rgba(0,0,0,0) 100%);
+  }
+
+  /* Texture / blur overlay (hero-blur.svg) tuning */
+  .hero-design .hero-blur {
+    mix-blend-mode: overlay;
+    opacity: 0.75;
+    filter: blur(18px) saturate(130%);
+    transform: translateY(6px) scale(1.02);
+    z-index: 2;
+    pointer-events: none;
+  }
+
+  /* Spotlight / glow arc at bottom */
+  .hero-design .hero-spot {
+    position: absolute;
+    bottom: -32%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 160%;
+    height: 460px;
+    border-radius: 50%;
+    background: radial-gradient(closest-side, rgba(64,160,202,0.9), rgba(0,110,168,0.4) 48%, transparent 100%);
+    filter: blur(96px) saturate(125%);
+    pointer-events: none;
+    z-index: 1;
+    opacity: 0.98;
+  }
+
+  /* CTA button in hero: strong glow + inner bevel */
+  .hero-design .hero-cta {
+    position: relative;
+    z-index: 10;
+    border-radius: 12px;
+    overflow: visible;
+  }
+
+  .hero-design .hero-cta[data-slot="button"] {
+    box-shadow: 0 42px 107px rgba(123,190,255,0.34), 0 24px 32px rgba(0,86,133,0.19), 0 10px 13px rgba(0,86,133,0.22), 0 3px 5px rgba(0,86,133,0.15);
+  }
+
+  .hero-design .hero-cta::after {
+    content: "";
+    position: absolute;
+    inset: -12px;
+    border-radius: 14px;
+    background: radial-gradient(closest-side, rgba(64,160,202,0.22), rgba(64,160,202,0.08) 40%, transparent 75%);
+    filter: blur(22px);
+    z-index: -1;
+    pointer-events: none;
+    opacity: 1;
+  }
+
+  .hero-design .hero-cta::before {
+    content: "";
+    position: absolute;
+    left: 4px;
+    right: 4px;
+    top: 4px;
+    bottom: 4px;
+    border-radius: 10px;
+    box-shadow: inset 0 1px 18px rgba(232,242,255,0.8), inset 0 1px 4px rgba(194,221,255,0.9);
+    z-index: -1;
+    pointer-events: none;
+    opacity: 0.9;
+  }
+
+  /* Hide heavy decorations on small screens to avoid performance/layout issues */
+  @media (max-width: 767px) {
+    .hero-design::before,
+    .hero-design .hero-splash,
+    .hero-design .hero-bars,
+    .hero-design .hero-spot {
+      display: none;
+    }
+    .hero-design .hero-cta::after,
+    .hero-design .hero-cta::before {
+      display: none;
+    }
+  }
+}
+
+.dark {
+  --background: #001222;
+  --foreground: #f5f5f5;
+  --card: #002b46;
+  --card-foreground: #f5f5f5;
+  --popover: #002b46;
+  --popover-foreground: #f5f5f5;
+  --primary: #40a0ca;
+  --primary-foreground: #ffffff;
+  --secondary: #003454;
+  --secondary-foreground: #f5f5f5;
+  --muted: #003454;
+  --muted-foreground: #d4d4d4;
+  --accent: #005685;
+  --accent-foreground: #ffffff;
+  --destructive: #ff3b30;
+  --destructive-foreground: #ffffff;
+  --destructive-soft: #402226;
+  --success: #34c759;
+  --success-foreground: #001222;
+  --success-soft: #1f3e30;
+  --warning: #fcb304;
+  --warning-foreground: #001222;
+  --warning-soft: #3f3618;
+  --info: #9333cd;
+  --info-foreground: #ffffff;
+  --info-soft: #32203f;
+  --border: #1e4d6b;
+  --input: #1e4d6b;
+  --ring: #80cdf6;
+  --chart-1: #80cdf6;
+  --chart-2: #40a0ca;
+  --chart-3: #34c759;
+  --chart-4: #fcb304;
+  --chart-5: #ff3b30;
+  --sidebar: #002b46;
+  --sidebar-foreground: #f5f5f5;
+  --sidebar-primary: #40a0ca;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #005685;
+  --sidebar-accent-foreground: #f5f5f5;
+  --sidebar-border: #1e4d6b;
+  --sidebar-ring: #80cdf6;
+  --sidebar-width: 256px;
+  --sidebar-width-icon: 56px;
+}
+
+/* Sidebar wrapper CSS variables - defined in :root to avoid inline styles */
+[data-slot="sidebar-wrapper"] {
+  --sidebar-width: inherit;
+  --sidebar-width-icon: inherit;
+}
+
+@layer base {
+  * {
+    border-color: var(--border);
+  }
+  button:hover,
+  a:hover {
+    cursor: pointer;
+  }
+  body {
+    @apply bg-background text-foreground;
+    overflow-x: hidden;
+  }
+  html {
+    @apply font-sans;
+    /* Use only webkit scrollbar styling for cross-browser safety */
+  }
+
+  /* Hide scrollbars globally for Google Chrome, Safari, Firefox, and Edge */
+  ::-webkit-scrollbar {
+    display: none !important;
+    width: 0 !important;
+    height: 0 !important;
+  }
+
+  /* Firefox & IE/Edge */
+  * {
+    scrollbar-width: none !important;
+    -ms-overflow-style: none !important;
+  }
+}
+
+@layer components {
+  /* Auth input helpers: consistent spacing, transitions, and focus state */
+  .auth-field {
+    transition: border-color 160ms ease, background-color 160ms ease;
+  }
+
+  .auth-field:focus-within {
+    border-color: var(--ring) !important;
+  }
+
+  .auth-input {
+    width: 100%;
+    background: transparent;
+    color: inherit;
+    padding: 0;
+    border: 0;
+    font-size: 1rem;
+    line-height: 1.25;
+    transition: color 160ms ease, background-color 160ms ease, box-shadow 160ms ease;
+  }
+
+  .auth-input::placeholder {
+    color: rgba(255,255,255,0.6);
+    opacity: 1;
+  }
+
+  /* Prevent the yellow/white autofill background — use the actual dark card colour */
+  input.auth-input:-webkit-autofill,
+  input.auth-input:-webkit-autofill:hover,
+  input.auth-input:-webkit-autofill:focus,
+  input.auth-input:-webkit-autofill:active,
+  textarea.auth-input:-webkit-autofill,
+  textarea.auth-input:-webkit-autofill:hover,
+  textarea.auth-input:-webkit-autofill:focus,
+  select.auth-input:-webkit-autofill,
+  select.auth-input:-webkit-autofill:hover,
+  select.auth-input:-webkit-autofill:focus {
+    -webkit-box-shadow: 0 0 0px 1000px #01223b inset !important;
+    box-shadow: 0 0 0px 1000px #01223b inset !important;
+    -webkit-text-fill-color: #ffffff !important;
+    caret-color: #ffffff !important;
+    transition: background-color 5000s ease-in-out 0s;
+  }
+
+  /* Make the password toggle easier to target/focus */
+  .auth-field button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
+
+@layer utilities {
+  .unicode-plaintext {
+    unicode-bidi: plaintext;
+  }
+}
+
+@layer components {
+  /* Input wrapper for modern rounded fields with icon */
+  .auth-input-wrap {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    width: 100%;
+    height: 56px;
+    padding: 0 0.9rem;
+    border-radius: 0.625rem;
+    background: rgba(2,34,59,0.95);
+    border: 1px solid rgba(255,255,255,0.08);
+    transition: border-color 160ms ease, box-shadow 160ms ease, background-color 160ms ease;
+    box-sizing: border-box;
+  }
+
+  .auth-input-wrap:focus-within {
+    border-color: var(--ring);
+    box-shadow: 0 6px 18px rgba(64,160,202,0.12);
+    background: rgba(2,40,65,0.98);
+  }
+
+  /* Underline input wrapper to match mockup design exactly */
+  .auth-input-underline-wrap {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    width: 100%;
+    height: 50px;
+    padding: 0;
+    border-radius: 0;
+    background: transparent;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    transition: border-color 160ms ease, box-shadow 160ms ease;
+    box-sizing: border-box;
+  }
+
+  .auth-input-underline-wrap:focus-within {
+    border-color: #006ea8;
+  }
+
+  /* Inputs inside the wrapper */
+  .auth-input {
+    background: transparent;
+    border: 0;
+    padding: 0;
+    margin: 0;
+    font-size: 1rem;
+    line-height: 1.25;
+    color: inherit;
+    outline: none;
+    height: 100%;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+  }
+
+  .auth-input::placeholder {
+    color: rgba(255,255,255,0.6);
+    opacity: 1;
+  }
+
+  /* Autofill fixes for WebKit and Firefox — hardcoded dark auth colour */
+  input.auth-input:-webkit-autofill,
+  input.auth-input:-webkit-autofill:hover,
+  input.auth-input:-webkit-autofill:focus,
+  input.auth-input:-webkit-autofill:active,
+  textarea.auth-input:-webkit-autofill,
+  textarea.auth-input:-webkit-autofill:hover,
+  textarea.auth-input:-webkit-autofill:focus,
+  select.auth-input:-webkit-autofill,
+  select.auth-input:-webkit-autofill:hover,
+  select.auth-input:-webkit-autofill:focus {
+    -webkit-box-shadow: 0 0 0px 1000px #01223b inset !important;
+    box-shadow: 0 0 0px 1000px #01223b inset !important;
+    -webkit-text-fill-color: #ffffff !important;
+    caret-color: #ffffff !important;
+    transition: background-color 5000s ease-in-out 0s;
+  }
+
+  input.auth-input:-moz-autofill,
+  textarea.auth-input:-moz-autofill {
+    box-shadow: 0 0 0px 1000px #01223b inset !important;
+    -moz-text-fill-color: #ffffff !important;
+    filter: none !important;
+  }
+
+  /* Make the password toggle easier to target/focus */
+  .auth-field button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
+
+html body [data-sonner-toaster], html body .toaster {
+  top: 90px !important; /* Mobile: 88px header + 2px */
+  left: 0 !important;
+  right: 0 !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  transform: none !important;
+  z-index: 999999 !important;
+  pointer-events: none !important;
+  display: flex !important;
+  justify-content: center !important;
+}
+
+@media (min-width: 1024px) {
+  html body [data-sonner-toaster], html body .toaster {
+    top: 130px !important; /* Desktop: 128px header + 2px */
+  }
+}
+
+/* Elegant card layout for toasts */
+section[data-sonner-toaster] [data-toast] {
+  font-family: inherit !important;
+  border-radius: 12px !important;
+  padding: 14px 18px !important;
+  font-size: 14px !important;
+  font-weight: 500 !important;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04), 0 0 0 1px rgba(0, 0, 0, 0.05) !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 12px !important;
+  width: calc(100% - 32px) !important;
+  max-width: 420px !important;
+  border: none !important;
+  pointer-events: auto !important;
+  
+  /* Force SOLID background to fix transparency issues */
+  background-color: #ffffff !important;
+  background: #ffffff !important;
+  color: #171717 !important;
+  opacity: 1 !important;
+  transition: transform 0.2s ease, opacity 0.2s ease !important;
+}
+
+@media (max-width: 640px) {
+  section[data-sonner-toaster] [data-toast] {
+    justify-content: center !important;
+  }
+}
+
+/* Dark mode fallback override */
+.dark section[data-sonner-toaster] [data-toast] {
+  background-color: #002b46 !important;
+  background: #002b46 !important;
+  color: #f5f5f5 !important;
+  border: none !important;
+}
+
+/* Loading State Toast - Force opaque background so it is visible */
+section[data-sonner-toaster] [data-toast][data-type="loading"] {
+  background-color: #EFF6FF !important;
+  background: #EFF6FF !important;
+  color: #1E3A8A !important;
+  border: none !important;
+  opacity: 1 !important;
+}
+
+.dark section[data-sonner-toaster] [data-toast][data-type="loading"] {
+  background-color: #002b46 !important;
+  background: #002b46 !important;
+  color: #f5f5f5 !important;
+  border: none !important;
+}
+
+/* Loading / Icon container styling */
+section[data-sonner-toaster] [data-toast] [data-icon] {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+/* Style the loading spinner */
+section[data-sonner-toaster] [data-toast] svg.animate-spin,
+section[data-sonner-toaster] [data-toast][data-type="loading"] svg {
+  color: #006ea8 !important;
+  width: 20px !important;
+  height: 20px !important;
+  opacity: 1 !important;
+}
+
+/* Success Toast - Matching brand green/emerald */
+section[data-sonner-toaster] [data-toast][data-type="success"] {
+  background-color: #ECFDF5 !important;
+  background: #ECFDF5 !important;
+  color: #065F46 !important;
+  border: none !important;
+}
+section[data-sonner-toaster] [data-toast][data-type="success"] svg {
+  color: #059669 !important;
+  width: 20px !important;
+  height: 20px !important;
+}
+
+/* Error Toast - Soft red */
+section[data-sonner-toaster] [data-toast][data-type="error"] {
+  background-color: #FEF2F2 !important;
+  background: #FEF2F2 !important;
+  color: #991B1B !important;
+  border: none !important;
+}
+section[data-sonner-toaster] [data-toast][data-type="error"] svg {
+  color: #DC2626 !important;
+  width: 20px !important;
+  height: 20px !important;
+}
+
+/* Info Toast - Soft brand blue */
+section[data-sonner-toaster] [data-toast][data-type="info"] {
+  background-color: #EFF6FF !important;
+  background: #EFF6FF !important;
+  color: #1E3A8A !important;
+  border: none !important;
+}
+section[data-sonner-toaster] [data-toast][data-type="info"] svg {
+  color: #2563EB !important;
+  width: 20px !important;
+  height: 20px !important;
+}
+
+/* Warning Toast - Soft amber/yellow */
+section[data-sonner-toaster] [data-toast][data-type="warning"] {
+  background-color: #FFFBEB !important;
+  background: #FFFBEB !important;
+  color: #78350F !important;
+  border: none !important;
+}
+section[data-sonner-toaster] [data-toast][data-type="warning"] svg {
+  color: #D97706 !important;
+  width: 20px !important;
+  height: 20px !important;
+}

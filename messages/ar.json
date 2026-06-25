@@ -1,0 +1,1111 @@
+{
+  "HomePage": {
+    "title": "للبدء، عدل ملف page.tsx.",
+    "descriptionPrefix": "هل تبحث عن نقطة بداية أو تعليمات أكثر؟ توجّه إلى",
+    "templates": "القوالب",
+    "descriptionMiddle": "أو",
+    "learningCenter": "مركز التعلّم",
+    "descriptionSuffix": ".",
+    "deployNow": "انشر الآن",
+    "documentation": "التوثيق",
+    "switchToEnglish": "الإنجليزية",
+    "switchToArabic": "العربية",
+    "switchToGerman": "الألمانية",
+    "metaTitle": "Talent Seeker",
+    "metaDescription": "منصة Talent Seeker للوظائف ودعم الانتقال والفرص المهنية في ألمانيا."
+  },
+  "Auth": {
+    "signIn": {
+      "title": "مرحبًا بك في تالنت سيكر",
+      "description": "سجّل الدخول إلى حسابك لإدارة رحلتك المهنية أو التوظيف",
+      "logoAlt": "شعار تالنت سيكر",
+      "submit": "تسجيل الدخول",
+      "loading": "جاري تسجيل الدخول...",
+      "forgotPassword": "نسيت كلمة المرور",
+      "back": "رجوع",
+      "userTab": "مستخدم",
+      "companyTab": "شركة",
+      "accountTypeTabs": "نوع الحساب",
+      "noAccount": "ليس لديك حساب؟",
+      "signUp": "إنشاء حساب",
+      "alternateAction": "ليس لديك حساب؟ أنشئ حسابًا",
+      "fields": {
+        "emailLabel": "البريد الإلكتروني",
+        "emailPlaceholder": "البريد الإلكتروني",
+        "passwordLabel": "كلمة المرور",
+        "passwordPlaceholder": "كلمة المرور",
+        "showPassword": "إظهار كلمة المرور",
+        "hidePassword": "إخفاء كلمة المرور"
+      }
+    },
+    "signUp": {
+      "title": "أنشئ حسابك",
+      "description": "سجّل الآن وابدأ رحلتك المهنية مع تالنت سيكر.",
+      "logoAlt": "شعار تالنت سيكر",
+      "submit": "إنشاء حساب",
+      "back": "رجوع",
+      "userTab": "مستخدم",
+      "companyTab": "شركة",
+      "accountTypeTabs": "نوع الحساب",
+      "hasAccount": "لديك حساب بالفعل؟",
+      "signIn": "تسجيل الدخول",
+      "alternateAction": "لديك حساب بالفعل؟ سجّل الدخول",
+      "fields": {
+        "fullNameLabel": "الاسم الكامل",
+        "fullNamePlaceholder": "الاسم الكامل",
+        "emailLabel": "البريد الإلكتروني",
+        "emailPlaceholder": "البريد الإلكتروني",
+        "passwordLabel": "كلمة المرور",
+        "passwordPlaceholder": "كلمة المرور",
+        "showPassword": "إظهار كلمة المرور",
+        "hidePassword": "إخفاء كلمة المرور",
+        "phonePlaceholder": "رقم الهاتف",
+        "confirmPasswordPlaceholder": "تأكيد كلمة المرور",
+        "companyNamePlaceholder": "اسم الشركة",
+        "termsLabel": "أوافق على <termsLink>الشروط</termsLink> و<privacyLink>سياسة الخصوصية</privacyLink>"
+      }
+    },
+    "forgotPassword": {
+      "title": "إعادة تعيين كلمة المرور",
+      "description": "أدخل بريدك الإلكتروني وسنرسل لك رمز التحقق.",
+      "logoAlt": "شعار تالنت سيكر",
+      "submit": "إرسال رابط الاستعادة",
+      "step1": "إرسال الرمز",
+      "step2": "تأكيد الرمز",
+      "step3": "كلمة مرور جديدة",
+      "back": "رجوع",
+      "rememberPassword": "تتذكر كلمة المرور؟",
+      "signIn": "تسجيل الدخول",
+      "alternateAction": "العودة لتسجيل الدخول",
+      "fields": {
+        "emailLabel": "البريد الإلكتروني",
+        "emailPlaceholder": "البريد الإلكتروني",
+        "codePlaceholder": "رمز من 6 أرقام",
+        "passwordPlaceholder": "كلمة المرور الجديدة",
+        "confirmPlaceholder": "تأكيد كلمة المرور"
+      }
+    },
+    "verifyEmail": {
+      "title": "تأكيد البريد الإلكتروني",
+      "description": "أدخل الرمز المرسل إلى بريدك الإلكتروني.",
+      "logoAlt": "شعار تالنت سيكر",
+      "submit": "تأكيد",
+      "resend": "إعادة إرسال الرمز",
+      "back": "رجوع",
+      "hasAccount": "لديك حساب؟",
+      "signIn": "تسجيل الدخول",
+      "fields": {
+        "codePlaceholder": "رمز التحقق"
+      }
+    }
+  },
+  "Landing": {
+    "hero": {
+      "brand": "تالنت سيكر",
+      "eyebrow": "بوابتك لحياة جديدة",
+      "title": "مسارك المتكامل لبناء مستقبل مهني في ألمانيا",
+      "description": "نحن لا نجد لك وظيفة فقط، بل نبني مستقبلك. من مطابقة ملفك مع أفضل أصحاب العمل في ألمانيا إلى دعم التأشيرة والسكن، نرافقك خطوة بخطوة.",
+      "cta": "استكشف الفرص",
+      "login": "تسجيل الدخول",
+      "nav": {
+        "home": "الرئيسية",
+        "about": "من نحن",
+        "services": "الخدمات",
+        "jobs": "الوظائف",
+        "news": "الأخبار",
+        "contact": "تواصل معنا"
+      },
+      "languageAria": "تغيير اللغة",
+      "locale": {
+        "en": "الإنجليزية",
+        "ar": "العربية",
+        "de": "الألمانية"
+      },
+      "card": {
+        "caption": "وظائف منشورة بالفعل",
+        "metric": "+13 ألف",
+        "description": "فرص جديدة تتم إضافتها باستمرار"
+      }
+    },
+    "categories": {
+      "eyebrow": "التصنيفات",
+      "title": "اعثر على الدور المناسب لخبرتك",
+      "description": "نربطك بأفضل الشركات الألمانية في قطاعات حيوية. اختر مجالك لاكتشاف فرص مناسبة لمهاراتك.",
+      "metricLabel": "وظائف منشورة بالفعل",
+      "showMore": "عرض المزيد",
+      "vacancies": "شواغر",
+      "items": {
+        "business": {
+          "label": "الأعمال والتسويق",
+          "vacancy": "250 شاغر"
+        },
+        "design": {
+          "label": "التصميم",
+          "vacancy": "250 شاغر"
+        },
+        "development": {
+          "label": "التطوير",
+          "vacancy": "250 شاغر"
+        },
+        "medical": {
+          "label": "القطاع الطبي",
+          "vacancy": "250 شاغر"
+        },
+        "sales": {
+          "label": "المبيعات",
+          "vacancy": "250 شاغر"
+        },
+        "hr": {
+          "label": "الموارد البشرية",
+          "vacancy": "250 شاغر"
+        },
+        "finance": {
+          "label": "المالية",
+          "vacancy": "250 شاغر"
+        }
+      }
+    },
+    "process": {
+      "eyebrow": "عملية سلسة",
+      "title": "رحلتك إلى ألمانيا بشكل أبسط",
+      "description": "من أول طلب حتى وصولك النهائي، نتولى التعقيدات لتتفرغ لمستقبلك المهني الجديد.",
+      "steps": {
+        "createAccount": {
+          "title": "إنشاء حساب",
+          "description": "يمكنك فتح حساب بسهولة وبدء رحلتك مباشرة."
+        },
+        "completeProfile": {
+          "title": "أكمل ملفك الشخصي",
+          "description": "أضف بياناتك كاملة لجذب أصحاب العمل المناسبين."
+        },
+        "apply": {
+          "title": "قدّم على الوظيفة أو وظّف",
+          "description": "قدّم على فرصك المفضلة مع جميع المتطلبات في مكان واحد."
+        }
+      }
+    },
+    "jobs": {
+      "eyebrow": "فرص مميزة",
+      "title": "خطوتك المهنية القادمة بانتظارك",
+      "description": "استكشف أحدث الوظائف في مختلف القطاعات واعثر على الفرصة المناسبة لخبرتك في السوق الألماني.",
+      "filters": {
+        "all": "كل التصنيفات",
+        "design": "التصميم",
+        "development": "التطوير",
+        "marketing": "التسويق",
+        "medical": "القطاع الطبي"
+      },
+      "moreDetails": "المزيد من التفاصيل",
+      "showAll": "عرض كل الوظائف",
+      "salaryPeriod": "/شهرياً",
+      "items": {
+        "frontend": {
+          "department": "تقنية المعلومات",
+          "title": "مطور واجهات أمامية",
+          "company": "TechNova - شركة برمجيات",
+          "type": "دوام كامل"
+        },
+        "marketing": {
+          "department": "التسويق",
+          "title": "أخصائي تسويق رقمي",
+          "company": "Marketify - وكالة تسويق",
+          "type": "دوام جزئي"
+        },
+        "uiux": {
+          "department": "التصميم",
+          "title": "مصمم واجهات وتجربة مستخدم",
+          "company": "Creative Lab - استوديو تصميم",
+          "type": "عن بعد"
+        },
+        "sales": {
+          "department": "المبيعات",
+          "title": "تنفيذي مبيعات",
+          "company": "SalesPro - شركة مبيعات",
+          "type": "دوام كامل"
+        },
+        "hr": {
+          "department": "الموارد البشرية",
+          "title": "أخصائي موارد بشرية",
+          "company": "PeopleHub - خدمات الموارد البشرية",
+          "type": "دوام جزئي"
+        },
+        "accounting": {
+          "department": "المالية",
+          "title": "محاسب",
+          "company": "FinCore - خدمات مالية",
+          "type": "عن بعد"
+        }
+      }
+    },
+    "jobsPage": {
+      "languageAria": "تغيير اللغة",
+      "searchPlaceholder": "ابحث حسب المسمى الوظيفي أو الموقع",
+      "search": "بحث",
+      "allJobs": "كل الوظائف",
+      "allJobsCount": "190",
+      "filter": "تصفية",
+      "department": "القسم",
+      "postedAgo": "منذ 14 ساعة",
+      "salaryPeriod": " /شهريا",
+      "employmentFullTime": "دوام كامل",
+      "companyName": "اسم الشركة",
+      "companySubLabel": "المسمى",
+      "noResults": "لا توجد وظائف مطابقة. جرّب تعديل البحث أو مسح الفلاتر.",
+      "closeFilters": "إغلاق",
+      "description": "وصف الوظيفة",
+      "requirements": "المتطلبات",
+      "responsibilities": "المسؤوليات",
+      "applyNow": "قدّم الآن",
+      "vacancies": "شواغر",
+      "detail": {
+        "lookingFor": "نبحث عن...",
+        "shareWith": "شارك عبر:",
+        "monthly": "شهرياً",
+        "details": "التفاصيل",
+        "industry": "المجال",
+        "employmentType": "نوع التوظيف",
+        "vacancy": "الشواغر",
+        "gender": "الجنس",
+        "age": "العمر",
+        "applicationDeadline": "آخر موعد للتقديم",
+        "applyForJob": "قدّم على الوظيفة",
+        "relatedJobs": "وظائف مشابهة",
+        "placeholderOne": "نبحث عن محترف متحمس ينضم إلى فريقنا المتنامي ويساهم في تحقيق أهدافنا.",
+        "placeholderTwo": "ستعمل عن كثب مع فرق متعددة لضمان جودة التسليم والتواصل الواضح مع أصحاب المصلحة.",
+        "placeholderThree": "نوفر بيئة عمل داعمة مع فرص للتطور المهني والتعلم المستمر."
+      },
+      "filterPanel": {
+        "title": "تصفية",
+        "clearAll": "مسح الكل",
+        "state": "الولاية",
+        "categories": "الفئات",
+        "salary": "الراتب",
+        "salaryMin": "$1",
+        "salaryMax": "$10k",
+        "from": "من",
+        "to": "إلى",
+        "stateOptions": {
+          "hassan": "حسان",
+          "alle": "الكل"
+        },
+        "categoryOptions": {
+          "marketing": "التسويق",
+          "design": "التصميم",
+          "it": "تقنية المعلومات",
+          "medical": "القطاع الطبي"
+        }
+      }
+    },
+    "testimonials": {
+      "eyebrow": "أثر حقيقي",
+      "title": "قصص نجاح من مجتمعنا",
+      "description": "اكتشف كيف ساعدنا الباحثين عن عمل وأصحاب الأعمال على النمو والنجاح داخل سوق العمل الألماني.",
+      "items": {
+        "jacob": {
+          "initials": "JJ",
+          "name": "جاكوب جونز",
+          "role": "مساعد طبي، 29، المغرب",
+          "quote": "لم تساعدني Talent SC في وظيفة فقط، بل أدارت انتقالي الكامل إلى ألمانيا."
+        },
+        "ronald": {
+          "initials": "RR",
+          "name": "رونالد ريتشاردز",
+          "role": "منسق تسويق، 32، اليمن",
+          "quote": "كانت العملية واضحة منذ اليوم الأول، والفريق تابع كل التفاصيل باحتراف."
+        },
+        "albert": {
+          "initials": "AF",
+          "name": "ألبرت فلوريس",
+          "role": "مصمم ويب، 25، مصر",
+          "quote": "وجدت دورًا مناسبًا لمهاراتي وانتقلت بثقة."
+        },
+        "lina": {
+          "initials": "LH",
+          "name": "لينا حسن",
+          "role": "ممرضة، 27، الأردن",
+          "quote": "من تجهيز المستندات إلى بدء العمل، كانت كل خطوة واضحة ومدعومة."
+        },
+        "youssef": {
+          "initials": "YE",
+          "name": "يوسف العمراني",
+          "role": "فني كهرباء، 31، المغرب",
+          "quote": "حصلت على إرشاد عملي وتمكنت من الحصول على وظيفة تناسب خبرتي."
+        },
+        "nora": {
+          "initials": "NA",
+          "name": "نورا علي",
+          "role": "أخصائية موارد بشرية، 30، مصر",
+          "quote": "كانت رحلة الانتقال سلسة والتواصل احترافيًا في جميع المراحل."
+        }
+      }
+    },
+    "news": {
+      "eyebrow": "ابقَ على اطلاع",
+      "title": "رؤى حول سوق العمل الألماني",
+      "description": "آخر الأخبار حول أنظمة التأشيرة ونصائح المسار المهني واتجاهات القطاعات لمساعدتك على النجاح في ألمانيا.",
+      "readMore": "اقرأ المزيد",
+      "viewAll": "عرض كل الأخبار",
+      "items": {
+        "first": {
+          "title": "CBS Evening News",
+          "description": "تحديثات مفيدة وإرشادات عملية للباحثين عن عمل الراغبين في الانتقال.",
+          "date": "28 يونيو 2026"
+        },
+        "second": {
+          "title": "CBS This Morning: Saturday",
+          "description": "نظرة أقرب على اتجاهات التوظيف والوظائف المطلوبة في السوق الألماني.",
+          "date": "28 يونيو 2026"
+        },
+        "third": {
+          "title": "تحديثات التأشيرة وتصاريح العمل",
+          "description": "مستجدات إجرائية مهمة وما تعنيه للمتقدمين.",
+          "date": "28 يونيو 2026"
+        },
+        "fourth": {
+          "title": "النمو المهني في ألمانيا",
+          "description": "كيف تهيئ ملفك لنمو مهني طويل الأمد بعد التوظيف.",
+          "date": "28 يونيو 2026"
+        }
+      }
+    },
+    "newsPage": {
+      "languageAria": "تغيير اللغة",
+      "backToNews": "العودة إلى الأخبار",
+      "empty": "لا توجد مقالات متاحة حالياً. يرجى المحاولة لاحقاً.",
+      "relatedTitle": "أخبار ذات صلة",
+      "shareWith": "شارك عبر",
+      "featured": {
+        "title": "CBS Evening News",
+        "date": "28 يونيو 2026",
+        "imageAlt": "العلم الألماني أمام مبنى تاريخي"
+      },
+      "content": {
+        "opening": "يوفّر العمل في نظام الرعاية الصحية الألماني فرصًا قوية للمهنيين الدوليين. تمتلك ألمانيا أحد أكثر الأنظمة الصحية تطورًا في أوروبا مع طلب مستمر على الكفاءات.",
+        "sectionOneTitle": "1. فرص مهنية متنوعة",
+        "sectionOneBody": "هناك حاجة مستمرة إلى كوادر التمريض في رعاية كبار السن والمستشفيات وأقسام الأطفال. كما يزداد الطلب على الأطباء المساعدين والمعالجين والتخصصات التقنية الطبية.",
+        "sectionTwoTitle": "2. أهم الأدوار المطلوبة",
+        "sectionTwoBody": "تشمل الوظائف الشائعة الأطباء المساعدين والباحثين السريريين وأخصائيي العلاج الطبيعي والوظيفي والأخصائيين النفسيين وفنيي المختبرات الطبية وأقسام الأشعة.",
+        "sectionThreeTitle": "3. متطلبات المرشحين الدوليين",
+        "sectionThreeBody": "يشترط أغلب أصحاب العمل الحصول على مؤهل صحي معترف به وإتمام معادلة الشهادات قبل بدء العمل.",
+        "sectionFourTitle": "4. اللغة والاندماج",
+        "sectionFourBody": "غالبًا ما يُتوقع مستوى لغة ألمانية يقارب B2 لضمان التواصل اليومي مع المرضى وفريق العمل."
+      },
+      "items": {
+        "first": {
+          "title": "CBS This Morning: Saturday",
+          "description": "ما زال التوظيف في القطاع الصحي الألماني نشطًا بقيادة المستشفيات والعيادات الإقليمية.",
+          "date": "28 يونيو 2026",
+          "imageAlt": "رجال إطفاء بملابس السلامة"
+        },
+        "second": {
+          "title": "CBS This Morning: Saturday",
+          "description": "متطلبات عملية للانتقال والترخيص المهني وخطة الأشهر الأولى بعد الوصول.",
+          "date": "28 يونيو 2026",
+          "imageAlt": "عمّال يرتدون خوذ سلامة صفراء"
+        },
+        "third": {
+          "title": "CBS This Morning: Saturday",
+          "description": "كيف يطابق المهنيون الدوليون ملفاتهم مع توقعات أصحاب العمل في ألمانيا.",
+          "date": "28 يونيو 2026",
+          "imageAlt": "صورة عامل بملابس حماية"
+        },
+        "fourth": {
+          "title": "CBS This Morning: Saturday",
+          "description": "ما زال التوظيف في القطاع الصحي الألماني نشطًا بقيادة المستشفيات والعيادات الإقليمية.",
+          "date": "28 يونيو 2026",
+          "imageAlt": "رجال إطفاء بملابس السلامة"
+        },
+        "fifth": {
+          "title": "CBS This Morning: Saturday",
+          "description": "متطلبات عملية للانتقال والترخيص المهني وخطة الأشهر الأولى بعد الوصول.",
+          "date": "28 يونيو 2026",
+          "imageAlt": "عمّال يرتدون خوذ سلامة صفراء"
+        },
+        "sixth": {
+          "title": "CBS This Morning: Saturday",
+          "description": "كيف يطابق المهنيون الدوليون ملفاتهم مع توقعات أصحاب العمل في ألمانيا.",
+          "date": "28 يونيو 2026",
+          "imageAlt": "صورة عامل بملابس حماية"
+        }
+      }
+    },
+    "support": {
+      "eyebrow": "دائمًا بجانبك",
+      "title": "تحتاج مساعدة؟ نحن هنا لدعمك",
+      "description": "سواء كان لديك سؤال محدد أو تحتاج دعمًا تقنيًا، فريق الدعم جاهز لمساعدتك.",
+      "actions": {
+        "faqs": "الأسئلة الشائعة",
+        "contact": "تواصل معنا"
+      }
+    },
+    "about": {
+      "intro": {
+        "eyebrow": "هويتنا",
+        "title": "الجسر بين المواهب وألمانيا",
+        "descriptionOne": "مرحبًا بك في Talent Seeker، منصتك الموثوقة لربط الكفاءات المتميزة بفرص حقيقية في سوق العمل الألماني.",
+        "descriptionTwo": "نرافق المرشحين وأصحاب العمل منذ أول تطابق وحتى النجاح المستدام عبر دعم الانتقال والإرشاد المهني."
+      },
+      "story": {
+        "eyebrow": "مهمتنا",
+        "title": "الجسر بين المواهب والتميّز",
+        "tabs": {
+          "mission": "مهمتنا",
+          "vision": "رؤيتنا",
+          "development": "التطوير"
+        },
+        "descriptionOne": "نجمع بين الخبرة البشرية وآليات التوظيف العملية لصنع تطابق قوي بين الكفاءات العالمية والشركات الألمانية.",
+        "descriptionTwo": "من خلال مواءمة الأهداف والمهارات واحتياجات السوق، نساعد الطرفين على التقدم بثقة وتحقيق نتائج طويلة الأمد."
+      }
+    },
+    "footer": {
+      "brand": "تالنت سيكر",
+      "description": "شريكك الموثوق للتوظيف والانتقال المهني الناجح في ألمانيا.",
+      "quickLinks": {
+        "title": "روابط سريعة",
+        "items": {
+          "about": "من نحن",
+          "jobs": "الوظائف",
+          "services": "الخدمات",
+          "contact": "تواصل معنا"
+        }
+      },
+      "contact": {
+        "title": "تواصل معنا",
+        "phone": "+49 (0) 15156350852",
+        "email": "info@talent-sc.com",
+        "address": "Stein Str. 81-83, 35390 Gießen"
+      },
+      "copyright": "2026 Jobs-Tsc. جميع الحقوق محفوظة.",
+      "terms": "شروط الخدمة",
+      "faqs": "الأسئلة الشائعة",
+      "privacy": "سياسة الخصوصية"
+    },
+    "contact": {
+      "eyebrow": "تواصل معنا",
+      "title": "لنبدأ محادثة",
+      "description": "هل لديك أسئلة حول خدماتنا أو تحتاج إلى دعم تقني؟ فريقنا جاهز لإرشادك نحو أهدافك في السوق الألماني.",
+      "mapAlt": "خريطة موقع المكتب",
+      "form": {
+        "title": "أرسل لنا رسالة",
+        "nameLabel": "الاسم",
+        "namePlaceholder": "أدخل اسمك",
+        "emailLabel": "البريد الإلكتروني",
+        "emailPlaceholder": "أدخل بريدك الإلكتروني",
+        "phoneLabel": "الهاتف",
+        "phonePlaceholder": "أدخل رقم هاتفك",
+        "subjectLabel": "الموضوع",
+        "subjectPlaceholder": "أدخل الموضوع",
+        "messageLabel": "الرسالة",
+        "messagePlaceholder": "اكتب رسالتك",
+        "send": "إرسال",
+        "sending": "جاري الإرسال...",
+        "success": "تم إرسال رسالتك بنجاح!",
+        "error": "حدث خطأ. حاول مرة أخرى."
+      },
+      "info": {
+        "phoneLabel": "رقم الهاتف",
+        "emailLabel": "البريد الإلكتروني",
+        "addressLabel": "عنوان المكتب"
+      },
+      "faq": {
+        "eyebrow": "إجابات سريعة",
+        "title": "كل ما تحتاج إلى معرفته",
+        "description": "لم تجد ما تبحث عنه؟ إليك أكثر الأسئلة شيوعًا حول بدء مسيرتك المهنية في ألمانيا.",
+        "items": {
+          "fees": {
+            "question": "هل توجد أي رسوم خفية يجب أن أدفعها كباحث عن عمل؟",
+            "answer": "لا، خدماتنا للمرشحين مجانية بالكامل. نحن نتلقى التعويض من أصحاب العمل الشركاء وليس من المواهب."
+          },
+          "language": {
+            "question": "هل يجب أن أتحدث الألمانية قبل التقديم؟",
+            "answer": "ليس دائمًا. يعتمد ذلك على الوظيفة. نحن نرشدك لمتطلبات اللغة وخطة التحضير المناسبة لكل فرصة."
+          },
+          "timeline": {
+            "question": "كم يستغرق عادةً مسار الانتقال الكامل؟",
+            "answer": "تختلف المدة حسب الوظيفة ونوع التأشيرة، لكن معظم المرشحين يكملون الإجراءات خلال بضعة أشهر عند تجهيز المستندات المطلوبة."
+          },
+          "documents": {
+            "question": "ما المستندات التي يجب أن أجهزها أولًا؟",
+            "answer": "جهز سيرتك الذاتية المحدثة وجواز السفر والشهادات وخطابات الخبرة. فريقنا يراجع كل شيء ويزودك بقائمة واضحة."
+          }
+        }
+      },
+      "footerDescription": "نص تجريبي للتصميم. نحن هنا لدعمك في كل خطوة من رحلتك المهنية نحو سوق العمل في ألمانيا.",
+      "legal": {
+        "terms": "شروط الخدمة",
+        "faqs": "الأسئلة الشائعة",
+        "privacy": "سياسة الخصوصية"
+      }
+    }
+  },
+  "Ui": {
+    "common": {
+      "loading": "جارٍ التحميل...",
+      "pleaseWait": "الرجاء الانتظار...",
+      "newTicket": "تذكرة جديدة"
+    },
+    "dialog": {
+      "close": "إغلاق",
+      "description": "محتوى مربع الحوار"
+    },
+    "sheet": {
+      "title": "درج القائمة الجانبية",
+      "close": "إغلاق"
+    },
+    "sidebar": {
+      "title": "الشريط الجانبي",
+      "mobileDescription": "يعرض الشريط الجانبي على الجوال.",
+      "toggle": "تبديل الشريط الجانبي"
+    },
+    "breadcrumb": {
+      "label": "مسار التنقل",
+      "more": "المزيد"
+    },
+    "carousel": {
+      "previousSlide": "الشريحة السابقة",
+      "nextSlide": "الشريحة التالية"
+    },
+    "pagination": {
+      "navigation": "ترقيم الصفحات",
+      "previous": "السابق",
+      "next": "التالي",
+      "goToPrevious": "الانتقال إلى الصفحة السابقة",
+      "goToNext": "الانتقال إلى الصفحة التالية",
+      "morePages": "صفحات أكثر"
+    }
+  },
+  "CompanyJobs": {
+    "title": "إنشاء وظيفة",
+    "listTitle": "وظائفي",
+    "addJob": "+ إضافة وظيفة",
+    "empty": "لم تنشر أي وظائف بعد",
+    "loadError": "حدث خطأ في تحميل الوظائف",
+    "cancel": "إلغاء",
+    "back": "رجوع",
+    "next": "التالي",
+    "submit": "نشر",
+    "submitting": "جاري النشر...",
+    "compressing": "جاري ضغط الصورة...",
+    "imageSizeHint": "يتم ضغط الصورة قبل الرفع لتسريع النشر. JPG أو PNG أو WebP حتى 12 ميجابايت.",
+    "delete": "حذف",
+    "stop": "إيقاف",
+    "applications": "الطلبات",
+    "confirmDelete": "هل تريد حذف هذه الوظيفة؟",
+    "steps": {
+      "basic": "المعلومات الأساسية",
+      "info": "معلومات الوظيفة",
+      "description": "وصف الوظيفة"
+    },
+    "fields": {
+      "title": "العنوان",
+      "category": "التصنيف",
+      "subCategory": "التصنيف الفرعي",
+      "sameAsCategory": "نفس التصنيف",
+      "state": "الولاية / المنطقة",
+      "vacancy": "عدد الشواغر",
+      "gender": "الجنس",
+      "deadline": "آخر موعد للتقديم",
+      "salary": "الراتب",
+      "age": "العمر",
+      "description": "الوصف",
+      "responsibilities": "المسؤوليات",
+      "requirements": "المتطلبات",
+      "image": "صورة بانر الوظيفة",
+      "employmentType": "نوع الدوام"
+    },
+    "placeholders": {
+      "title": "عنوان الوظيفة",
+      "image": "اضغط لرفع أو تغيير الصورة",
+      "select": "اختر",
+      "salaryFrom": "من €",
+      "salaryTo": "إلى €",
+      "ageFrom": "من",
+      "ageTo": "إلى"
+    },
+    "gender": {
+      "Male": "ذكر",
+      "Female": "أنثى",
+      "All": "الجميع"
+    },
+    "jobType": {
+      "full_time": "دوام كامل",
+      "part_time": "دوام جزئي"
+    },
+    "status": {
+      "pending": "قيد المراجعة",
+      "approved": "نشطة",
+      "rejected": "مرفوضة",
+      "stopped": "موقوفة"
+    },
+    "menu": {
+      "applications": "الطلبات",
+      "review": "عرض",
+      "stop": "إيقاف",
+      "activate": "تفعيل",
+      "delete": "حذف"
+    },
+    "review": {
+      "title": "معاينة الوظيفة",
+      "backToJobs": "العودة لكل الوظائف",
+      "viewApplications": "عرض الطلبات",
+      "companyFallback": "شركتك",
+      "industryFallback": "المجال",
+      "notFound": "لم يتم العثور على هذه الوظيفة أو لم تعد متاحة."
+    },
+    "applicationsPage": {
+      "title": "طلبات التقديم",
+      "backToJobs": "العودة لكل الوظائف",
+      "candidate": "المتقدم",
+      "statusLabel": "الحالة",
+      "actionsLabel": "الإجراءات",
+      "approve": "موافقة",
+      "reject": "رفض",
+      "details": "التفاصيل",
+      "empty": "لا توجد طلبات على هذه الوظيفة بعد.",
+      "unknownCandidate": "متقدم",
+      "processing": "جاري المعالجة...",
+      "approvedSuccess": "تم قبول الطلب بنجاح",
+      "rejectedSuccess": "تم رفض الطلب",
+      "errorGeneral": "حدث خطأ أثناء معالجة الطلب",
+      "status": {
+        "pending": "قيد الانتظار",
+        "accepted": "مقبول",
+        "rejected": "مرفوض"
+      }
+    },
+    "columns": {
+      "title": "عنوان الوظيفة",
+      "category": "التصنيف",
+      "status": "الحالة",
+      "applications": "المتقدمون",
+      "deadline": "الموعد النهائي",
+      "actions": "الإجراءات",
+      "details": "التفاصيل"
+    },
+    "errors": {
+      "title": "أدخل عنوان الوظيفة",
+      "category": "اختر التصنيف",
+      "subCategory": "اختر التصنيف الفرعي",
+      "categoriesUnavailable": "تعذّر تحميل التصنيفات من الخادم. تحقق من الاتصال بالـ API ثم أعد تحميل الصفحة.",
+      "state": "اختر الولاية",
+      "vacancy": "أدخل عدد الشواغر",
+      "gender": "اختر الجنس",
+      "deadline": "اختر آخر موعد",
+      "salary": "أدخل نطاق الراتب",
+      "salaryRange": "الراتب «من» يجب أن يكون أقل من «إلى»",
+      "age": "أدخل نطاق العمر",
+      "ageRange": "العمر «من» يجب أن يكون أقل من «إلى»",
+      "description": "أدخل الوصف",
+      "responsibilities": "أدخل المسؤوليات",
+      "requirements": "أدخل المتطلبات",
+      "image": "ارفع صورة بانر للوظيفة",
+      "imageSize": "حجم الصورة يجب ألا يتجاوز 12 ميجابايت",
+      "imageCompress": "تعذّر معالجة الصورة. جرّب ملفًا آخر.",
+      "employmentType": "اختر نوع الدوام"
+    },
+    "removeImage": "إزالة"
+  },
+  "LegalPages": {
+    "privacy": {
+      "eyebrow": "خصوصية",
+      "title": "سياسة الخصوصية",
+      "description": "نقوم بجمع المعلومات اللازمة لتقديم خدمات التسجيل والمطابقة ودعم الحساب.",
+      "termsAction": "شروط الخدمة",
+      "contactAction": "تواصل معنا"
+    },
+    "terms": {
+      "eyebrow": "الشروط",
+      "title": "شروط الخدمة",
+      "description": "استخدام المنصة يخضع لهذه الشروط.",
+      "privacyAction": "سياسة الخصوصية",
+      "contactAction": "تواصل معنا"
+    }
+  },
+  "Pages": {
+    "legal": {
+      "faq": {
+        "faq": {
+          "eyebrow": "مساعدة",
+          "title": "الأسئلة الشائعة",
+          "description": "أسئلة متكررة حول استخدام المنصة.",
+          "contactAction": "تواصل معنا"
+        },
+        "items": {
+          "one": {
+            "q": "كيف أقدّم على وظيفة؟",
+            "a": "يمكنك التقديم عبر صفحة تفاصيل الوظيفة."
+          },
+          "two": {
+            "q": "هل تقدمون دعم الانتقال؟",
+            "a": "نعم، نقدم دعم الانتقال."
+          }
+        }
+      }
+    }
+  },
+  "admin": {
+    "title": "لوحة التحكم",
+    "description": "نظرة عامة وأدوات إدارة المنصة"
+  },
+  "Admin": {
+    "dashboard": {
+      "title": "لوحة تحكم الأدمن",
+      "description": "نظرة عامة على المنصة",
+      "kpi": {
+        "users": "المستخدمون",
+        "companies": "الشركات",
+        "jobs": "الوظائف",
+        "pending": "وظائف معلقة"
+      },
+      "pendingTable": "الوظائف المعلقة للمراجعة",
+      "viewAll": "عرض الكل",
+      "noPending": "لا توجد وظائف معلقة",
+      "col": {
+        "job": "الوظيفة",
+        "company": "الشركة",
+        "category": "التصنيف",
+        "status": "الحالة",
+        "actions": "الإجراءات"
+      },
+      "status": {
+        "pending": "قيد المراجعة"
+      }
+    },
+    "jobs": {
+      "title": "إدارة الوظائف",
+      "description": "مراجعة الوظائف وقبولها أو رفضها",
+      "tabs": {
+        "pending": "معلقة",
+        "approved": "منشورة",
+        "rejected": "مرفوضة",
+        "all": "الكل"
+      },
+      "columns": {
+        "title": "الوظيفة",
+        "company": "الشركة",
+        "category": "التصنيف",
+        "publishedAt": "تاريخ النشر",
+        "applicants": "المتقدمون",
+        "salary": "الراتب",
+        "status": "الحالة",
+        "actions": "الإجراءات"
+      },
+      "status": {
+        "pending": "معلقة",
+        "approved": "منشورة",
+        "rejected": "مرفوضة"
+      },
+      "summary": {
+        "total": "إجمالي الوظائف",
+        "pending": "معلقة",
+        "published": "منشورة",
+        "rejected": "مرفوضة"
+      },
+      "viewDetails": "عرض التفاصيل",
+      "viewApplications": "عرض الطلبات",
+      "more": "المزيد",
+      "stop": "إيقاف",
+      "activate": "تفعيل",
+      "delete": "حذف",
+      "searchPlaceholder": "بحث في الوظائف...",
+      "search": "بحث",
+      "backToJobs": "العودة إلى الوظائف",
+      "details": "تفاصيل الوظيفة",
+      "companyLabel": "الشركة",
+      "locationLabel": "الموقع",
+      "postedOnLabel": "تاريخ النشر",
+      "deadlineLabel": "آخر موعد للتقديم",
+      "applicationsLabel": "عدد الطلبات",
+      "rejectReasonTitle": "سبب الرفض",
+      "rejectReasonHint": "يمكنك إضافة سبب الرفض قبل تأكيد العملية.",
+      "reasonLabel": "سبب الرفض",
+      "reasonPlaceholder": "اكتب سبب الرفض هنا",
+      "rejecting": "جارٍ الرفض",
+      "approve": "قبول",
+      "reject": "رفض",
+      "applicationsPage": {
+        "title": "طلبات التوظيف",
+        "backToDetail": "العودة للتفاصيل",
+        "backToJobs": "العودة إلى وظائف الإدارة",
+        "summary": "عدد المتقدمين",
+        "candidate": "المتقدم",
+        "actions": "الإجراءات",
+        "actionsLabel": "الإجراءات",
+        "statusLabel": "الحالة",
+        "appliedAt": "تاريخ التقديم",
+        "email": "البريد الإلكتروني",
+        "empty": "لا توجد طلبات على هذه الوظيفة بعد.",
+        "unknownCandidate": "متقدم غير مسمى",
+        "viewCv": "عرض السيرة الذاتية",
+        "status": {
+          "pending": "قيد الانتظار",
+          "accepted": "مقبول",
+          "rejected": "مرفوض"
+        }
+      },
+      "empty": "لا توجد وظائف",
+      "error": "تعذر تنفيذ الإجراء"
+    },
+    "users": {
+      "title": "المستخدمون",
+      "description": "إدارة حسابات المستخدمين والشركات",
+      "filters": {
+        "all": "الكل",
+        "user": "مستخدم",
+        "company": "شركة",
+        "admin": "أدمن"
+      },
+      "columns": {
+        "name": "الاسم",
+        "email": "البريد",
+        "phone": "الهاتف",
+        "country": "البلد",
+        "category": "التصنيف",
+        "status": "الحالة",
+        "role": "الدور",
+        "actions": "الإجراءات"
+      },
+      "roles": {
+        "user": "مستخدم",
+        "company": "شركة",
+        "admin": "أدمن"
+      },
+      "delete": "حذف",
+      "deleteConfirm": "هل تريد حذف هذا المستخدم؟",
+      "empty": "لا يوجد مستخدمون",
+      "error": "تعذر الحذف"
+    },
+    "companies": {
+      "title": "الشركات",
+      "description": "إدارة حسابات الشركات",
+      "columns": {
+        "name": "الشركة",
+        "email": "البريد",
+        "phone": "الهاتف",
+        "employees": "الموظفون",
+        "country": "البلد",
+        "status": "الحالة",
+        "actions": "الإجراءات"
+      },
+      "delete": "حذف",
+      "deleteConfirm": "هل تريد حذف هذه الشركة؟",
+      "empty": "لا توجد شركات",
+      "error": "تعذر الحذف"
+    },
+    "successStories": {
+      "title": "قصص النجاح",
+      "description": "إدارة قصص النجاح المعروضة في الصفحة الرئيسية",
+      "hint": "أضف أو عدّل القصص باللغة الحالية وأرفق صورة.",
+      "loadError": "تعذر تحميل قصص النجاح من الخادم",
+      "columns": {
+        "image": "الصورة",
+        "name": "الاسم",
+        "role": "الدور",
+        "location": "الموقع",
+        "quote": "الاقتباس",
+        "actions": "الإجراءات"
+      },
+      "fields": {
+        "name": "الاسم",
+        "role": "الدور",
+        "quote": "الاقتباس",
+        "location": "الموقع",
+        "image": "صورة"
+      },
+      "add": "+ إضافة قصة",
+      "createTitle": "قصة جديدة",
+      "editTitle": "تعديل القصة",
+      "currentLanguageOnly": "سيتم حفظ المحتوى باللغة الحالية فقط.",
+      "save": "حفظ",
+      "saving": "جاري الحفظ…",
+      "cancel": "إلغاء",
+      "edit": "تعديل",
+      "delete": "حذف",
+      "deleteConfirm": "حذف هذه القصة؟",
+      "empty": "لا توجد قصص نجاح",
+      "error": "تعذر الحفظ",
+      "locationRequired": "حقل الموقع مطلوب"
+    },
+    "faqs": {
+      "title": "الأسئلة الشائعة",
+      "description": "إدارة الأسئلة الشائعة المنشورة على المنصة.",
+      "columns": {
+        "question": "السؤال",
+        "answer": "الإجابة",
+        "actions": "الإجراءات"
+      },
+      "add": "+ إضافة سؤال",
+      "empty": "لا توجد أسئلة",
+      "delete": "حذف",
+      "error": "فشل الإجراء",
+      "titles": {
+        "details": "تفاصيل السؤال"
+      },
+      "labels": {
+        "language": "اللغة:"
+      },
+      "fields": {
+        "question": "السؤال",
+        "answer": "الإجابة"
+      },
+      "actions": {
+        "saving": "جاري الحفظ...",
+        "create": "إنشاء",
+        "saveChanges": "حفظ التغييرات",
+        "back": "رجوع"
+      },
+      "messages": {
+        "saved": "✓ تم الحفظ بنجاح"
+      },
+      "errors": {
+        "atLeastOneQuestion": "حقل السؤال مطلوب على الأقل بالعربية",
+        "save": "فشل الحفظ"
+      }
+    },
+    "home": {
+      "title": "محتوى الصفحة الرئيسية",
+      "description": "حدّث الهيدر وخطوات العملية وعناوين أقسام الصفحة الرئيسية المعروضة على الصفحة العامة.",
+      "hint": "سيتم حفظ المحتوى باللغة الحالية فقط.",
+      "success": "تم حفظ محتوى الصفحة الرئيسية.",
+      "loadError": "تعذر تحميل محتوى الصفحة الرئيسية من الخادم",
+      "error": "تعذر الحفظ",
+      "save": "حفظ",
+      "saving": "جاري الحفظ…",
+      "status": {
+        "editing": "تعديل أقسام الصفحة الرئيسية",
+        "section": "القسم النشط"
+      },
+      "helper": {
+        "hero": "عدّل نص البانر الرئيسي الذي يظهر في أعلى الصفحة الرئيسية.",
+        "categories": "حدّث عنوان ووصف قسم الفئات المستخدم في فلتر الصفحة الرئيسية.",
+        "process": "أدر الخطوات الثلاث التي توضح كيف يبدأ المستخدم ويقدم طلبه.",
+        "jobs": "حدّث نص قسم الوظائف المعروض في الصفحة الرئيسية.",
+        "successStories": "حدّث كتلة قصص النجاح وعنوانها.",
+        "news": "حدّث عنوان ووصف قسم الأخبار في الصفحة الرئيسية.",
+        "footer": "حدّث دعوة الدعم التي تظهر في منطقة تذييل الصفحة الرئيسية.",
+        "processIcon": "يمكنك استبدال أيقونة الخطوة باستخدام مسار محلي أو رابط عام."
+      },
+      "labels": {
+        "processStep": "خطوة"
+      },
+      "fields": {
+        "heroTitle": "عنوان القسم الرئيسي",
+        "heroDescription": "وصف القسم الرئيسي",
+        "heroImage": "صورة الهيدر",
+        "sectionCategoriesTitle": "عنوان قسم الفئات",
+        "sectionCategoriesDescription": "وصف قسم الفئات",
+        "sectionJobsTitle": "عنوان قسم الوظائف",
+        "sectionJobsDescription": "وصف قسم الوظائف",
+        "sectionTestimonialsTitle": "عنوان قسم قصص النجاح",
+        "sectionTestimonialsDescription": "وصف قسم قصص النجاح",
+        "sectionNewsTitle": "عنوان قسم الأخبار",
+        "sectionNewsDescription": "وصف قسم الأخبار",
+        "sectionFooterTitle": "عنوان قسم الدعم",
+        "sectionFooterDescription": "وصف قسم الدعم",
+        "stepTitle": "عنوان الخطوة",
+        "stepIcon": "مسار الأيقونة",
+        "uploadIcon": "رفع أيقونة",
+        "removeImage": "إزالة",
+        "preview": "معاينة",
+        "stepDescription": "وصف الخطوة"
+      },
+      "sectionLabels": {
+        "hero": "القسم الرئيسي",
+        "process": "الخطوات",
+        "categories": "الفئات",
+        "jobs": "الوظائف",
+        "successStories": "قصص النجاح",
+        "news": "الأخبار",
+        "footer": "الدعم"
+      }
+    },
+    "about": {
+      "title": "محتوى صفحة من نحن",
+      "description": "أدر محتوى الهيدر وقسم القصة المعروض في صفحة من نحن العامة.",
+      "summary": "النموذج يزامن صفحة من نحن مع endpoint العام /about ويحفظ الصور المرفوعة.",
+      "fields": {
+        "title": "عنوان الهيدر",
+        "descriptionLeft": "وصف المقدمة الأيسر",
+        "descriptionRight": "وصف المقدمة الأيمن",
+        "secondTitle": "عنوان القصة",
+        "secondDescription": "وصف القصة",
+        "image": "صورة الهيدر",
+        "secondImage": "الصورة الثانوية"
+      },
+      "currentImage": "صورة الهيدر الحالية",
+      "currentSecondaryImage": "الصورة الثانوية الحالية",
+      "save": "حفظ",
+      "saving": "جاري الحفظ…",
+      "loadError": "تعذر تحميل محتوى صفحة من نحن من الخادم",
+      "error": "تعذر الحفظ"
+    },
+    "settings": {
+      "title": "الإعدادات والمحتوى",
+      "description": "إعدادات الموقع، الأخبار، والإشعارات",
+      "tabs": {
+        "settings": "إعدادات الموقع",
+        "news": "الأخبار",
+        "notifications": "الإشعارات"
+      },
+      "settingsEmpty": "لا توجد إعدادات من الخادم",
+      "edit": "تعديل",
+      "save": "حفظ",
+      "addNews": "+ خبر جديد",
+      "newsTitle": "العنوان",
+      "newsDesc": "الوصف",
+      "newsImage": "صورة الخبر",
+      "saveNews": "نشر الخبر",
+      "newsColTitle": "العنوان",
+      "newsColDate": "التاريخ",
+      "newsColActions": "الإجراءات",
+      "newsEmpty": "لا توجد أخبار",
+      "notificationsEmpty": "لا توجد إشعارات",
+      "markAllRead": "تعليم الكل كمقروءة",
+      "markRead": "مقروء",
+      "unread": "جديد",
+      "delete": "حذف",
+      "deleteConfirm": "حذف هذا الخبر؟",
+      "error": "حدث خطأ"
+    }
+  },
+  "Ui": {
+    "common": {
+      "loading": "جاري التحميل",
+      "pleaseWait": "يرجى الانتظار..."
+    },
+    "dialog": {
+      "close": "إغلاق",
+      "description": "محتوى الحوار"
+    },
+    "sheet": {
+      "title": "الشريط الجانبي",
+      "close": "إغلاق"
+    },
+    "sidebar": {
+      "title": "الشريط الجانبي",
+      "mobileDescription": "يعرض الشريط الجانبي على الجوال.",
+      "toggle": "تبديل الشريط الجانبي"
+    },
+    "breadcrumb": {
+      "label": "مسار التنقل",
+      "more": "المزيد"
+    },
+    "carousel": {
+      "previousSlide": "الشريحة السابقة",
+      "nextSlide": "الشريحة التالية"
+    },
+    "pagination": {
+      "navigation": "ترقيم الصفحات",
+      "previous": "السابق",
+      "next": "التالي",
+      "goToPrevious": "الانتقال إلى الصفحة السابقة",
+      "goToNext": "الانتقال إلى الصفحة التالية",
+      "morePages": "المزيد من الصفحات"
+    },
+    "common": {
+      "loading": "جاري التحميل...",
+      "pleaseWait": "يرجى الانتظار...",
+      "openTicket": "فتح تذكرة"
+    }
+  }
+}

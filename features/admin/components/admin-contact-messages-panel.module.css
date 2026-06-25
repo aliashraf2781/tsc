@@ -1,0 +1,95 @@
+/* Animations */
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -1000px 0;
+  }
+  100% {
+    background-position: 1000px 0;
+  }
+}
+
+.messageCard {
+  animation: slideIn 0.3s ease-out;
+}
+
+.messageBadge {
+  animation: pulse 2s ease-in-out infinite;
+}
+
+.statCard {
+  transition: all 0.3s ease;
+  background: linear-gradient(135deg, rgba(0, 110, 168, 0.05) 0%, rgba(64, 160, 202, 0.05) 100%);
+}
+
+.statCard:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 16px rgba(0, 110, 168, 0.15);
+}
+
+.filterButton {
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.filterButton.active {
+  background: linear-gradient(135deg, #006EA8 0%, #40A0CA 100%);
+  box-shadow: 0 4px 12px rgba(0, 110, 168, 0.3);
+}
+
+.searchInput {
+  transition: all 0.3s ease;
+}
+
+.searchInput:focus {
+  border-color: #006EA8;
+  box-shadow: 0 0 0 3px rgba(0, 110, 168, 0.1);
+}
+
+/* Status badge colors */
+.badgeNew {
+  background: linear-gradient(135deg, #3B82F6 0%, #1E40AF 100%);
+  color: white;
+}
+
+.badgeRead {
+  background: linear-gradient(135deg, #FBBF24 0%, #D97706 100%);
+  color: white;
+}
+
+.badgeReplied {
+  background: linear-gradient(135deg, #10B981 0%, #047857 100%);
+  color: white;
+}
+
+/* Empty state */
+.emptyState {
+  background: linear-gradient(135deg, #F8FBFF 0%, #E8F2FA 100%);
+  border: 2px dashed #78A3BE;
+}
+
+/* Responsive grid */
+@media (max-width: 640px) {
+  .statCard {
+    grid-column: span 1 !important;
+  }
+}
