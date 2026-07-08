@@ -11,8 +11,6 @@ export async function JobsPage({ locale: propLocale }: { locale?: string } = {})
   // Ensure next-intl uses the route locale for translations
   setRequestLocale(locale)
   // Debug: ensure server-side locale is detected correctly
-  // eslint-disable-next-line no-console
-  console.debug(`[jobs] server locale=${locale}`)
   const t = await getTranslations("Landing.jobsPage")
   const jobsT = await getTranslations("Landing.jobs")
 

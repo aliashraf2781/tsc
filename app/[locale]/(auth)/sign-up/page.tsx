@@ -41,7 +41,7 @@ export default async function SignUpPage({ params }: Props) {
         confirmPasswordPlaceholder={t("fields.confirmPasswordPlaceholder")}
         companyNamePlaceholder={t("fields.companyNamePlaceholder")}
         submitLabel={t("submit")}
-        initialCountries={countries as any}
+        initialCountries={countries}
       />
     </AuthCardWrapper>
   )

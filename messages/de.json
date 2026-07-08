@@ -816,6 +816,23 @@
           "rejected": "Abgelehnt"
         }
       },
+      "addJob": "+ Stelle hinzufügen",
+      "createJob": {
+        "title": "Stelle erstellen",
+        "description": "Veröffentlichen Sie eine neue Stelle im Namen eines Unternehmens",
+        "backToJobs": "Zurück zu den Stellen",
+        "fields": {
+          "company": "Unternehmen"
+        },
+        "placeholders": {
+          "company": "Unternehmen auswählen"
+        },
+        "errors": {
+          "company": "Wählen Sie ein Unternehmen aus",
+          "companiesUnavailable": "Unternehmen konnten nicht vom Server geladen werden."
+        },
+        "loadError": "Stelle konnte nicht erstellt werden"
+      },
       "empty": "Keine Stellen",
       "error": "Aktion fehlgeschlagen"
     },

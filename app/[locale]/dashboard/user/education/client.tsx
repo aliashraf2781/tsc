@@ -239,28 +239,25 @@ export default function UserEducationClient({ locale, initialPortfolio }: Props)
     }
   }, [initialPortfolio, locale]);
 
-  // Save the entire portfolio using FormData (API expects arrays to be sent)
-  const savePortfolio = async (
-    updatedLangs = languages,
-    updatedEdus = educations,
-    updatedExps = experiences,
-    updatedSkills = skills,
-    newCvFile: File | null = cvFile
-  ) => {
+  // Submit the entire portfolio using FormData (API expects arrays to be sent).
+  // This is the ONLY place that talks to the backend — every other handler in
+  // this file just updates local state, so validation only ever runs here,
+  // when the user explicitly clicks the page-level Submit button.
+  const savePortfolio = async () => {
     // ── Pre-save validation: backend requires ALL 4 sections to be non-empty arrays ──
-    if (updatedLangs.length === 0) {
+    if (languages.length === 0) {
       toast.error(isAr ? "يجب إضافة لغة واحدة على الأقل قبل الحفظ" : isDe ? "Bitte fügen Sie mindestens eine Sprache hinzu, bevor Sie speichern" : "Please add at least one language before saving");
       return;
     }
-    if (updatedEdus.length === 0) {
+    if (educations.length === 0) {
       toast.error(isAr ? "يجب إضافة مؤهل تعليمي واحد على الأقل قبل الحفظ" : isDe ? "Bitte fügen Sie mindestens einen Bildungseintrag hinzu, bevor Sie speichern" : "Please add at least one education entry before saving");
       return;
     }
-    if (updatedExps.length === 0) {
+    if (experiences.length === 0) {
       toast.error(isAr ? "يجب إضافة خبرة عملية واحدة على الأقل قبل الحفظ" : isDe ? "Bitte fügen Sie mindestens eine Berufserfahrung hinzu, bevor Sie speichern" : "Please add at least one work experience before saving");
       return;
     }
-    if (updatedSkills.length === 0) {
+    if (skills.length === 0) {
       toast.error(isAr ? "يجب إضافة مهارة واحدة على الأقل قبل الحفظ" : isDe ? "Bitte fügen Sie mindestens eine Fähigkeit hinzu, bevor Sie speichern" : "Please add at least one skill before saving");
       return;
     }
@@ -270,20 +267,20 @@ export default function UserEducationClient({ locale, initialPortfolio }: Props)
 
       const formData = new FormData();
 
-      // Append CV if available
-      if (newCvFile) {
-        formData.append("cv", newCvFile);
+      // Append CV if a new file was staged
+      if (cvFile) {
+        formData.append("cv", cvFile);
       }
 
       // Languages
-      updatedLangs.forEach((lang, idx) => {
+      languages.forEach((lang, idx) => {
         formData.append(`languages[${idx}][language]`, lang.language);
         formData.append(`languages[${idx}][level]`, lang.level);
         if (lang.id) formData.append(`languages[${idx}][id]`, String(lang.id));
       });
 
       // Education
-      updatedEdus.forEach((edu, idx) => {
+      educations.forEach((edu, idx) => {
         formData.append(`education[${idx}][university]`, edu.university);
         formData.append(`education[${idx}][level_of_education]`, edu.levelOfEducation);
         formData.append(`education[${idx}][graduation_year]`, edu.graduationYear);
@@ -294,28 +291,22 @@ export default function UserEducationClient({ locale, initialPortfolio }: Props)
       });
 
       // Work Experience
-      if (updatedExps.length === 0) {
-        // should never reach here due to validation above
-        toast.error(isAr ? "يجب إضافة خبرة عملية" : isDe ? "Berufserfahrung ist erforderlich" : "Work experience is required");
-        return;
-      } else {
-        updatedExps.forEach((exp, idx) => {
-          formData.append(`work_experience[${idx}][company_name]`, exp.companyName);
-          formData.append(`work_experience[${idx}][department]`, exp.department);
-          formData.append(`work_experience[${idx}][start_date]`, exp.startDate);
-          if (exp.endDate && !exp.currentlyWorking) {
-            formData.append(`work_experience[${idx}][end_date]`, exp.endDate);
-          }
-          formData.append(`work_experience[${idx}][currently_working]`, exp.currentlyWorking ? "1" : "0");
-          formData.append(`work_experience[${idx}][responsibilities]`, exp.responsibilities || "");
-          // Do not send ID due to non-existent 'user_work_experiences' table validation bug on Laravel backend
-          // if (exp.id) formData.append(`work_experience[${idx}][id]`, String(exp.id));
-          if (exp.attachmentFile) formData.append(`work_experience[${idx}][attachment]`, exp.attachmentFile);
-        });
-      }
+      experiences.forEach((exp, idx) => {
+        formData.append(`work_experience[${idx}][company_name]`, exp.companyName);
+        formData.append(`work_experience[${idx}][department]`, exp.department);
+        formData.append(`work_experience[${idx}][start_date]`, exp.startDate);
+        if (exp.endDate && !exp.currentlyWorking) {
+          formData.append(`work_experience[${idx}][end_date]`, exp.endDate);
+        }
+        formData.append(`work_experience[${idx}][currently_working]`, exp.currentlyWorking ? "1" : "0");
+        formData.append(`work_experience[${idx}][responsibilities]`, exp.responsibilities || "");
+        // Do not send ID due to non-existent 'user_work_experiences' table validation bug on Laravel backend
+        // if (exp.id) formData.append(`work_experience[${idx}][id]`, String(exp.id));
+        if (exp.attachmentFile) formData.append(`work_experience[${idx}][attachment]`, exp.attachmentFile);
+      });
 
       // Skills
-      updatedSkills.forEach((skill, idx) => {
+      skills.forEach((skill, idx) => {
         formData.append(`skills[${idx}][skill_name]`, skill.skillName);
         if (skill.id) formData.append(`skills[${idx}][id]`, String(skill.id));
       });
@@ -355,31 +346,38 @@ export default function UserEducationClient({ locale, initialPortfolio }: Props)
     fileInputRef.current?.click();
   };
 
-  const handleCVChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+  // Staging only — the file is held in state and only sent to the backend
+  // when the user clicks the page-level Submit button, so picking the wrong
+  // file (and swapping it out) never triggers a request.
+  const stageCvFile = (file: File) => {
     if (file.type !== "application/pdf") {
       toast.error(isAr ? "يجب رفع ملف بصيغة PDF فقط" : isDe ? "Es sind nur PDF-Dateien erlaubt" : "Only PDF files are allowed");
       return;
     }
     setCvFile(file);
-    await savePortfolio(languages, educations, experiences, skills, file);
+  };
+
+  const handleCVChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    stageCvFile(file);
+    e.target.value = "";
   };
 
   const handleCVDragOver = (e: React.DragEvent) => {
     e.preventDefault();
   };
 
-  const handleCVDrop = async (e: React.DragEvent) => {
+  const handleCVDrop = (e: React.DragEvent) => {
     e.preventDefault();
     const file = e.dataTransfer.files?.[0];
     if (!file) return;
-    if (file.type !== "application/pdf") {
-      toast.error(isAr ? "يجب رفع ملف بصيغة PDF فقط" : isDe ? "Es sind nur PDF-Dateien erlaubt" : "Only PDF files are allowed");
-      return;
-    }
-    setCvFile(file);
-    await savePortfolio(languages, educations, experiences, skills, file);
+    stageCvFile(file);
+  };
+
+  const clearStagedCv = () => {
+    setCvFile(null);
+    if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
   // -----------------
@@ -412,7 +410,7 @@ export default function UserEducationClient({ locale, initialPortfolio }: Props)
     );
   };
 
-  const saveLanguagesModal = async () => {
+  const saveLanguagesModal = () => {
     const invalid = modalLanguages.some((l) => !l.language.trim());
     if (invalid) {
       toast.error(isAr ? "الرجاء تحديد اسم اللغة لكل الصفوف" : "Please specify the language name for all rows");
@@ -422,9 +420,8 @@ export default function UserEducationClient({ locale, initialPortfolio }: Props)
       toast.error(isAr ? "يجب إضافة لغة واحدة على الأقل" : "At least one language is required");
       return;
     }
-    setShowLanguageModal(false);
     setLanguages(modalLanguages);
-    await savePortfolio(modalLanguages, educations, experiences, skills, cvFile);
+    setShowLanguageModal(false);
   };
 
   // -----------------
@@ -458,17 +455,15 @@ export default function UserEducationClient({ locale, initialPortfolio }: Props)
     setShowEducationModal(true);
   };
 
-  const deleteEducationItem = async (index: number) => {
+  const deleteEducationItem = (index: number) => {
     if (educations.length <= 1) {
       toast.error(isAr ? "يجب أن تحتوي سيرتك الذاتية على مؤهل تعليمي واحد على الأقل." : "Your portfolio must contain at least one education item.");
       return;
     }
-    const updated = educations.filter((_, idx) => idx !== index);
-    setEducations(updated);
-    await savePortfolio(languages, updated, experiences, skills, cvFile);
+    setEducations((prev) => prev.filter((_, idx) => idx !== index));
   };
 
-  const submitEducation = async () => {
+  const submitEducation = () => {
     if (!educationForm.university.trim()) {
       toast.error(isAr ? "الرجاء إدخال اسم الجامعة" : "Please enter the university name");
       return;
@@ -492,24 +487,22 @@ export default function UserEducationClient({ locale, initialPortfolio }: Props)
 
     setShowEducationModal(false);
 
-    let updatedEdus = [...educations];
     if (editingEducation) {
-      updatedEdus = educations.map((item) =>
-        (item.id && item.id === editingEducation.id) ||
-          (item.tempId && item.tempId === editingEducation.tempId)
-          ? { ...item, ...educationForm }
-          : item
+      setEducations((prev) =>
+        prev.map((item) =>
+          (item.id && item.id === editingEducation.id) ||
+            (item.tempId && item.tempId === editingEducation.tempId)
+            ? { ...item, ...educationForm }
+            : item
+        )
       );
     } else {
       const newEdu: EducationItem = {
         tempId: `edu-new-${Date.now()}`,
         ...educationForm,
       };
-      updatedEdus.push(newEdu);
+      setEducations((prev) => [...prev, newEdu]);
     }
-
-    setEducations(updatedEdus);
-    await savePortfolio(languages, updatedEdus, experiences, skills, cvFile);
   };
 
   // -----------------
@@ -545,17 +538,15 @@ export default function UserEducationClient({ locale, initialPortfolio }: Props)
     setShowExperienceModal(true);
   };
 
-  const deleteExperienceItem = async (index: number) => {
+  const deleteExperienceItem = (index: number) => {
     if (experiences.length <= 1) {
       toast.error(isAr ? "يجب أن تحتوي سيرتك الذاتية على خبرة عملية واحدة على الأقل." : "Your portfolio must contain at least one work experience.");
       return;
     }
-    const updated = experiences.filter((_, idx) => idx !== index);
-    setExperiences(updated);
-    await savePortfolio(languages, educations, updated, skills, cvFile);
+    setExperiences((prev) => prev.filter((_, idx) => idx !== index));
   };
 
-  const submitExperience = async () => {
+  const submitExperience = () => {
     if (!experienceForm.companyName.trim()) {
       toast.error(isAr ? "الرجاء إدخال اسم الشركة" : "Please enter the company name");
       return;
@@ -579,24 +570,22 @@ export default function UserEducationClient({ locale, initialPortfolio }: Props)
 
     setShowExperienceModal(false);
 
-    let updatedExps = [...experiences];
     if (editingExperience) {
-      updatedExps = experiences.map((item) =>
-        (item.id && item.id === editingExperience.id) ||
-          (item.tempId && item.tempId === editingExperience.tempId)
-          ? { ...item, ...experienceForm }
-          : item
+      setExperiences((prev) =>
+        prev.map((item) =>
+          (item.id && item.id === editingExperience.id) ||
+            (item.tempId && item.tempId === editingExperience.tempId)
+            ? { ...item, ...experienceForm }
+            : item
+        )
       );
     } else {
       const newExp: ExperienceItem = {
         tempId: `exp-new-${Date.now()}`,
         ...experienceForm,
       };
-      updatedExps.push(newExp);
+      setExperiences((prev) => [...prev, newExp]);
     }
-
-    setExperiences(updatedExps);
-    await savePortfolio(languages, educations, updatedExps, skills, cvFile);
   };
 
   // -----------------
@@ -623,14 +612,13 @@ export default function UserEducationClient({ locale, initialPortfolio }: Props)
     setModalSkills((prev) => prev.filter((_, idx) => idx !== index));
   };
 
-  const saveSkillsModal = async () => {
+  const saveSkillsModal = () => {
     if (modalSkills.length === 0) {
       toast.error(isAr ? "يجب إضافة مهارة واحدة على الأقل" : "At least one skill is required");
       return;
     }
-    setShowSkillModal(false);
     setSkills(modalSkills);
-    await savePortfolio(languages, educations, experiences, modalSkills, cvFile);
+    setShowSkillModal(false);
   };
 
   // Get display helpers
@@ -749,8 +737,28 @@ export default function UserEducationClient({ locale, initialPortfolio }: Props)
           </p>
         </div>
 
-        {/* Existing CV Link */}
-        {cv && (
+        {/* Staged (not-yet-saved) CV replacement — lets the user swap the file
+            before it's actually sent, instead of it uploading immediately. */}
+        {cvFile ? (
+          <div className="mt-4 flex items-center justify-between p-3 bg-[#FFF9EB] border border-[#F5D98B] rounded-[8px]">
+            <div className="flex items-center gap-2 min-w-0">
+              <img src="/portfolio/pdf.svg" alt="PDF" className="w-6 h-6 flex-shrink-0" />
+              <span className="text-sm font-medium text-gray-700 truncate max-w-[200px] sm:max-w-md">
+                {cvFile.name}
+              </span>
+              <span className="text-[11px] font-semibold text-[#92650B] bg-[#FEF3C7] px-2 py-0.5 rounded-full flex-shrink-0">
+                {isAr ? "بانتظار الحفظ" : isDe ? "Ausstehend" : "Pending save"}
+              </span>
+            </div>
+            <button
+              type="button"
+              onClick={clearStagedCv}
+              className="text-xs font-semibold text-red-600 hover:underline flex-shrink-0"
+            >
+              {isAr ? "إزالة" : isDe ? "Entfernen" : "Remove"}
+            </button>
+          </div>
+        ) : cv && (
           <div className="mt-4 flex items-center justify-between p-3 bg-gray-50 border border-gray-200 rounded-[8px]">
             <div className="flex items-center gap-2">
               <img src="/portfolio/pdf.svg" alt="PDF" className="w-6 h-6" />
@@ -1008,6 +1016,20 @@ export default function UserEducationClient({ locale, initialPortfolio }: Props)
             </p>
           )}
         </div>
+      </div>
+
+      {/* Page-level submit — the only action that actually sends data to the
+          backend; everything above just edits local state until this is clicked. */}
+      <div className="sticky bottom-0 -mx-6 sm:mx-0 bg-white/95 backdrop-blur border-t border-[#E5E7EB] px-6 py-4 flex items-center justify-end gap-3 rounded-b-[16px] shadow-[0_-4px_14px_rgba(0,0,0,0.04)]">
+        <PrimaryButton
+          onClick={savePortfolio}
+          disabled={saving}
+          className="w-auto h-[44px] px-8 rounded-[12px] flex items-center justify-center text-[15px] font-bold cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
+        >
+          {saving
+            ? (isAr ? "جاري الحفظ..." : isDe ? "Wird gespeichert..." : "Saving...")
+            : (isAr ? "حفظ التغييرات" : isDe ? "Änderungen speichern" : "Submit")}
+        </PrimaryButton>
       </div>
 
       {/* ------------------------------------------------------------- */}

@@ -1,4 +1,4 @@
-﻿"use client"
+"use client"
 
 import { useEffect, useMemo, useState, useTransition } from "react"
 import { useTranslations } from "next-intl"
@@ -10,7 +10,6 @@ import { GERMAN_STATES, JOB_GENDERS, JOB_TYPES } from "@/features/company-jobs/l
 import { buildJobFormData } from "@/features/company-jobs/lib/build-job-form-data"
 import { CreateJobStepper } from "@/features/company-jobs/components/create-job-stepper"
 import { JobImageUpload } from "@/features/company-jobs/components/job-image-upload"
-import { useAuth } from "@/hooks/use-auth"
 import { getLocalizedStateName } from "@/features/jobs/lib/job-display"
 import {
   JobFieldGroup,
@@ -19,13 +18,19 @@ import {
   JobUnderlineDate,
   JobUnderlineTextarea,
 } from "@/features/company-jobs/components/job-underline-field"
+import { createAdminJobAction } from "@/features/admin/actions/admin-actions"
 import { PrimaryButton } from "@/components/ui/primary-button"
 import { cn } from "@/lib/utils"
 
+type EditingLocale = "ar" | "en" | "de"
+
+type LocalizedText = { ar: string; en: string; de: string }
+
+type LocalizedField = "title" | "description" | "responsibilities" | "requirements"
+
 type FormState = {
-  title_ar: string
-  title_en: string
-  title_de: string
+  title: LocalizedText
+  companyId: string
   category_id: string
   sub_category_id: string
   state: string
@@ -37,21 +42,28 @@ type FormState = {
   salary_to: string
   age_from: string
   age_to: string
-  description_ar: string
-  description_en: string
-  description_de: string
-  responsibilities_ar: string
-  responsibilities_en: string
-  responsibilities_de: string
-  requirements_ar: string
-  requirements_en: string
-  requirements_de: string
+  description: LocalizedText
+  responsibilities: LocalizedText
+  requirements: LocalizedText
+}
+
+export type AdminCompanyOption = {
+  id: number
+  name: string
+  logo?: string
+}
+
+function emptyLocalized(): LocalizedText {
+  return { ar: "", en: "", de: "" }
+}
+
+function hasAnyValue(text: LocalizedText): boolean {
+  return Object.values(text).some((value) => value.trim().length > 0)
 }
 
 const initialForm: FormState = {
-  title_ar: "",
-  title_en: "",
-  title_de: "",
+  title: emptyLocalized(),
+  companyId: "",
   category_id: "",
   sub_category_id: "",
   state: "",
@@ -63,31 +75,23 @@ const initialForm: FormState = {
   salary_to: "",
   age_from: "",
   age_to: "",
-  description_ar: "",
-  description_en: "",
-  description_de: "",
-  responsibilities_ar: "",
-  responsibilities_en: "",
-  responsibilities_de: "",
-  requirements_ar: "",
-  requirements_en: "",
-  requirements_de: "",
+  description: emptyLocalized(),
+  responsibilities: emptyLocalized(),
+  requirements: emptyLocalized(),
 }
 
 function GradientOutlineButton({
   children,
   onClick,
-  type = "button",
   className,
 }: {
   children: React.ReactNode
   onClick?: () => void
-  type?: "button"
   className?: string
 }) {
   return (
     <button
-      type={type}
+      type="button"
       onClick={onClick}
       className={cn(
         "inline-flex h-9 min-w-[120px] items-center justify-center rounded-lg border border-[#E8F2FF] bg-white px-4 text-base font-normal shadow-none transition hover:bg-[#F5F9FC]",
@@ -101,14 +105,17 @@ function GradientOutlineButton({
   )
 }
 
-export function CreateJobWizard({
+export function AdminCreateJobWizard({
   categories,
+  companies,
   locale,
 }: {
   categories: Category[]
+  companies: AdminCompanyOption[]
   locale: string
 }) {
   const t = useTranslations("CompanyJobs")
+  const tAdmin = useTranslations("Admin.jobs.createJob")
   const router = useRouter()
   const pathname = usePathname()
   const [step, setStep] = useState(1)
@@ -117,33 +124,28 @@ export function CreateJobWizard({
   const [imagePreview, setImagePreview] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [pending, startTransition] = useTransition()
-  const [remoteCategories, setRemoteCategories] = useState<Category[]>([])
-  const { user } = useAuth()
+  const [fetchedCategories, setFetchedCategories] = useState<Category[] | null>(null)
 
   // Defaults to the page's own URL locale (routing only ever serves ar/en/de),
   // so the initial editing language/direction matches the page you're on.
-  const [editingLocale, setEditingLocale] = useState<"ar" | "en" | "de">(
-    locale as "ar" | "en" | "de"
-  )
+  const [editingLocale, setEditingLocale] = useState<EditingLocale>(locale as EditingLocale)
 
   const isRtl = locale === "ar" || editingLocale === "ar"
   const editingDir = editingLocale === "ar" ? "rtl" : "ltr"
 
-  const allCategories = remoteCategories.length > 0 ? remoteCategories : categories
+  // Categories are localized server-side, so switching the editing language
+  // re-fetches them; the initial locale's categories come straight from props.
+  const allCategories = editingLocale === locale ? categories : (fetchedCategories ?? categories)
 
   useEffect(() => {
-    if (editingLocale === locale && categories.length > 0) {
-
-      setRemoteCategories(categories)
-      return
-    }
+    if (editingLocale === locale) return
 
     let cancelled = false
     fetch(`/api/categories?locale=${encodeURIComponent(editingLocale)}`)
       .then((res) => res.json())
       .then((payload: { data?: Category[] }) => {
         if (cancelled || !Array.isArray(payload.data) || payload.data.length === 0) return
-        setRemoteCategories(payload.data)
+        setFetchedCategories(payload.data)
       })
       .catch((err) => {
         console.warn(err)
@@ -152,7 +154,7 @@ export function CreateJobWizard({
     return () => {
       cancelled = true
     }
-  }, [editingLocale, locale, categories])
+  }, [editingLocale, locale])
 
   const selectedCategory = useMemo(
     () => allCategories.find((c) => String(c.id) === form.category_id),
@@ -161,15 +163,13 @@ export function CreateJobWizard({
 
   const subCategories = selectedCategory?.sub_categories ?? []
 
-  const categoryOptions = allCategories
-    .filter((c) => c.name?.trim())
-    .map((c) => ({
-      value: String(c.id),
-      label: c.name,
-    }))
-
-  const set = (key: keyof FormState, value: string) => {
+  const setField = <K extends Exclude<keyof FormState, LocalizedField>>(key: K, value: FormState[K]) => {
     setForm((prev) => ({ ...prev, [key]: value }))
+    setError(null)
+  }
+
+  const setLocalizedField = (field: LocalizedField, value: string) => {
+    setForm((prev) => ({ ...prev, [field]: { ...prev[field], [editingLocale]: value } }))
     setError(null)
   }
 
@@ -182,22 +182,28 @@ export function CreateJobWizard({
     setError(null)
   }
 
-  const genderOptions = JOB_GENDERS.map((g) => ({
-    value: g,
-    label: t(`gender.${g}`),
-  }))
+  const companyOptions = companies.map((c) => ({ value: String(c.id), label: c.name }))
 
-  const jobTypeOptions = JOB_TYPES.map((jt) => ({
-    value: jt,
-    label: t(`jobType.${jt}`),
-  }))
+  const categoryOptions = allCategories
+    .filter((c) => c.name?.trim())
+    .map((c) => ({ value: String(c.id), label: c.name }))
 
-  const stateOptions = GERMAN_STATES.map((s) => ({ value: s, label: getLocalizedStateName(s, editingLocale) }))
+  const genderOptions = JOB_GENDERS.map((g) => ({ value: g, label: t(`gender.${g}`) }))
+
+  const jobTypeOptions = JOB_TYPES.map((jt) => ({ value: jt, label: t(`jobType.${jt}`) }))
+
+  const stateOptions = GERMAN_STATES.map((s) => ({
+    value: s,
+    label: getLocalizedStateName(s, editingLocale),
+  }))
 
   const validateStep = (s: number): boolean => {
     if (s === 1) {
-      const hasTitle = [form.title_ar, form.title_en, form.title_de].some((v) => v && v.trim())
-      if (!hasTitle) {
+      if (!form.companyId) {
+        setError(tAdmin("errors.company"))
+        return false
+      }
+      if (!hasAnyValue(form.title)) {
         setError(t("errors.title"))
         return false
       }
@@ -253,18 +259,15 @@ export function CreateJobWizard({
       }
     }
     if (s === 3) {
-      const hasDescription = [form.description_ar, form.description_en, form.description_de].some((v) => v && v.trim())
-      const hasResponsibilities = [form.responsibilities_ar, form.responsibilities_en, form.responsibilities_de].some((v) => v && v.trim())
-      const hasRequirements = [form.requirements_ar, form.requirements_en, form.requirements_de].some((v) => v && v.trim())
-      if (!hasDescription) {
+      if (!hasAnyValue(form.description)) {
         setError(t("errors.description"))
         return false
       }
-      if (!hasResponsibilities) {
+      if (!hasAnyValue(form.responsibilities)) {
         setError(t("errors.responsibilities"))
         return false
       }
-      if (!hasRequirements) {
+      if (!hasAnyValue(form.requirements)) {
         setError(t("errors.requirements"))
         return false
       }
@@ -274,41 +277,28 @@ export function CreateJobWizard({
   }
 
   const buildPayload = (): CreateJobPayload => {
-    // The auth hook already sets user.avatar = companyLogo for company accounts.
-    // Also try companyProfile/company sub-objects for id, name, logo.
-    const cp = (user)?.companyProfile || (user)?.company_profile || (user)?.company || undefined
-    const company = user
-      ? {
-          id: cp?.id ? Number(cp.id) : undefined,
-          name: (cp?.companyName || cp?.name || cp?.company_name || user.name) as string | undefined,
-          logo: (cp?.logoUrl || cp?.logo || cp?.logo_url || cp?.avatar || user.avatar) as string | undefined,
-        }
-      : undefined
+    const company = companies.find((c) => String(c.id) === form.companyId)
 
     return {
-    title: { ar: form.title_ar.trim(), en: form.title_en.trim(), de: form.title_de.trim() },
-    category_id: Number(form.category_id),
-    sub_category_id: Number(form.sub_category_id || form.category_id),
-    state: form.state,
-    vacancy: Number(form.vacancy),
-    gender: form.gender as CreateJobPayload["gender"],
-    employment_type: form.employment_type as CreateJobPayload["employment_type"],
-    application_deadline: form.application_deadline,
-    salary_from: Number(form.salary_from),
-    salary_to: Number(form.salary_to),
-    age_from: Number(form.age_from),
-    age_to: Number(form.age_to),
-    description: { ar: form.description_ar.trim(), en: form.description_en.trim(), de: form.description_de.trim() },
-    responsibilities: { ar: form.responsibilities_ar.trim(), en: form.responsibilities_en.trim(), de: form.responsibilities_de.trim() },
-    requirements: { ar: form.requirements_ar.trim(), en: form.requirements_en.trim(), de: form.requirements_de.trim() },
-    image: imageFile!,
-    company,
+      title: form.title,
+      category_id: Number(form.category_id),
+      sub_category_id: Number(form.sub_category_id || form.category_id),
+      state: form.state,
+      vacancy: Number(form.vacancy),
+      gender: form.gender as CreateJobPayload["gender"],
+      employment_type: form.employment_type as CreateJobPayload["employment_type"],
+      application_deadline: form.application_deadline,
+      salary_from: Number(form.salary_from),
+      salary_to: Number(form.salary_to),
+      age_from: Number(form.age_from),
+      age_to: Number(form.age_to),
+      description: form.description,
+      responsibilities: form.responsibilities,
+      requirements: form.requirements,
+      image: imageFile!,
+      company: company ? { id: company.id, name: company.name, logo: company.logo } : undefined,
+    }
   }
-  }
-
-  // Include current company info from session (if available) so the backend
-  // can show the company profile/logo on job details without extra lookups.
-  
 
   const handleNext = () => {
     if (!validateStep(step)) return
@@ -323,35 +313,24 @@ export function CreateJobWizard({
     startTransition(async () => {
       try {
         const formData = buildJobFormData(buildPayload())
-        const res = await fetch("/api/company/jobs", {
-          method: "POST",
-          body: formData,
-          headers: {
-            "x-locale": locale,
-            "Accept-Language": locale,
-          },
-        })
-        const result = (await res.json()) as { ok: boolean; message?: string }
-        if (!res.ok || !result.ok) {
-          setError(result.message ?? t("loadError"))
+        const result = await createAdminJobAction(formData, locale)
+        if (!result.ok) {
+          setError(result.message ?? tAdmin("loadError"))
           return
         }
-        router.push("/dashboard/company/jobs")
+        router.push("/dashboard/admin/jobs")
       } catch (err) {
         console.error(err)
-        setError(t("loadError"))
+        setError(tAdmin("loadError"))
       }
     })
   }
 
-  const stepLabels: [string, string, string] = [
-    t("steps.basic"),
-    t("steps.info"),
-    t("steps.description"),
-  ]
+  const stepLabels: [string, string, string] = [t("steps.basic"), t("steps.info"), t("steps.description")]
+
+  const canSubmitStep = categoryOptions.length > 0 && companyOptions.length > 0
 
   return (
-    /* تم مسح الاختصار max-w-[920px] هنا وأصبحت w-full ممتدة بالكامل دون أي قيود */
     <div
       dir={editingDir}
       className={cn(
@@ -361,12 +340,14 @@ export function CreateJobWizard({
     >
       <div className="w-full flex flex-col gap-2">
         <div className="flex flex-col items-center gap-3 w-full sm:flex-row sm:justify-between px-8 sm:px-0">
-          <h1 className={cn(
-            "bg-clip-text text-[24px] font-bold leading-[1.3] text-transparent sm:text-[32px] py-1 text-center sm:text-start flex-1",
-            isRtl ? "bg-gradient-to-r" : "bg-gradient-to-l",
-            "from-[#032C44] to-[#41A0CA]"
-          )}>
-            {t("title")}
+          <h1
+            className={cn(
+              "bg-clip-text text-[24px] font-bold leading-[1.3] text-transparent sm:text-[32px] py-1 text-center sm:text-start flex-1",
+              isRtl ? "bg-gradient-to-r" : "bg-gradient-to-l",
+              "from-[#032C44] to-[#41A0CA]"
+            )}
+          >
+            {tAdmin("title")}
           </h1>
           {/* Language switcher — shown on all steps for consistency */}
           <div className="flex gap-1.5 justify-center sm:justify-start shrink-0">
@@ -393,7 +374,7 @@ export function CreateJobWizard({
         <div className="absolute top-3 end-3">
           <Link
             locale={locale}
-            href="/dashboard/company/jobs"
+            href="/dashboard/admin/jobs"
             className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-[#006EA8] transition-opacity hover:opacity-70 bg-white shadow-sm"
             aria-label={t("cancel")}
           >
@@ -407,17 +388,25 @@ export function CreateJobWizard({
       <div className="flex w-full flex-col gap-4">
         {step === 1 && (
           <>
+            <JobFieldGroup label={tAdmin("fields.company")} required>
+              <JobUnderlineSelect
+                value={form.companyId}
+                onChange={(v) => setField("companyId", v)}
+                placeholder={tAdmin("placeholders.company")}
+                options={companyOptions}
+                disabled={companyOptions.length === 0}
+              />
+            </JobFieldGroup>
+
             <div className="flex w-full flex-col gap-4">
               <div className="flex items-center gap-0.5 text-start">
-                <span className="text-base font-medium leading-[150%] text-[#262626]">
-                  {t("fields.title")}
-                </span>
+                <span className="text-base font-medium leading-[150%] text-[#262626]">{t("fields.title")}</span>
                 <span className="text-base font-medium leading-[150%] text-[#FF2D55]">*</span>
               </div>
 
               <JobUnderlineInput
-                value={(form)[`title_${editingLocale}`]}
-                onChange={(v) => set((`title_${editingLocale}` as unknown) as keyof FormState, v)}
+                value={form.title[editingLocale]}
+                onChange={(v) => setLocalizedField("title", v)}
                 placeholder={t("placeholders.title")}
                 dir={editingDir}
               />
@@ -428,8 +417,8 @@ export function CreateJobWizard({
                 <JobUnderlineSelect
                   value={form.category_id}
                   onChange={(v) => {
-                    set("category_id", v)
-                    set("sub_category_id", "")
+                    setField("category_id", v)
+                    setField("sub_category_id", "")
                   }}
                   placeholder={t("placeholders.select")}
                   options={categoryOptions}
@@ -440,15 +429,12 @@ export function CreateJobWizard({
               <JobFieldGroup label={t("fields.subCategory")} required>
                 <JobUnderlineSelect
                   value={form.sub_category_id}
-                  onChange={(v) => set("sub_category_id", v)}
+                  onChange={(v) => setField("sub_category_id", v)}
                   placeholder={t("placeholders.select")}
                   disabled={!form.category_id || pending}
                   options={
                     subCategories.length > 0
-                      ? subCategories.map((s) => ({
-                          value: String(s.id),
-                          label: s.name,
-                        }))
+                      ? subCategories.map((s) => ({ value: String(s.id), label: s.name }))
                       : form.category_id
                         ? [{ value: form.category_id, label: t("fields.sameAsCategory") }]
                         : []
@@ -461,7 +447,7 @@ export function CreateJobWizard({
               <JobFieldGroup label={t("fields.state")} required>
                 <JobUnderlineSelect
                   value={form.state}
-                  onChange={(v) => set("state", v)}
+                  onChange={(v) => setField("state", v)}
                   placeholder={t("placeholders.select")}
                   options={stateOptions}
                 />
@@ -472,7 +458,7 @@ export function CreateJobWizard({
                   type="number"
                   min={1}
                   value={form.vacancy}
-                  onChange={(v) => set("vacancy", v)}
+                  onChange={(v) => setField("vacancy", v)}
                   placeholder="20"
                 />
               </JobFieldGroup>
@@ -502,7 +488,7 @@ export function CreateJobWizard({
               <JobFieldGroup label={t("fields.gender")} required>
                 <JobUnderlineSelect
                   value={form.gender}
-                  onChange={(v) => set("gender", v)}
+                  onChange={(v) => setField("gender", v)}
                   placeholder={t("placeholders.select")}
                   options={genderOptions}
                 />
@@ -511,7 +497,7 @@ export function CreateJobWizard({
               <JobFieldGroup label={t("fields.employmentType")} required>
                 <JobUnderlineSelect
                   value={form.employment_type}
-                  onChange={(v) => set("employment_type", v)}
+                  onChange={(v) => setField("employment_type", v)}
                   placeholder={t("placeholders.select")}
                   options={jobTypeOptions}
                 />
@@ -521,7 +507,7 @@ export function CreateJobWizard({
             <JobFieldGroup label={t("fields.deadline")} required>
               <JobUnderlineDate
                 value={form.application_deadline}
-                onChange={(v) => set("application_deadline", v)}
+                onChange={(v) => setField("application_deadline", v)}
               />
             </JobFieldGroup>
 
@@ -531,14 +517,14 @@ export function CreateJobWizard({
                   type="number"
                   min={0}
                   value={form.salary_from}
-                  onChange={(v) => set("salary_from", v)}
+                  onChange={(v) => setField("salary_from", v)}
                   placeholder={t("placeholders.salaryFrom")}
                 />
                 <JobUnderlineInput
                   type="number"
                   min={0}
                   value={form.salary_to}
-                  onChange={(v) => set("salary_to", v)}
+                  onChange={(v) => setField("salary_to", v)}
                   placeholder={t("placeholders.salaryTo")}
                 />
               </div>
@@ -550,14 +536,14 @@ export function CreateJobWizard({
                   type="number"
                   min={18}
                   value={form.age_from}
-                  onChange={(v) => set("age_from", v)}
+                  onChange={(v) => setField("age_from", v)}
                   placeholder={t("placeholders.ageFrom")}
                 />
                 <JobUnderlineInput
                   type="number"
                   min={18}
                   value={form.age_to}
-                  onChange={(v) => set("age_to", v)}
+                  onChange={(v) => setField("age_to", v)}
                   placeholder={t("placeholders.ageTo")}
                 />
               </div>
@@ -569,24 +555,24 @@ export function CreateJobWizard({
           <>
             <JobFieldGroup label={t("fields.description")} required>
               <JobUnderlineTextarea
-                value={(form)[`description_${editingLocale}`]}
-                onChange={(v) => set((`description_${editingLocale}` as unknown) as keyof FormState, v)}
+                value={form.description[editingLocale]}
+                onChange={(v) => setLocalizedField("description", v)}
                 rows={4}
                 dir={editingDir}
               />
             </JobFieldGroup>
             <JobFieldGroup label={t("fields.responsibilities")} required>
               <JobUnderlineTextarea
-                value={(form)[`responsibilities_${editingLocale}`]}
-                onChange={(v) => set((`responsibilities_${editingLocale}` as unknown) as keyof FormState, v)}
+                value={form.responsibilities[editingLocale]}
+                onChange={(v) => setLocalizedField("responsibilities", v)}
                 rows={4}
                 dir={editingDir}
               />
             </JobFieldGroup>
             <JobFieldGroup label={t("fields.requirements")} required>
               <JobUnderlineTextarea
-                value={(form)[`requirements_${editingLocale}`]}
-                onChange={(v) => set((`requirements_${editingLocale}` as unknown) as keyof FormState, v)}
+                value={form.requirements[editingLocale]}
+                onChange={(v) => setLocalizedField("requirements", v)}
                 rows={4}
                 dir={editingDir}
               />
@@ -600,6 +586,12 @@ export function CreateJobWizard({
           </p>
         ) : null}
 
+        {companyOptions.length === 0 ? (
+          <p className="text-center text-sm text-[#FF2D55]" role="status">
+            {tAdmin("errors.companiesUnavailable")}
+          </p>
+        ) : null}
+
         {error ? (
           <p className="text-center text-sm leading-relaxed text-[#FF2D55]" role="alert">
             {error}
@@ -609,7 +601,7 @@ export function CreateJobWizard({
 
       <div className="flex w-full flex-wrap items-center justify-end gap-3 sm:flex-nowrap">
         {step === 1 ? (
-          <GradientOutlineButton onClick={() => router.push("/dashboard/company/jobs") }>
+          <GradientOutlineButton onClick={() => router.push("/dashboard/admin/jobs")}>
             {t("cancel")}
           </GradientOutlineButton>
         ) : (
@@ -620,7 +612,7 @@ export function CreateJobWizard({
           <PrimaryButton
             type="button"
             onClick={handleNext}
-            disabled={pending || categoryOptions.length === 0}
+            disabled={pending || !canSubmitStep}
             className="h-9 min-w-[120px] w-auto rounded-lg px-4 text-base font-normal"
           >
             {t("next")}
@@ -629,7 +621,7 @@ export function CreateJobWizard({
           <PrimaryButton
             type="button"
             onClick={handleSubmit}
-            disabled={pending || categoryOptions.length === 0}
+            disabled={pending || !canSubmitStep}
             className="h-9 min-w-[120px] w-auto rounded-lg px-4 text-base font-normal"
           >
             {pending ? t("submitting") : t("submit")}

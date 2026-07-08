@@ -10,6 +10,7 @@ import { pickLocalizedName } from "@/features/admin/lib/localized-name"
 import { formatJobSalaryRange, resolveJobCreatedAt } from "@/features/jobs/lib/job-display"
 import { DashboardStatusBadge } from "@/features/dashboard/components/dashboard-status-badge"
 import { AdminTableCell, AdminTableRow, AdminTableShell } from "./admin-table-shell"
+import { AdminPagination } from "./admin-pagination"
 import { DashboardStatCard } from "@/features/dashboard/components/dashboard-stat-card"
 import { AdminJobActionsMenu } from "@/features/admin/components/admin-job-actions-menu"
 import { Input } from "@/components/ui/input"
@@ -17,6 +18,8 @@ import { PrimaryButton } from "@/components/ui/primary-button"
 import { cn } from "@/lib/utils"
 
 type Tab = "pending" | "approved" | "rejected" | "all"
+
+const PAGE_SIZE = 10
 
 function mapStatusForTab(status: string): "pending" | "approved" | "rejected" {
   if (status === "approved" || status === "active" || status === "stopped" || status === "closed") return "approved"
@@ -63,10 +66,15 @@ export function AdminJobsPanel({
   const [tab, setTab] = useState<Tab>(initialTab)
   const [search, setSearch] = useState("")
   const [appliedSearch, setAppliedSearch] = useState("")
+  const [page, setPage] = useState(1)
 
   useEffect(() => {
     setTab(initialTab)
   }, [initialTab])
+
+  useEffect(() => {
+    setPage(1)
+  }, [tab, appliedSearch])
 
   function handleSearchSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
@@ -94,6 +102,10 @@ export function AdminJobsPanel({
       return timeB - timeA
     })
   }, [jobs, tab, appliedSearch, locale])
+
+  const lastPage = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE))
+  const currentPage = Math.min(page, lastPage)
+  const pagedJobs = filtered.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE)
 
   const statusCounts = useMemo(() => {
     if (serverCounts) return serverCounts
@@ -226,7 +238,7 @@ export function AdminJobsPanel({
         emptyMessage={t("empty")}
         isRTL={isRTL}
       >
-        {filtered.map((job, index) => {
+        {pagedJobs.map((job, index) => {
           const status = mapStatusForBadge(job.status)
           const salary = formatJobSalaryRange(job)
 
@@ -249,7 +261,7 @@ export function AdminJobsPanel({
                 {formatPublishDate(job, locale)}
               </AdminTableCell>
               <AdminTableCell className="w-[8%] text-sm font-medium">
-                {job.applications_count ?? 0}
+                {job.applications_count ?? "—"}
               </AdminTableCell>
               <AdminTableCell className="w-[12%]">{salary}</AdminTableCell>
               <AdminTableCell className="w-[10%]">
@@ -280,6 +292,18 @@ export function AdminJobsPanel({
           )
         })}
       </AdminTableShell>
+
+      <AdminPagination
+        currentPage={currentPage}
+        lastPage={lastPage}
+        onPageChange={setPage}
+        isAr={isRTL}
+        summary={
+          isRTL
+            ? `الصفحة ${currentPage} من ${lastPage} · ${filtered.length} وظيفة`
+            : `Page ${currentPage} of ${lastPage} · ${filtered.length} jobs`
+        }
+      />
     </div>
   )
 }

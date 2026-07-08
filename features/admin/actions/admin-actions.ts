@@ -1,7 +1,8 @@
 "use server"
 
 import { revalidatePath } from "next/cache"
-import { approveJob, rejectJob, deleteUser, deleteAdminJob, stopAdminJob, activateAdminJob } from "@/lib/api/services/admin.service"
+import { approveJob, rejectJob, deleteUser, deleteAdminJob, stopAdminJob, activateAdminJob, createAdminJob } from "@/lib/api/services/admin.service"
+import { formatApiValidationMessage } from "@/features/company-jobs/lib/format-api-error"
 import {
   createSuccessStory,
   deleteSuccessStory,
@@ -117,6 +118,18 @@ export async function activateAdminJobAction(jobId: number, locale: string) {
     return { ok: true as const }
   } catch (err) {
     const message = err instanceof ApiError ? err.message : "Failed to activate job"
+    return { ok: false as const, message }
+  }
+}
+
+export async function createAdminJobAction(formData: FormData, locale: string) {
+  try {
+    const { token } = await requireAdmin(locale)
+    await createAdminJob(formData, token, locale)
+    revalidateAdmin(locale)
+    return { ok: true as const }
+  } catch (err) {
+    const message = formatApiValidationMessage(err, "Failed to create job")
     return { ok: false as const, message }
   }
 }

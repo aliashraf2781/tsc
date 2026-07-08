@@ -9,19 +9,23 @@ export async function sendContactAction(prevState: any, formData: FormData) {
   const phone = formData.get("phone") as string
   const subject = formData.get("subject") as string
   const message = formData.get("message") as string
+  const locale = (formData.get("locale") as string) || "ar"
 
   if (!name || !email || !subject || !message) {
     return { ok: false, message: "Please fill in all required fields." }
   }
 
   try {
-    const result = await sendContact({
-      name,
-      email,
-      phone: phone || "",
-      subject,
-      message,
-    })
+    const result = await sendContact(
+      {
+        name,
+        email,
+        phone: phone || "",
+        subject,
+        message,
+      },
+      locale
+    )
     return { ok: true, message: result.message || "Your message has been sent successfully." }
   } catch (error) {
     console.error("Error sending contact form:", error)

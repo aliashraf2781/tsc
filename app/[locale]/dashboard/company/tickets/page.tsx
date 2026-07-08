@@ -2,7 +2,7 @@ import { redirect } from "next/navigation"
 import { setRequestLocale } from "next-intl/server"
 import { getSession } from "@/lib/auth-token"
 import { getTickets } from "@/lib/api/services/tickets.service"
-import { DashboardPageShell } from "@/features/dashboard/components/dashboard-page-shell"
+import type { PaginationMeta } from "@/lib/api/types"
 import CompanyTicketsClient from "./client"
 
 export default async function CompanyTicketsPage({
@@ -22,12 +22,15 @@ export default async function CompanyTicketsPage({
   const ticketsResult = await getTickets(session.accessToken, 1, locale).catch(
     (err) => {
       console.error("Failed to load company tickets in page.tsx", err)
-      return { data: [] }
+      return { data: [], meta: undefined as PaginationMeta | undefined }
     }
   )
-  const tickets = ticketsResult.data || []
 
-  const isAr = locale === "ar"
-
-  return <CompanyTicketsClient locale={locale} initialTickets={tickets} />
+  return (
+    <CompanyTicketsClient
+      locale={locale}
+      initialTickets={ticketsResult.data || []}
+      initialMeta={ticketsResult.meta ?? null}
+    />
+  )
 }

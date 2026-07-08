@@ -8,27 +8,34 @@ import { PrimaryButton } from "@/components/ui/primary-button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { DashboardPageShell } from "@/features/dashboard/components/dashboard-page-shell";
+import { AdminPagination } from "@/features/admin/components/admin-pagination";
+import type { Ticket, TicketReply, PaginationMeta } from "@/lib/api/types";
 import { Trash2 } from "lucide-react";
 
 type Props = {
   locale: string;
-  initialTickets: any[];
+  initialTickets: Ticket[];
+  initialMeta: PaginationMeta | null;
 };
 
-export default function TicketsClient({ locale, initialTickets }: Props) {
-  const [tickets, setTickets] = useState<any[]>(initialTickets);
+type StatusFilter = "all" | "pending" | "open" | "closed";
+
+export default function TicketsClient({ locale, initialTickets, initialMeta }: Props) {
+  const [tickets, setTickets] = useState<Ticket[]>(initialTickets);
+  const [meta, setMeta] = useState<PaginationMeta | null>(initialMeta);
+  const [loadingList, setLoadingList] = useState(false);
   const [showNewTicketModal, setShowNewTicketModal] = useState(false);
   const [submitting, setSubmitting] = useState(false);
 
   // Detail / reply states
-  const [selectedTicket, setSelectedTicket] = useState<any | null>(null);
+  const [selectedTicket, setSelectedTicket] = useState<Ticket | null>(null);
   const [showDetailModal, setShowDetailModal] = useState(false);
   const [replyText, setReplyText] = useState("");
   const [replying, setReplying] = useState(false);
   const [loadingDetail, setLoadingDetail] = useState(false);
 
   // Filter state
-  const [statusFilter, setStatusFilter] = useState<string>("all");
+  const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
 
   // Delete state
   const [deleteTargetId, setDeleteTargetId] = useState<number | null>(null);
@@ -44,15 +51,19 @@ export default function TicketsClient({ locale, initialTickets }: Props) {
   const isAr = locale === "ar";
   const isDe = locale === "de";
 
-  const fetchTickets = async () => {
+  const fetchTickets = async (page = meta?.current_page || 1) => {
     try {
-      const res = await fetch(`/api/user/tickets?locale=${locale}`);
+      setLoadingList(true);
+      const res = await fetch(`/api/user/tickets?locale=${locale}&page=${page}`);
       const data = await res.json();
       if (res.ok) {
-        setTickets(data.data || data);
+        setTickets(data.data || []);
+        setMeta(data.meta || null);
       }
     } catch (err) {
       console.error("Failed to fetch tickets", err);
+    } finally {
+      setLoadingList(false);
     }
   };
 
@@ -113,18 +124,19 @@ export default function TicketsClient({ locale, initialTickets }: Props) {
       setPriority("high");
       setAttachmentFile(null);
 
-      // Refresh list
-      await fetchTickets();
-    } catch (err: any) {
+      // Refresh list from page 1 so the new ticket is visible
+      await fetchTickets(1);
+    } catch (err) {
       console.error("[Create ticket error]", err);
-      toast.error(err.message || (isAr ? "فشل إنشاء التذكرة" : isDe ? "Fehler beim Erstellen des Tickets" : "Failed to create ticket"));
+      const errMessage = err instanceof Error ? err.message : undefined;
+      toast.error(errMessage || (isAr ? "فشل إنشاء التذكرة" : isDe ? "Fehler beim Erstellen des Tickets" : "Failed to create ticket"));
     } finally {
       setSubmitting(false);
     }
   };
 
   // ── Open ticket detail ──
-  const openTicketDetail = async (ticket: any) => {
+  const openTicketDetail = async (ticket: Ticket) => {
     setSelectedTicket(ticket);
     setReplyText("");
     setShowDetailModal(true);
@@ -180,11 +192,12 @@ export default function TicketsClient({ locale, initialTickets }: Props) {
         }
       } catch { /* ignore */ }
 
-      // Refresh list
+      // Refresh current page
       await fetchTickets();
-    } catch (err: any) {
+    } catch (err) {
       console.error("[Reply error]", err);
-      toast.error(err.message || (isAr ? "فشل إرسال الرد" : isDe ? "Fehler beim Senden der Antwort" : "Failed to send reply"));
+      const errMessage = err instanceof Error ? err.message : undefined;
+      toast.error(errMessage || (isAr ? "فشل إرسال الرد" : isDe ? "Fehler beim Senden der Antwort" : "Failed to send reply"));
     } finally {
       setReplying(false);
     }
@@ -209,9 +222,11 @@ export default function TicketsClient({ locale, initialTickets }: Props) {
       setSelectedTicket(null);
       setDeleteTargetId(null);
       setTickets((prev) => prev.filter((t) => t.id !== ticketId));
-    } catch (err: any) {
+      setMeta((prev) => (prev ? { ...prev, total: Math.max(0, prev.total - 1) } : prev));
+    } catch (err) {
       console.error("[Delete ticket error]", err);
-      toast.error(err.message || (isAr ? "فشل حذف التذكرة" : isDe ? "Fehler beim Löschen des Tickets" : "Failed to delete ticket"));
+      const errMessage = err instanceof Error ? err.message : undefined;
+      toast.error(errMessage || (isAr ? "فشل حذف التذكرة" : isDe ? "Fehler beim Löschen des Tickets" : "Failed to delete ticket"));
     } finally {
       setDeleting(false);
     }
@@ -294,15 +309,20 @@ export default function TicketsClient({ locale, initialTickets }: Props) {
     }
   };
 
-  // Status counts
+  // A reply written by the ticket owner carries the ticket's own `sender` name;
+  // anything else came from support.
+  const isSupportReply = (reply: TicketReply, ticket: Ticket) =>
+    reply.user.trim().toLowerCase() !== (ticket.sender || "").trim().toLowerCase();
+
+  // Status counts — "all" reflects the true server-side total, the rest reflect the loaded page
   const statusCounts = {
-    all: tickets.length,
+    all: meta?.total ?? tickets.length,
     pending: tickets.filter((t) => (t.status || "pending") === "pending").length,
     open: tickets.filter((t) => t.status === "open" || t.status === "answered").length,
     closed: tickets.filter((t) => t.status === "closed").length,
   };
 
-  // Filtered list
+  // Filtered list (within the currently loaded page)
   const filteredTickets =
     statusFilter === "all"
       ? tickets
@@ -366,12 +386,12 @@ export default function TicketsClient({ locale, initialTickets }: Props) {
         </div>
 
         {/* Tickets List */}
-        <div className="space-y-4">
+        <div className={cn("space-y-4", loadingList && "opacity-60 pointer-events-none")}>
           {filteredTickets.length > 0 ? (
             filteredTickets.map((ticket) => {
               const lastUpdated = ticket.updated_at || ticket.created_at;
               const status = ticket.status || "pending";
-              const attachment = ticket.file || ticket.attachment;
+              const attachments = ticket.attachments || [];
 
               return (
                 <div
@@ -395,7 +415,7 @@ export default function TicketsClient({ locale, initialTickets }: Props) {
                         </span>
                       </div>
                       <p className="text-xs text-gray-500 font-medium">
-                        {isAr ? "آخر تحديث:" : isDe ? "Letztes Update:" : "Last Update:"} {formatLastReply(lastUpdated)}
+                        {isAr ? "آخر تحديث:" : isDe ? "Letztes Update:" : "Last Update:"} {ticket.last_reply || formatLastReply(lastUpdated)}
                       </p>
                     </div>
 
@@ -421,10 +441,13 @@ export default function TicketsClient({ locale, initialTickets }: Props) {
 
                   {/* Footer: Attachment + View Detail hint */}
                   <div className="flex items-center justify-between pt-2 border-t border-gray-100">
-                    {attachment ? (
+                    {attachments.length > 0 ? (
                       <div className="flex items-center gap-2 text-xs text-[#006EA8] truncate">
                         <img src="/portfolio/pdf.svg" alt="File Icon" className="w-5 h-5 flex-shrink-0" />
-                        <span className="truncate font-semibold">{getFilenameFromUrl(attachment)}</span>
+                        <span className="truncate font-semibold">
+                          {getFilenameFromUrl(attachments[0])}
+                          {attachments.length > 1 && ` +${attachments.length - 1}`}
+                        </span>
                       </div>
                     ) : (
                       <span />
@@ -447,6 +470,21 @@ export default function TicketsClient({ locale, initialTickets }: Props) {
             </div>
           )}
         </div>
+
+        {/* ── Pagination ── */}
+        {meta && meta.last_page > 1 && (
+          <AdminPagination
+            currentPage={meta.current_page}
+            lastPage={meta.last_page}
+            onPageChange={(page) => fetchTickets(page)}
+            isAr={isAr}
+            summary={
+              isAr
+                ? `الصفحة ${meta.current_page} من ${meta.last_page} · ${meta.total} تذكرة`
+                : `Page ${meta.current_page} of ${meta.last_page} · ${meta.total} tickets`
+            }
+          />
+        )}
 
         {/* ── TICKET DETAIL / REPLY MODAL ── */}
         <Dialog open={showDetailModal} onOpenChange={setShowDetailModal}>
@@ -509,19 +547,23 @@ export default function TicketsClient({ locale, initialTickets }: Props) {
                     </p>
                   </div>
 
-                  {/* Attachment */}
-                  {(selectedTicket.file || selectedTicket.attachment) && (
-                    <div className="flex items-center gap-2 text-xs text-[#006EA8]">
-                      <img src="/portfolio/pdf.svg" alt="File" className="w-5 h-5 flex-shrink-0" />
-                      <a
-                        href={selectedTicket.file || selectedTicket.attachment}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="truncate font-semibold hover:underline"
-                        onClick={(e) => e.stopPropagation()}
-                      >
-                        {getFilenameFromUrl(selectedTicket.file || selectedTicket.attachment)}
-                      </a>
+                  {/* Attachments */}
+                  {(selectedTicket.attachments || []).length > 0 && (
+                    <div className="space-y-2">
+                      {(selectedTicket.attachments || []).map((url, idx) => (
+                        <div key={idx} className="flex items-center gap-2 text-xs text-[#006EA8]">
+                          <img src="/portfolio/pdf.svg" alt="File" className="w-5 h-5 flex-shrink-0" />
+                          <a
+                            href={url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="truncate font-semibold hover:underline"
+                            onClick={(e) => e.stopPropagation()}
+                          >
+                            {getFilenameFromUrl(url)}
+                          </a>
+                        </div>
+                      ))}
                     </div>
                   )}
 
@@ -531,27 +573,12 @@ export default function TicketsClient({ locale, initialTickets }: Props) {
                       <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
                         {isAr ? "الردود" : isDe ? "Antworten" : "Replies"} ({selectedTicket.replies.length})
                       </p>
-                      {selectedTicket.replies.map((reply: any, idx: number) => {
-                        const isSupport =
-                          reply.is_admin === true ||
-                          reply.is_admin === 1 ||
-                          reply.is_admin === "1" ||
-                          (reply.user &&
-                            typeof reply.user === "object" &&
-                            (reply.user.role === "admin" ||
-                              reply.user.role === "talent-seeker" ||
-                              (Array.isArray(reply.user.roles) && reply.user.roles.includes("admin")) ||
-                              reply.user.name === "talent-seeker" ||
-                              reply.user.email?.includes("admin") ||
-                              reply.user.email === "info@talent-sc.com")) ||
-                          (typeof reply.user === "string" &&
-                            (reply.user.toLowerCase() === "talent-seeker" ||
-                              reply.user.toLowerCase() === "admin" ||
-                              reply.user.toLowerCase().includes("support")));
+                      {selectedTicket.replies.map((reply, idx) => {
+                        const isSupport = isSupportReply(reply, selectedTicket);
 
                         return (
                           <div
-                            key={reply.id || idx}
+                            key={idx}
                             className={cn(
                               "rounded-[12px] p-4 border",
                               isSupport
@@ -566,11 +593,11 @@ export default function TicketsClient({ locale, initialTickets }: Props) {
                                   : (isAr ? "أنت" : isDe ? "Sie" : "You")}
                               </span>
                               <span className="text-[11px] text-gray-400">
-                                {formatDate(reply.created_at)}
+                                {formatDate(reply.date)}
                               </span>
                             </div>
                             <p className="text-[14px] text-gray-600 leading-relaxed whitespace-pre-wrap">
-                              {reply.message || reply.body || reply.content}
+                              {reply.message}
                             </p>
                           </div>
                         );
@@ -651,7 +678,7 @@ export default function TicketsClient({ locale, initialTickets }: Props) {
                   <div className="relative">
                     <select
                       value={priority}
-                      onChange={(e) => setPriority(e.target.value as any)}
+                      onChange={(e) => setPriority(e.target.value as "low" | "medium" | "high")}
                       className="appearance-none border border-[#E5E7EB] focus:border-[#40A0CA] bg-white rounded-[8px] px-3 py-2 pr-8 text-sm w-full outline-none text-[#032C44]"
                     >
                       <option value="high">{isAr ? "عالي" : isDe ? "Hoch" : "High"}</option>

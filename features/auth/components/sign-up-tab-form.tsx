@@ -8,7 +8,7 @@ import { AuthFieldGroup } from "./auth-field-group"
 import { useLocale, useTranslations } from "next-intl"
 import { cn } from "@/lib/utils"
 import { COUNTRIES as STATIC_COUNTRIES } from "@/lib/countries"
-import { Check, MapPin } from "lucide-react"
+import { Check, MapPin, Search } from "lucide-react"
 
 type FormValues = {
   name: string
@@ -72,22 +72,15 @@ export function SignUpTabForm({
   const [selectedCountry, setSelectedCountry] = useState<CountryOption | null>(null)
   const [countryDropdownOpen, setCountryDropdownOpen] = useState(false)
   const [phoneDropdownOpen, setPhoneDropdownOpen] = useState(false)
+  const [countrySearch, setCountrySearch] = useState("")
+  const [phoneSearch, setPhoneSearch] = useState("")
   const countryDropdownRef = useRef<HTMLDivElement>(null)
   const phoneDropdownRef = useRef<HTMLDivElement>(null)
+  const previousCountryIdRef = useRef<string | null>(null)
   const { signUp, loading, error } = useAuth()
   const locale = useLocale()
   const t = useTranslations("Auth.signUp")
   const isRTL = locale === "ar"
-
-  // Helper to map API country codes (+20, +966) to 2-letter ISO codes for flag-icons
-  const getCountryIsoCode = (c: { code: string }) => {
-    const codeStr = c.code || "";
-    const cleanCode = codeStr.trim();
-    const staticCountry = STATIC_COUNTRIES.find(
-      s => s.dialCode === cleanCode || s.dialCode === `+${cleanCode}` || s.code.toLowerCase() === cleanCode.toLowerCase()
-    );
-    return staticCountry ? staticCountry.code.toLowerCase() : cleanCode.toLowerCase().replace('+', '');
-  };
 
   const {
     register,
@@ -160,6 +153,29 @@ export function SignUpTabForm({
     }
   }
 
+  const handleTabChange = (tab: "user" | "company") => {
+    if (tab === activeTab) return
+    if (tab === "company") {
+      previousCountryIdRef.current = selectedCountryId
+      const germany = countries.find((c) => c.name === "Germany")
+      if (germany) {
+        setValue("country_id", String(germany.id), { shouldDirty: true })
+      }
+    } else if (previousCountryIdRef.current) {
+      setValue("country_id", previousCountryIdRef.current, { shouldDirty: true })
+    }
+    setActiveTab(tab)
+  }
+
+  // If countries load after the company tab is already active, force the selection to Germany
+  useEffect(() => {
+    if (activeTab !== "company") return
+    const germany = countries.find((c) => c.name === "Germany")
+    if (germany && String(selectedCountryId) !== String(germany.id)) {
+      setValue("country_id", String(germany.id), { shouldDirty: true })
+    }
+  }, [activeTab, countries, selectedCountryId, setValue])
+
   const passwordsMatch = !passwordConfirmation || password === passwordConfirmation
 
   // Close custom dropdowns on outside click
@@ -167,14 +183,42 @@ export function SignUpTabForm({
     function handleClickOutside(event: MouseEvent) {
       if (countryDropdownOpen && countryDropdownRef.current && !countryDropdownRef.current.contains(event.target as Node)) {
         setCountryDropdownOpen(false)
+        setCountrySearch("")
       }
       if (phoneDropdownOpen && phoneDropdownRef.current && !phoneDropdownRef.current.contains(event.target as Node)) {
         setPhoneDropdownOpen(false)
+        setPhoneSearch("")
       }
     }
     document.addEventListener("mousedown", handleClickOutside)
     return () => document.removeEventListener("mousedown", handleClickOutside)
   }, [countryDropdownOpen, phoneDropdownOpen])
+
+  const toggleCountryDropdown = () => {
+    setCountryDropdownOpen((open) => !open)
+    setCountrySearch("")
+    setPhoneDropdownOpen(false)
+  }
+
+  const togglePhoneDropdown = () => {
+    setPhoneDropdownOpen((open) => !open)
+    setPhoneSearch("")
+    setCountryDropdownOpen(false)
+  }
+
+  const countryQuery = countrySearch.trim().toLowerCase()
+  const availableCountries =
+    activeTab === "company" ? countries.filter((c) => c.name === "Germany") : countries
+  const filteredCountries = countryQuery
+    ? availableCountries.filter((c) => c.name.toLowerCase().includes(countryQuery))
+    : availableCountries
+
+  const phoneQuery = phoneSearch.trim().toLowerCase()
+  const filteredDialCodes = phoneQuery
+    ? STATIC_COUNTRIES.filter(
+        (c) => c.name.toLowerCase().includes(phoneQuery) || c.dialCode.includes(phoneQuery)
+      )
+    : STATIC_COUNTRIES
 
   const baseTabClassName =
     "inline-flex h-[52px] min-h-[52px] flex-1 items-center justify-center gap-2 rounded-xl border px-3 py-2.5 text-sm font-medium transition-all duration-200 sm:h-[52px] sm:px-4 sm:text-base"
@@ -211,13 +255,6 @@ export function SignUpTabForm({
     }
   }
 
-  // Resolve dial code from static countries first, fallback to API fields
-  const staticCountry = selectedCountry?.code
-    ? STATIC_COUNTRIES.find((c) => c.code.toLowerCase() === selectedCountry.code.toLowerCase())
-    : null
-
-  const phoneCode = staticCountry?.dialCode || selectedCountry?.phone_code || ""
-
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="flex w-full flex-col gap-6" noValidate>
       {/* Tab switcher – same max-width as fields so edges align */}
@@ -227,7 +264,7 @@ export function SignUpTabForm({
             type="button"
             role="tab"
             aria-selected={activeTab === "user" ? "true" : "false"}
-            onClick={() => setActiveTab("user")}
+            onClick={() => handleTabChange("user")}
             className={`${baseTabClassName} ${activeTab === "user" ? activeTabClassName : inactiveTabClassName}`}
           >
             <Image src="/auth/user.svg" alt="" width={24} height={24} className="h-5 w-5 sm:h-6 sm:w-6" aria-hidden />
@@ -237,7 +274,7 @@ export function SignUpTabForm({
             type="button"
             role="tab"
             aria-selected={activeTab === "company" ? "true" : "false"}
-            onClick={() => setActiveTab("company")}
+            onClick={() => handleTabChange("company")}
             className={`${baseTabClassName} ${activeTab === "company" ? activeTabClassName : inactiveTabClassName}`}
           >
             <Image src="/auth/company.svg" alt="" width={24} height={24} className="h-5 w-5 sm:h-6 sm:w-6" aria-hidden />
@@ -320,7 +357,7 @@ export function SignUpTabForm({
               <input type="hidden" {...register("country_id", { required: true })} />
               <button
                 type="button"
-                onClick={() => { setCountryDropdownOpen(!countryDropdownOpen); setPhoneDropdownOpen(false) }}
+                onClick={toggleCountryDropdown}
                 className={cn(
                   "flex items-center gap-2.5 w-full h-[50px] bg-transparent border-b transition-colors cursor-pointer text-start outline-none",
                   countryDropdownOpen ? "border-[#40A0CA]" : "border-white/20 hover:border-white/40"
@@ -347,9 +384,28 @@ export function SignUpTabForm({
                     scrollbarColor: 'rgba(255,255,255,0.1) transparent'
                   }}
                 >
-                  {countries.map((c) => {
+                  <div className="sticky top-0 z-10 bg-[#041d33]/95 backdrop-blur-md px-2.5 pb-1.5 pt-1">
+                    <div className="relative flex items-center">
+                      <Search className="absolute start-2.5 h-3.5 w-3.5 text-white/40 pointer-events-none" aria-hidden />
+                      <input
+                        type="text"
+                        value={countrySearch}
+                        onChange={(e) => setCountrySearch(e.target.value)}
+                        onClick={(e) => e.stopPropagation()}
+                        placeholder={isRTL ? "بحث..." : "Search..."}
+                        autoFocus
+                        className="w-full rounded-lg border border-white/10 bg-white/[0.06] py-1.5 ps-8 pe-2.5 text-[13px] text-white placeholder:text-white/40 outline-none focus:border-[#40A0CA]/60"
+                      />
+                    </div>
+                  </div>
+                  {filteredCountries.length === 0 && (
+                    <p className="px-3.5 py-3 text-center text-[13px] text-white/40">
+                      {isRTL ? "لا توجد نتائج" : "No results found"}
+                    </p>
+                  )}
+                  {filteredCountries.map((c) => {
                     const isSelected = String(c.id) === String(selectedCountryId)
-                    
+
                     return (
                       <button
                         key={c.id}
@@ -365,10 +421,11 @@ export function SignUpTabForm({
                             setValue("phone_code", c.code)
                           }
                           setCountryDropdownOpen(false)
+                          setCountrySearch("")
                         }}
                         className={cn(
                           "flex items-center gap-3 w-full px-3.5 py-2.5 text-white text-[13.5px] hover:bg-white/[0.08] active:bg-white/[0.12] transition-all duration-150 text-start cursor-pointer border-s-2 border-transparent",
-                          isSelected && (isRTL 
+                          isSelected && (isRTL
                             ? "bg-gradient-to-l from-[#006EA8]/35 to-transparent border-s-[#40A0CA] font-medium"
                             : "bg-gradient-to-r from-[#006EA8]/35 to-transparent border-s-[#40A0CA] font-medium")
                         )}
@@ -398,7 +455,7 @@ export function SignUpTabForm({
                   <input type="hidden" {...register("phone_code")} />
                   <button
                     type="button"
-                    onClick={() => { setPhoneDropdownOpen(!phoneDropdownOpen); setCountryDropdownOpen(false) }}
+                    onClick={togglePhoneDropdown}
                     className="flex items-center gap-1 h-6 cursor-pointer"
                   >
                     <Image 
@@ -424,7 +481,26 @@ export function SignUpTabForm({
                         scrollbarColor: 'rgba(255,255,255,0.1) transparent'
                       }}
                     >
-                      {STATIC_COUNTRIES.map((c) => {
+                      <div className="sticky top-0 z-10 bg-[#041d33]/95 backdrop-blur-md px-2.5 pb-1.5 pt-1">
+                        <div className="relative flex items-center">
+                          <Search className="absolute start-2.5 h-3.5 w-3.5 text-white/40 pointer-events-none" aria-hidden />
+                          <input
+                            type="text"
+                            value={phoneSearch}
+                            onChange={(e) => setPhoneSearch(e.target.value)}
+                            onClick={(e) => e.stopPropagation()}
+                            placeholder={isRTL ? "بحث..." : "Search..."}
+                            autoFocus
+                            className="w-full rounded-lg border border-white/10 bg-white/[0.06] py-1.5 ps-8 pe-2.5 text-[13px] text-white placeholder:text-white/40 outline-none focus:border-[#40A0CA]/60"
+                          />
+                        </div>
+                      </div>
+                      {filteredDialCodes.length === 0 && (
+                        <p className="px-4 py-3 text-center text-[13px] text-white/40">
+                          {isRTL ? "لا توجد نتائج" : "No results found"}
+                        </p>
+                      )}
+                      {filteredDialCodes.map((c) => {
                         const isSelected = c.dialCode === selectedDialCode
                         return (
                           <button
@@ -433,6 +509,7 @@ export function SignUpTabForm({
                             onClick={() => {
                               handleDialCodeChange(c.dialCode)
                               setPhoneDropdownOpen(false)
+                              setPhoneSearch("")
                             }}
                             className={cn(
                               "flex items-center gap-3 w-full px-4 py-3 text-white text-sm hover:bg-white/[0.08] active:bg-white/[0.12] transition-all duration-150 text-start cursor-pointer border-s-2 border-transparent",

@@ -2,20 +2,34 @@
 
 import { Link } from "@/i18n/navigation"
 import { useState, useTransition } from "react"
-import { useRouter } from "@/i18n/navigation"
+import { useRouter, usePathname } from "@/i18n/navigation"
+import { useSearchParams } from "next/navigation"
 import { useTranslations } from "next-intl"
-import type { User } from "@/lib/api/types"
+import type { PaginationMeta, User } from "@/lib/api/types"
 import { deleteUserAction, suspendUserAction } from "@/features/admin/actions/admin-actions"
 import { AdminTableCell, AdminTableRow, AdminTableShell } from "./admin-table-shell"
+import { AdminPagination } from "./admin-pagination"
 import { cn } from "@/lib/utils"
 import { toast } from "sonner"
 
-export function AdminUsersPanel({ users, locale }: { users: User[]; locale: string }) {
+export function AdminUsersPanel({ users, locale, meta }: { users: User[]; locale: string; meta?: PaginationMeta }) {
   const t = useTranslations("Admin.users")
   const router = useRouter()
+  const pathname = usePathname()
+  const searchParams = useSearchParams()
   const [pending, startTransition] = useTransition()
   const [error, setError] = useState<string | null>(null)
   const isAr = locale === "ar"
+
+  const currentPage = meta?.current_page ?? 1
+  const lastPage = Math.max(meta?.last_page ?? 1, 1)
+
+  function goToPage(page: number) {
+    if (page < 1 || page > lastPage || page === currentPage) return
+    const params = new URLSearchParams(searchParams.toString())
+    params.set("page", String(page))
+    router.push(`${pathname}?${params.toString()}`)
+  }
 
   // Sort users so that the latest registered user (highest ID or newest createdAt) appears first
   const sortedUsers = [...users].sort((a, b) => {
@@ -28,9 +42,9 @@ export function AdminUsersPanel({ users, locale }: { users: User[]; locale: stri
   })
 
   // Calculate user-specific statistics
-  const totalUsers = sortedUsers.length
+  const totalUsers = meta?.total ?? sortedUsers.length
   const verifiedUsers = sortedUsers.filter((u) => u.emailVerified).length
-  const unverifiedUsers = totalUsers - verifiedUsers
+  const unverifiedUsers = sortedUsers.length - verifiedUsers
 
   const columns = [
     { key: "name", label: t("columns.name"), className: "w-[15%]" },
@@ -205,6 +219,18 @@ export function AdminUsersPanel({ users, locale }: { users: User[]; locale: stri
           )
         })}
       </AdminTableShell>
+
+      <AdminPagination
+        currentPage={currentPage}
+        lastPage={lastPage}
+        onPageChange={goToPage}
+        isAr={isAr}
+        summary={
+          isAr
+            ? `الصفحة ${currentPage} من ${lastPage} · ${totalUsers} مستخدم`
+            : `Page ${currentPage} of ${lastPage} · ${totalUsers} users`
+        }
+      />
     </div>
   )
 }

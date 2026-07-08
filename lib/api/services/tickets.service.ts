@@ -136,6 +136,14 @@ export async function replyToTicket(
   return response.data
 }
 
+export async function deleteTicket(
+  id: number,
+  token: string,
+  locale = "ar"
+): Promise<void> {
+  await api.delete<ApiResponse<null>>(`/tickets/${id}`, { token, locale })
+}
+
 export async function updateTicketStatus(
   ticketId: number,
   status: string,

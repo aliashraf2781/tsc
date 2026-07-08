@@ -87,6 +87,8 @@ export function CompanyApplicationDetailView({
     currentlyWorking: isAr ? "حتى الآن" : "Present",
     responsibilities: isAr ? "المسؤوليات" : "Responsibilities",
     unknownCandidate: isAr ? "متقدم غير مسمى" : "Unnamed candidate",
+    appliedOn: isAr ? "تاريخ التقديم" : "Applied on",
+    jobStatus: isAr ? "حالة الوظيفة" : "Job status",
   }
 
   const applicantName = getApplicantDisplayName(application, {
@@ -98,6 +100,8 @@ export function CompanyApplicationDetailView({
   const status = mapApplicationStatus(application.status)
   const cvUrl = application.cv_url || portfolio.cv
   const location = [application.user?.city?.name, application.user?.country?.name].filter(Boolean).join(", ")
+  const appliedAt = formatDate(application.applied_at, locale)
+  const jobStatus = application.job?.status
 
   const formatDegree = (degree?: string) => {
     const map: Record<string, string> = {
@@ -206,6 +210,11 @@ export function CompanyApplicationDetailView({
               <h1 className="text-[24px] font-bold text-[#032C44]">{applicantName || labels.unknownCandidate}</h1>
               <p className="mt-1 text-sm text-[#525252]">{location || "—"}</p>
               <p className="mt-1 text-xs text-[#6B7280]">{jobTitle}</p>
+              {appliedAt !== "—" ? (
+                <p className="mt-1 text-xs text-[#6B7280]">
+                  {labels.appliedOn}: {appliedAt}
+                </p>
+              ) : null}
               {userProfileHref ? (
                 <Link
                   href={userProfileHref}
@@ -219,6 +228,12 @@ export function CompanyApplicationDetailView({
 
           <div className="flex flex-wrap items-center gap-3">
             <DashboardStatusBadge status={status} locale={locale} />
+            {jobStatus ? (
+              <span className="flex items-center gap-1.5 text-xs text-[#6B7280]">
+                {labels.jobStatus}:
+                <DashboardStatusBadge status={jobStatus} locale={locale} />
+              </span>
+            ) : null}
             {cvUrl ? (
               <a
                 href={cvUrl}
@@ -264,7 +279,11 @@ export function CompanyApplicationDetailView({
                 { label: labels.maritalStatus, value: formatMaritalStatus(profile?.maritalStatus) },
                 {
                   label: labels.category,
-                  value: profile?.categoryName || profile?.subcategoryName || application.job?.category?.name || "—",
+                  value:
+                    [application.job?.category?.name, application.job?.sub_category?.name].filter(Boolean).join(" — ") ||
+                    profile?.categoryName ||
+                    profile?.subcategoryName ||
+                    "—",
                 },
                 { label: labels.languages, value: languageList || "—" },
               ].map((item) => (

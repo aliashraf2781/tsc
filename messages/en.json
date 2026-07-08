@@ -816,6 +816,23 @@
           "rejected": "Rejected"
         }
       },
+      "addJob": "+ Add Job",
+      "createJob": {
+        "title": "Create Job",
+        "description": "Publish a new job on behalf of a company",
+        "backToJobs": "Back to jobs",
+        "fields": {
+          "company": "Company"
+        },
+        "placeholders": {
+          "company": "Select a company"
+        },
+        "errors": {
+          "company": "Select a company",
+          "companiesUnavailable": "Could not load companies from the server."
+        },
+        "loadError": "Failed to create job"
+      },
       "empty": "No jobs",
       "error": "Action failed"
     },

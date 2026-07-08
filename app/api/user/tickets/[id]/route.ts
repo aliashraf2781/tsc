@@ -1,6 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server"
 import { getSession } from "@/lib/auth-token"
-import { getTicket } from "@/lib/api/services/tickets.service"
+import { getTicket, deleteTicket } from "@/lib/api/services/tickets.service"
 
 export async function GET(request: NextRequest, context: { params: Promise<{ id: string }> }) {
   try {
@@ -34,6 +34,28 @@ export async function GET(request: NextRequest, context: { params: Promise<{ id:
   } catch (error) {
     console.error("[Ticket GET] Exception:", error)
     const message = error instanceof Error ? error.message : "Failed to load ticket"
+    return NextResponse.json({ message }, { status: 500 })
+  }
+}
+
+export async function DELETE(request: NextRequest, context: { params: Promise<{ id: string }> }) {
+  try {
+    const session = await getSession()
+    const token = session.accessToken
+
+    if (!token) {
+      return NextResponse.json({ message: "Not authenticated" }, { status: 401 })
+    }
+
+    const { id: idStr } = await context.params
+    const id = Number(idStr)
+    const locale = request.headers.get("accept-language")?.split(",")[0] || session.locale || "ar"
+
+    await deleteTicket(id, token, locale)
+    return NextResponse.json({ success: true })
+  } catch (error) {
+    console.error("[Ticket DELETE] Exception:", error)
+    const message = error instanceof Error ? error.message : "Failed to delete ticket"
     return NextResponse.json({ message }, { status: 500 })
   }
 }

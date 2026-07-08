@@ -349,6 +349,19 @@ export async function getCompanyApplication(
     page += 1
   } while (page <= lastPage)
 
+  // Last resort: the list endpoints occasionally miss a record (pagination edge
+  // cases, eventual consistency) — try the direct single-application endpoint.
+  try {
+    const response = await api.get<unknown>(`/company/applications/${applicationId}`, { token, locale })
+    const raw = ((response as { data?: unknown })?.data ?? response) as Record<string, unknown> | undefined
+    if (raw) {
+      const normalized = normalizeCompanyApplication(raw)
+      if (normalized.id > 0) return enrichApplicationRecord(normalized, token, locale)
+    }
+  } catch {
+    // endpoint may not exist, or the application genuinely doesn't exist
+  }
+
   return null
 }
 

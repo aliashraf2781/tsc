@@ -7,7 +7,7 @@ type Props = {
 export default async function JobsRoutePage({ params }: Props) {
   const { locale } = await params
   // eslint-disable-next-line no-console
-  console.debug(`[jobs route] params.locale=${locale}`)
+  // console.debug(`[jobs route] params.locale=${locale}`)
   return <JobsPage locale={locale} />
 }
 

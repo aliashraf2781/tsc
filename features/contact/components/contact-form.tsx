@@ -8,7 +8,7 @@ import { PrimaryButton } from "@/components/ui/primary-button"
 import { Send, CheckCircle2, AlertCircle } from "lucide-react"
 import { sendContactAction } from "../actions"
 
-export function ContactForm() {
+export function ContactForm({ locale }: { locale: string }) {
   const t = useTranslations("Landing.contact")
   const [isPending, startTransition] = useTransition()
   const [state, setState] = useState<{ ok?: boolean; message?: string } | null>(null)
@@ -36,6 +36,7 @@ export function ContactForm() {
     fd.append("phone", inputs.phone)
     fd.append("subject", inputs.subject)
     fd.append("message", inputs.message)
+    fd.append("locale", locale)
 
     startTransition(async () => {
       const result = await sendContactAction(null, fd)

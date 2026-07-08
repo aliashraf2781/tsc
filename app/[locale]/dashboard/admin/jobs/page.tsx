@@ -1,17 +1,17 @@
 import { redirect } from "next/navigation"
 import { getTranslations, setRequestLocale } from "next-intl/server"
+import { Plus } from "lucide-react"
 import { getSession } from "@/lib/auth-token"
 import { normalizeRole } from "@/lib/auth-token"
 import { getAdminJobs } from "@/lib/api/services/admin.service"
 import type { Job } from "@/lib/api/types"
+import { Link } from "@/i18n/navigation"
 import { AdminJobsPanel } from "@/features/admin/components/admin-jobs-panel"
 import { AdminPageLayout } from "@/features/admin/components/admin-page-layout"
 
 const VALID_TABS = ["pending", "approved", "rejected", "all"] as const
 
 type Tab = (typeof VALID_TABS)[number]
-
-const MAX_PAGES = 5
 
 /** Postman admin statuses: pending, active, closed, rejected (+ legacy approved/stopped). */
 const EXTRA_STATUS_FETCH = ["closed", "stopped"] as const
@@ -27,7 +27,7 @@ async function fetchJobsForStatus(
   }))
 
   const jobs = [...first.data]
-  const lastPage = Math.min(Number(first.meta?.last_page ?? 1), MAX_PAGES)
+  const lastPage = Number(first.meta?.last_page ?? 1)
 
   if (lastPage > 1) {
     const rest = await Promise.all(
@@ -130,7 +130,21 @@ export default async function AdminJobsPage({
     statusParam && VALID_TABS.includes(statusParam as Tab) ? (statusParam as Tab) : "all"
 
   return (
-    <AdminPageLayout title={t("title")} description={t("description")} needsClientPersist={needsClientPersist}>
+    <AdminPageLayout
+      title={t("title")}
+      description={t("description")}
+      needsClientPersist={needsClientPersist}
+      action={
+        <Link
+          locale={locale}
+          href="/dashboard/admin/jobs/create"
+          className="inline-flex h-10 w-full items-center justify-center gap-2 rounded-lg bg-[url('/contact/button-noise.png'),linear-gradient(180deg,#006EA8_0%,#005685_100%)] px-5 text-sm font-semibold text-white shadow-sm transition hover:brightness-105 sm:w-auto"
+        >
+          <Plus className="h-4 w-4 shrink-0" />
+          {t("addJob")}
+        </Link>
+      }
+    >
       <AdminJobsPanel jobs={jobs} locale={locale} initialTab={initialTab} serverCounts={serverCounts} />
     </AdminPageLayout>
   )

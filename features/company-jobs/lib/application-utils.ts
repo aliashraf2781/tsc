@@ -154,6 +154,28 @@ export function getApplicantDisplayName(
   return options?.mask ? maskName(resolved) : resolved
 }
 
+/**
+ * Single-application endpoints (`/admin/job-applications/:id`, `/company/applications/:id`)
+ * return job info as `jobDetails` with camelCase keys (`subCategory`, `applicationDeadline`,
+ * `salary: {from, to}`, `age: {from, to}`, `createdAt`) instead of the app's `Job` shape.
+ * Idempotent for already-normalized `job` rows since it prefers existing snake_case keys.
+ */
+export function normalizeApplicationJob(jobRow: Record<string, unknown>): JobApplication["job"] {
+  const salary = jobRow.salary as Record<string, unknown> | undefined
+  const age = jobRow.age as Record<string, unknown> | undefined
+  return {
+    ...jobRow,
+    sub_category: jobRow.subCategory ?? jobRow.sub_category,
+    application_deadline: jobRow.applicationDeadline ?? jobRow.application_deadline,
+    salary_from: salary?.from ?? jobRow.salary_from,
+    salary_to: salary?.to ?? jobRow.salary_to,
+    age_from: age?.from ?? jobRow.age_from,
+    age_to: age?.to ?? jobRow.age_to,
+    created_at: jobRow.createdAt ?? jobRow.created_at,
+    created_at_human: jobRow.createdAtHuman ?? jobRow.created_at_human,
+  } as JobApplication["job"]
+}
+
 export function normalizeCompanyApplication(item: unknown): CompanyApplication {
   const row = (item && typeof item === "object" ? item : {}) as Record<string, unknown>
   const userSource =
@@ -278,10 +300,15 @@ export function normalizeCompanyApplication(item: unknown): CompanyApplication {
     )
   }
 
+  const jobSource =
+    (row.job && typeof row.job === "object" && row.job) ||
+    (row.jobDetails && typeof row.jobDetails === "object" && row.jobDetails) ||
+    null
+
   return {
     id: Number(row.id ?? row.applicationId ?? row.application_id ?? 0),
     user_id: Number(row.user_id ?? row.userId ?? user.id ?? 0) || undefined,
-    job: row.job as JobApplication["job"],
+    job: (jobSource ? normalizeApplicationJob(jobSource as Record<string, unknown>) : row.job) as JobApplication["job"],
     user: {
       id: Number(user.id ?? 0),
       name: resolvedName,

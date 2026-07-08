@@ -188,16 +188,22 @@ export interface CompanyType {
 export interface Ticket {
   id: number
   subject: string
-  status: "open" | "closed" | "pending"
-  created_at: string
+  message: string
+  priority: "low" | "medium" | "high"
+  status: "pending" | "open" | "answered" | "closed" | "rejected"
+  sender: string
+  last_reply?: string
+  attachments?: string[]
   replies?: TicketReply[]
+  created_at: string
+  updated_at?: string
 }
 
 export interface TicketReply {
-  id: number
+  user: string
   message: string
-  user: User
-  created_at: string
+  date: string
+  files?: string[]
 }
 
 export interface Notification {

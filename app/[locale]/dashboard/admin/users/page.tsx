@@ -8,11 +8,14 @@ import { AdminPageLayout } from "@/features/admin/components/admin-page-layout"
 
 export default async function AdminUsersPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ locale: string }>
+  searchParams: Promise<{ page?: string }>
 }) {
   const { locale } = await params
   setRequestLocale(locale)
+  const { page: pageParam } = await searchParams
   const session = await getSession()
   const t = await getTranslations("Admin.users")
 
@@ -20,17 +23,21 @@ export default async function AdminUsersPage({
     redirect(`/${locale}/dashboard`)
   }
 
+  const currentPage = Math.max(1, Number(pageParam) || 1)
+
   let users: Awaited<ReturnType<typeof getAdminUsers>>["data"] = []
+  let meta: Awaited<ReturnType<typeof getAdminUsers>>["meta"] | undefined
   try {
-    const result = await getAdminUsers(session.accessToken!, "user", 1, locale)
+    const result = await getAdminUsers(session.accessToken!, "user", currentPage, locale)
     users = result.data
+    meta = result.meta
   } catch (err) {
     // ignore
   }
 
   return (
     <AdminPageLayout title={t("title")} description={t("description")}>
-      <AdminUsersPanel users={users} locale={locale} />
+      <AdminUsersPanel users={users} locale={locale} meta={meta} />
     </AdminPageLayout>
   )
 }

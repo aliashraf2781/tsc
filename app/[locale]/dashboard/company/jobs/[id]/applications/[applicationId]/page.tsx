@@ -67,29 +67,7 @@ export default async function CompanyApplicationDetailPage({ params }: PageProps
     getCompanyApplication(jobId, appId, token, locale),
   ])
   if (!job) notFound()
-
-  if (!application) {
-    // development fallback when impersonating
-    if (process.env.NODE_ENV !== "production") {
-      const { cookies } = await import("next/headers")
-      const cookieStore = await cookies()
-      const imp = cookieStore.get("impersonate")?.value
-      if (imp && String(imp).toLowerCase() === "company") {
-        const mockApp = {
-          id: appId,
-          job: job,
-          user: { id: 123, name: "Ahmed Saeed", avatar: "", country: { id: 1, name: "Egypt", code: "EG" }, city: { id: 1, name: "Cairo", country: { id: 1, name: "Egypt", code: "EG" } } },
-          status: "pending",
-          applied_at: new Date().toISOString(),
-          cv_url: undefined,
-        }
-        return (
-          <CompanyApplicationDetailView application={mockApp as any} jobId={jobId} jobTitle={getJobTitle(job, locale)} locale={locale} />
-        )
-      }
-    }
-    notFound()
-  }
+  if (!application) notFound()
 
   return (
     <CompanyApplicationDetailView

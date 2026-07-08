@@ -40,6 +40,7 @@ export function JobUnderlineInput({
   min,
   max,
   className,
+  dir,
 }: {
   value: string
   onChange: (v: string) => void
@@ -48,6 +49,7 @@ export function JobUnderlineInput({
   min?: string | number
   max?: string | number
   className?: string
+  dir?: "rtl" | "ltr"
 }) {
   return (
     <input
@@ -57,6 +59,7 @@ export function JobUnderlineInput({
       placeholder={placeholder}
       min={min}
       max={max}
+      dir={dir}
       className={cn(
         underlineClass,
         "bg-transparent placeholder:text-[#B0B0B0] font-medium",
@@ -201,12 +204,14 @@ export function JobUnderlineTextarea({
   placeholder,
   rows = 3,
   className,
+  dir,
 }: {
   value: string
   onChange: (v: string) => void
   placeholder?: string
   rows?: number
   className?: string
+  dir?: "rtl" | "ltr"
 }) {
   return (
     <textarea
@@ -214,6 +219,7 @@ export function JobUnderlineTextarea({
       onChange={(e) => onChange(e.target.value)}
       placeholder={placeholder}
       rows={rows}
+      dir={dir}
       className={cn(
         underlineClass,
         "resize-y bg-transparent placeholder:text-[#B0B0B0] font-medium",

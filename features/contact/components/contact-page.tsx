@@ -90,7 +90,7 @@ export async function ContactPage() {
                 <h2 className="bg-[linear-gradient(270deg,#032C44_0%,#41A0CA_100%)] bg-clip-text font-heading text-[36px] leading-[1.16] font-bold text-transparent">
                   {t("form.title")}
                 </h2>
-                <ContactForm />
+                <ContactForm locale={locale} />
               </div>
             </div>
           </StaggerItem>

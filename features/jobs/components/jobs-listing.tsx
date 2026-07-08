@@ -276,7 +276,7 @@ export function JobsListing({
         </div>
 
         {isDesktopFilterOpen ? (
-          <aside className="hidden w-full shrink-0 lg:block lg:w-[min(100%,421px)] lg:sticky lg:top-24 lg:self-start">
+          <aside className="hidden w-full shrink-0 lg:block lg:w-[min(100%,421px)] lg:static lg:top-24 lg:self-start">
             <FilterPanel {...filterPanelProps} variant="sidebar" />
           </aside>
         ) : null}

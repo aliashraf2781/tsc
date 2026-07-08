@@ -100,6 +100,38 @@ export async function getAdminUserPortfolio(
   }
 }
 
+async function findAdminApplicationInList(
+  jobId: number,
+  applicationId: number,
+  token: string,
+  locale: string
+): Promise<JobApplication | null> {
+  let page = 1
+  while (true) {
+    const { data, meta } = await getAdminJobApplications(jobId, token, page, locale)
+    const found = data.find((a) => Number(a.id) === Number(applicationId))
+    if (found) {
+      if (found.user_id && !found.user) {
+        const user = await getAdminUserById(found.user_id, token, locale)
+        if (user) {
+          found.user = user
+        }
+      }
+      if (!found.portfolio && (found.user_id || found.user?.id)) {
+        const portfolio = await getAdminUserPortfolio(found.user_id || found.user?.id, token, locale)
+        if (portfolio) {
+          found.portfolio = portfolio
+        }
+      }
+      return found
+    }
+    const last = Number(meta?.last_page ?? 1)
+    if (page >= last) break
+    page += 1
+  }
+  return null
+}
+
 export async function getAdminJobApplicationById(
   jobId: number,
   applicationId: number,
@@ -107,45 +139,37 @@ export async function getAdminJobApplicationById(
   locale = "ar"
 ): Promise<JobApplication | null> {
   try {
-    const response = await api.get<any>(`/admin/job-applications/${applicationId}`, { token, locale })
-    const raw = response.data ?? response
-    if (raw) {
-      const normalized = normalizeCompanyApplication(raw) as JobApplication
-      return enrichAdminApplication(normalized, token, locale)
+    const response = await api.get<unknown>(`/admin/job-applications/${applicationId}`, { token, locale })
+    const raw = ((response as { data?: unknown })?.data ?? response) as Record<string, unknown> | undefined
+    if (!raw) return null
+
+    // The single-application endpoint returns `applicationId`/`appliedAt`/`jobDetails`
+    // (no `job`/`user` keys) — normalizeCompanyApplication maps `jobDetails` onto the
+    // shared `Job` shape automatically.
+    const normalized = normalizeCompanyApplication(raw) as JobApplication
+    const enriched = await enrichAdminApplication(normalized, token, locale)
+
+    // This endpoint never returns applicant identity (no user/user_id), so
+    // recover it from the paginated applications list, which does.
+    if (!enriched.user_id && !enriched.user?.id) {
+      const fromList = await findAdminApplicationInList(jobId, applicationId, token, locale).catch(() => null)
+      if (fromList) {
+        return {
+          ...enriched,
+          user_id: fromList.user_id ?? enriched.user_id,
+          user: fromList.user ?? enriched.user,
+          portfolio: fromList.portfolio ?? enriched.portfolio,
+        }
+      }
     }
+
+    return enriched
   } catch (err) {
     if (err instanceof ApiError && (err.status === 403 || err.status === 401 || err.status === 404)) {
-      try {
-        let page = 1
-        while (true) {
-          const { data, meta } = await getAdminJobApplications(jobId, token, page, locale)
-          const found = data.find((a) => Number(a.id) === Number(applicationId))
-          if (found) {
-            if (found.user_id && !found.user) {
-              const user = await getAdminUserById(found.user_id, token, locale)
-              if (user) {
-                found.user = user
-              }
-            }
-            if (!found.portfolio && (found.user_id || found.user?.id)) {
-              const portfolio = await getAdminUserPortfolio(found.user_id || found.user?.id, token, locale)
-              if (portfolio) {
-                found.portfolio = portfolio
-              }
-            }
-            return found
-          }
-          const last = Number(meta?.last_page ?? 1)
-          if (page >= last) break
-          page += 1
-        }
-      } catch (innerErr) {
-        // ignore
-      }
+      return findAdminApplicationInList(jobId, applicationId, token, locale).catch(() => null)
     }
     return null
   }
-  return null
 }
 
 export async function getAdminJobById(
@@ -344,6 +368,16 @@ export async function activateAdminJob(
     locale,
     "Failed to activate job"
   )
+}
+
+export async function createAdminJob(
+  formData: FormData,
+  token: string,
+  locale = "ar"
+): Promise<Job> {
+  const response = await api.post<ApiResponse<Job>>("/admin/jobs", formData, { token, locale })
+  const payload = (response as any)?.data ?? response
+  return payload as Job
 }
 
 async function resolveUserApiRouteId(

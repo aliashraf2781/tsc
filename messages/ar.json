@@ -843,6 +843,23 @@
           "rejected": "مرفوض"
         }
       },
+      "addJob": "+ إضافة وظيفة",
+      "createJob": {
+        "title": "إنشاء وظيفة",
+        "description": "انشر وظيفة جديدة نيابة عن إحدى الشركات",
+        "backToJobs": "العودة إلى الوظائف",
+        "fields": {
+          "company": "الشركة"
+        },
+        "placeholders": {
+          "company": "اختر شركة"
+        },
+        "errors": {
+          "company": "اختر شركة",
+          "companiesUnavailable": "تعذر تحميل الشركات من الخادم."
+        },
+        "loadError": "تعذر إنشاء الوظيفة"
+      },
       "empty": "لا توجد وظائف",
       "error": "تعذر تنفيذ الإجراء"
     },

@@ -8,26 +8,33 @@ import { PrimaryButton } from "@/components/ui/primary-button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { DashboardPageShell } from "@/features/dashboard/components/dashboard-page-shell";
+import { AdminPagination } from "@/features/admin/components/admin-pagination";
+import type { Ticket, TicketReply, PaginationMeta } from "@/lib/api/types";
 
 type Props = {
   locale: string;
-  initialTickets: any[];
+  initialTickets: Ticket[];
+  initialMeta: PaginationMeta | null;
 };
 
-export default function CompanyTicketsClient({ locale, initialTickets }: Props) {
-  const [tickets, setTickets] = useState<any[]>(initialTickets);
+type StatusFilter = "all" | "pending" | "open" | "closed";
+
+export default function CompanyTicketsClient({ locale, initialTickets, initialMeta }: Props) {
+  const [tickets, setTickets] = useState<Ticket[]>(initialTickets);
+  const [meta, setMeta] = useState<PaginationMeta | null>(initialMeta);
+  const [loadingList, setLoadingList] = useState(false);
   const [showNewTicketModal, setShowNewTicketModal] = useState(false);
   const [submitting, setSubmitting] = useState(false);
 
   // Detail / reply states
-  const [selectedTicket, setSelectedTicket] = useState<any | null>(null);
+  const [selectedTicket, setSelectedTicket] = useState<Ticket | null>(null);
   const [showDetailModal, setShowDetailModal] = useState(false);
   const [replyText, setReplyText] = useState("");
   const [replying, setReplying] = useState(false);
   const [loadingDetail, setLoadingDetail] = useState(false);
 
   // Filter state
-  const [statusFilter, setStatusFilter] = useState<string>("all");
+  const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
 
   // Form states
   const [subject, setSubject] = useState("");
@@ -39,15 +46,19 @@ export default function CompanyTicketsClient({ locale, initialTickets }: Props) 
   const isAr = locale === "ar";
   const isDe = locale === "de";
 
-  const fetchTickets = async () => {
+  const fetchTickets = async (page = meta?.current_page || 1) => {
     try {
-      const res = await fetch(`/api/company/tickets?locale=${locale}`);
+      setLoadingList(true);
+      const res = await fetch(`/api/company/tickets?locale=${locale}&page=${page}`);
       const data = await res.json();
       if (res.ok) {
-        setTickets(data.data || data);
+        setTickets(data.data || []);
+        setMeta(data.meta || null);
       }
     } catch (err) {
       console.error("Failed to fetch company tickets", err);
+    } finally {
+      setLoadingList(false);
     }
   };
 
@@ -101,25 +112,26 @@ export default function CompanyTicketsClient({ locale, initialTickets }: Props) 
 
       toast.success(isAr ? "تم إنشاء التذكرة بنجاح" : (isDe ? "Ticket erfolgreich erstellt" : "Ticket created successfully"));
       setShowNewTicketModal(false);
-      
+
       // Reset form
       setSubject("");
       setMessage("");
       setPriority("high");
       setAttachmentFile(null);
 
-      // Refresh list
-      await fetchTickets();
-    } catch (err: any) {
+      // Refresh list from page 1 so the new ticket is visible
+      await fetchTickets(1);
+    } catch (err) {
       console.error("[Create ticket error]", err);
-      toast.error(err.message || (isAr ? "فشل إنشاء التذكرة" : (isDe ? "Ticket konnte nicht erstellt werden" : "Failed to create ticket")));
+      const errMessage = err instanceof Error ? err.message : undefined;
+      toast.error(errMessage || (isAr ? "فشل إنشاء التذكرة" : (isDe ? "Ticket konnte nicht erstellt werden" : "Failed to create ticket")));
     } finally {
       setSubmitting(false);
     }
   };
 
   // ── Open ticket detail ──
-  const openTicketDetail = async (ticket: any) => {
+  const openTicketDetail = async (ticket: Ticket) => {
     setSelectedTicket(ticket);
     setReplyText("");
     setShowDetailModal(true);
@@ -175,11 +187,12 @@ export default function CompanyTicketsClient({ locale, initialTickets }: Props) 
         }
       } catch { /* ignore */ }
 
-      // Refresh list
+      // Refresh current page
       await fetchTickets();
-    } catch (err: any) {
+    } catch (err) {
       console.error("[Reply error]", err);
-      toast.error(err.message || (isAr ? "فشل إرسال الرد" : (isDe ? "Antwort konnte nicht gesendet werden" : "Failed to send reply")));
+      const errMessage = err instanceof Error ? err.message : undefined;
+      toast.error(errMessage || (isAr ? "فشل إرسال الرد" : (isDe ? "Antwort konnte nicht gesendet werden" : "Failed to send reply")));
     } finally {
       setReplying(false);
     }
@@ -254,27 +267,32 @@ export default function CompanyTicketsClient({ locale, initialTickets }: Props) 
     }
   };
 
+  // A reply written by the ticket owner (the company) carries the ticket's own
+  // `sender` name; anything else came from support.
+  const isSupportReply = (reply: TicketReply, ticket: Ticket) =>
+    reply.user.trim().toLowerCase() !== (ticket.sender || "").trim().toLowerCase();
+
   const gradientTitleClasses = cn(
     "bg-clip-text text-transparent font-bold",
     isAr ? "bg-gradient-to-r" : "bg-gradient-to-l",
     "from-[#032C44] to-[#41A0CA]"
   );
 
-  // ── Filter tickets ──
+  // ── Filter tickets (within the currently loaded page) ──
   const filteredTickets =
     statusFilter === "all"
       ? tickets
       : tickets.filter((t) => {
-          const status = t.status || "pending";
-          if (statusFilter === "open") {
-            return status === "open" || status === "answered";
-          }
-          return status === statusFilter;
-        });
+        const status = t.status || "pending";
+        if (statusFilter === "open") {
+          return status === "open" || status === "answered";
+        }
+        return status === statusFilter;
+      });
 
-  // Status counts
+  // Status counts — "all" reflects the true server-side total, the rest reflect the loaded page
   const statusCounts = {
-    all: tickets.length,
+    all: meta?.total ?? tickets.length,
     pending: tickets.filter((t) => (t.status || "pending") === "pending").length,
     open: tickets.filter((t) => t.status === "open" || t.status === "answered").length,
     closed: tickets.filter((t) => t.status === "closed").length,
@@ -297,401 +315,408 @@ export default function CompanyTicketsClient({ locale, initialTickets }: Props) 
     >
       <div className="w-full space-y-6 pb-10" dir={isAr ? "rtl" : "ltr"}>
 
-      {/* ── Status Filter Tabs ── */}
-      <div className="flex flex-wrap gap-2">
-        {(["all", "pending", "open", "closed"] as const).map((status) => {
-          const labels: Record<string, string> = {
-            all: isAr ? "الكل" : (isDe ? "Alle" : "All"),
-            pending: isAr ? "معلق" : (isDe ? "Ausstehend" : "Pending"),
-            open: isAr ? "مفتوح" : (isDe ? "Offen" : "Open"),
-            closed: isAr ? "مغلق" : (isDe ? "Geschlossen" : "Closed"),
-          };
-          const count = statusCounts[status];
-          const isActive = statusFilter === status;
-          return (
-            <button
-              key={status}
-              onClick={() => setStatusFilter(status)}
-              className={cn(
-                "px-4 py-2 rounded-full text-[13px] font-semibold border transition-all cursor-pointer",
-                isActive
-                  ? "bg-gradient-to-b from-[#006EA8] to-[#005685] text-white border-transparent shadow-md"
-                  : "bg-white text-[#525252] border-[#E5E7EB] hover:border-[#40A0CA] hover:text-[#006EA8]"
-              )}
-            >
-              {labels[status]} ({count})
-            </button>
-          );
-        })}
-      </div>
-
-      {/* Tickets List */}
-      <div className="space-y-4">
-        {filteredTickets.length > 0 ? (
-          filteredTickets.map((ticket) => {
-            const lastUpdated = ticket.updated_at || ticket.created_at;
-            const status = ticket.status || "pending";
-            const attachment = ticket.file || ticket.attachment;
-
+        {/* ── Status Filter Tabs ── */}
+        <div className="flex flex-wrap gap-2">
+          {(["all", "pending", "open", "closed"] as const).map((status) => {
+            const labels: Record<string, string> = {
+              all: isAr ? "الكل" : (isDe ? "Alle" : "All"),
+              pending: isAr ? "معلق" : (isDe ? "Ausstehend" : "Pending"),
+              open: isAr ? "مفتوح" : (isDe ? "Offen" : "Open"),
+              closed: isAr ? "مغلق" : (isDe ? "Geschlossen" : "Closed"),
+            };
+            const count = statusCounts[status];
+            const isActive = statusFilter === status;
             return (
-              <div
-                key={ticket.id}
-                onClick={() => openTicketDetail(ticket)}
-                className="rounded-[16px] border border-[#E5E7EB] bg-white p-6 shadow-sm hover:shadow-md hover:border-[#40A0CA]/40 transition-all space-y-4 cursor-pointer group"
+              <button
+                key={status}
+                onClick={() => setStatusFilter(status)}
+                className={cn(
+                  "px-4 py-2 rounded-full text-[13px] font-semibold border transition-all cursor-pointer",
+                  isActive
+                    ? "bg-gradient-to-b from-[#006EA8] to-[#005685] text-white border-transparent shadow-md"
+                    : "bg-white text-[#525252] border-[#E5E7EB] hover:border-[#40A0CA] hover:text-[#006EA8]"
+                )}
               >
-                {/* Header row */}
-                <div className="flex items-start justify-between gap-4">
-                  <div className="space-y-1 min-w-0">
-                    <div className="flex flex-wrap items-center gap-2">
-                      <h3 className="text-[17px] font-bold text-[#032C44] group-hover:text-[#006EA8] transition-colors truncate">
-                        {ticket.subject}
-                      </h3>
-                      {/* Priority badge */}
+                {labels[status]} ({count})
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Tickets List */}
+        <div className={cn("space-y-4", loadingList && "opacity-60 pointer-events-none")}>
+          {filteredTickets.length > 0 ? (
+            filteredTickets.map((ticket) => {
+              const lastUpdated = ticket.updated_at || ticket.created_at;
+              const status = ticket.status || "pending";
+              const attachments = ticket.attachments || [];
+
+              return (
+                <div
+                  key={ticket.id}
+                  onClick={() => openTicketDetail(ticket)}
+                  className="rounded-[16px] border border-[#E5E7EB] bg-white p-6 shadow-sm hover:shadow-md hover:border-[#40A0CA]/40 transition-all space-y-4 cursor-pointer group"
+                >
+                  {/* Header row */}
+                  <div className="flex items-start justify-between gap-4">
+                    <div className="space-y-1 min-w-0">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <h3 className="text-[17px] font-bold text-[#032C44] group-hover:text-[#006EA8] transition-colors truncate">
+                          {ticket.subject}
+                        </h3>
+                        {/* Priority badge */}
+                        <span className={cn(
+                          "text-white text-[10px] font-bold px-2.5 py-0.5 rounded-full capitalize",
+                          getPriorityColor(ticket.priority || "high")
+                        )}>
+                          {getPriorityLabel(ticket.priority || "high")}
+                        </span>
+                      </div>
+                      <p className="text-xs text-gray-500 font-medium">
+                        {isAr ? "آخر تحديث:" : (isDe ? "Letzte Aktualisierung:" : "Last Update:")} {ticket.last_reply || formatLastReply(lastUpdated)}
+                      </p>
+                    </div>
+
+                    {/* Status badge */}
+                    <span
+                      className={cn(
+                        "text-[11px] font-bold px-3 py-1 rounded-full border shrink-0",
+                        status === "pending" && "border-[#FFB64D] bg-[#FFF8EE] text-[#FFB64D]",
+                        status === "open" && "border-[#39DA8A] bg-[#EAFBF3] text-[#39DA8A]",
+                        status === "answered" && "border-[#006EA8] bg-[#F0F9FF] text-[#006EA8]",
+                        status === "closed" && "border-[#FF5B5C] bg-[#FFF5F5] text-[#FF5B5C]",
+                        status === "rejected" && "border-[#FF5B5C] bg-[#FFF5F5] text-[#FF5B5C]"
+                      )}
+                    >
+                      {getStatusLabel(status)}
+                    </span>
+                  </div>
+
+                  {/* Message body */}
+                  <p className="text-[14px] text-gray-600 leading-relaxed line-clamp-2">
+                    {ticket.message}
+                  </p>
+
+                  {/* Footer: Attachment + View Detail hint */}
+                  <div className="flex items-center justify-between pt-2 border-t border-gray-100">
+                    {attachments.length > 0 ? (
+                      <div className="flex items-center gap-2 text-xs text-[#006EA8] truncate">
+                        <img src="/portfolio/pdf.svg" alt="File Icon" className="w-5 h-5 flex-shrink-0" />
+                        <span className="truncate font-semibold">
+                          {getFilenameFromUrl(attachments[0])}
+                          {attachments.length > 1 && ` +${attachments.length - 1}`}
+                        </span>
+                      </div>
+                    ) : (
+                      <span />
+                    )}
+                    <span className="inline-flex items-center gap-1 text-xs text-[#006EA8] font-semibold bg-[#F0F9FF] hover:bg-[#E0F3FC] border border-[#D0E9F7] rounded-full px-3 py-1 transition-colors">
+                      {isAr ? "عرض التفاصيل" : (isDe ? "Details anzeigen" : "View Details")}
+                    </span>
+                  </div>
+                </div>
+              );
+            })
+          ) : (
+            <div className="rounded-[16px] border border-[#E5E7EB] bg-white p-12 text-center shadow-sm">
+              <img src="/portfolio/drop.svg" alt="Empty" className="w-16 h-16 mx-auto opacity-40 mb-4" />
+              <p className="text-gray-500 font-medium">
+                {statusFilter === "all"
+                  ? (isAr ? "لا توجد تذاكر دعم فني مفتوحة حالياً للشركة" : (isDe ? "Derzeit sind keine Support-Tickets für das Unternehmen geöffnet" : "No corporate support tickets open at the moment"))
+                  : (isAr ? "لا توجد تذاكر بهذه الحالة" : (isDe ? "Keine Tickets mit diesem Status" : "No tickets with this status"))}
+              </p>
+            </div>
+          )}
+        </div>
+
+        {/* ── Pagination ── */}
+        {meta && meta.last_page > 1 && (
+          <AdminPagination
+            currentPage={meta.current_page}
+            lastPage={meta.last_page}
+            onPageChange={(page) => fetchTickets(page)}
+            isAr={isAr}
+            summary={
+              isAr
+                ? `الصفحة ${meta.current_page} من ${meta.last_page} · ${meta.total} تذكرة`
+                : `Page ${meta.current_page} of ${meta.last_page} · ${meta.total} tickets`
+            }
+          />
+        )}
+
+        {/* ------------------------------------------------------------- */}
+        {/* TICKET DETAIL / REPLY MODAL */}
+        {/* ------------------------------------------------------------- */}
+        <Dialog open={showDetailModal} onOpenChange={setShowDetailModal}>
+          <DialogContent className="max-w-[600px] p-0 rounded-[20px] bg-white border-0 shadow-lg max-h-[90vh] overflow-hidden flex flex-col">
+            {selectedTicket && (
+              <>
+                {/* Header */}
+                <div className="p-6 pb-4 border-b border-gray-100 flex items-start justify-between gap-4">
+                  <div className="min-w-0">
+                    <DialogTitle className={cn("text-[18px] leading-snug", gradientTitleClasses)}>
+                      {selectedTicket.subject}
+                    </DialogTitle>
+                    <div className="flex flex-wrap items-center gap-2 mt-2">
+                      <span className={cn(
+                        "text-[11px] font-bold px-3 py-1 rounded-full border",
+                        (selectedTicket.status || "pending") === "pending" && "border-[#FFB64D] bg-[#FFF8EE] text-[#FFB64D]",
+                        (selectedTicket.status || "pending") === "open" && "border-[#39DA8A] bg-[#EAFBF3] text-[#39DA8A]",
+                        (selectedTicket.status || "pending") === "answered" && "border-[#006EA8] bg-[#F0F9FF] text-[#006EA8]",
+                        (selectedTicket.status || "pending") === "closed" && "border-[#FF5B5C] bg-[#FFF5F5] text-[#FF5B5C]"
+                      )}>
+                        {getStatusLabel(selectedTicket.status || "pending")}
+                      </span>
                       <span className={cn(
                         "text-white text-[10px] font-bold px-2.5 py-0.5 rounded-full capitalize",
-                        getPriorityColor(ticket.priority || "high")
+                        getPriorityColor(selectedTicket.priority || "high")
                       )}>
-                        {getPriorityLabel(ticket.priority || "high")}
+                        {getPriorityLabel(selectedTicket.priority || "high")}
+                      </span>
+                      <span className="text-xs text-gray-400">
+                        {formatDate(selectedTicket.created_at)}
                       </span>
                     </div>
-                    <p className="text-xs text-gray-500 font-medium">
-                      {isAr ? "آخر تحديث:" : (isDe ? "Letzte Aktualisierung:" : "Last Update:")} {formatLastReply(lastUpdated)}
-                    </p>
                   </div>
-
-                  {/* Status badge */}
-                  <span
-                    className={cn(
-                      "text-[11px] font-bold px-3 py-1 rounded-full border shrink-0",
-                      status === "pending" && "border-[#FFB64D] bg-[#FFF8EE] text-[#FFB64D]",
-                      status === "open" && "border-[#39DA8A] bg-[#EAFBF3] text-[#39DA8A]",
-                      status === "answered" && "border-[#006EA8] bg-[#F0F9FF] text-[#006EA8]",
-                      status === "closed" && "border-[#FF5B5C] bg-[#FFF5F5] text-[#FF5B5C]",
-                      status === "rejected" && "border-[#FF5B5C] bg-[#FFF5F5] text-[#FF5B5C]"
-                    )}
+                  <button
+                    onClick={() => setShowDetailModal(false)}
+                    className="p-1 hover:bg-gray-100 rounded-full transition cursor-pointer shrink-0"
                   >
-                    {getStatusLabel(status)}
-                  </span>
+                    <img src="/portfolio/close-circle.svg" alt="Close" className="w-7 h-7" />
+                  </button>
                 </div>
 
-                {/* Message body */}
-                <p className="text-[14px] text-gray-600 leading-relaxed line-clamp-2">
-                  {ticket.message}
-                </p>
-
-                {/* Footer: Attachment + View Detail hint */}
-                <div className="flex items-center justify-between pt-2 border-t border-gray-100">
-                  {attachment ? (
-                    <div className="flex items-center gap-2 text-xs text-[#006EA8] truncate">
-                      <img src="/portfolio/pdf.svg" alt="File Icon" className="w-5 h-5 flex-shrink-0" />
-                      <span className="truncate font-semibold">{getFilenameFromUrl(attachment)}</span>
-                    </div>
-                  ) : (
-                    <span />
-                  )}
-                  <span className="inline-flex items-center gap-1 text-xs text-[#006EA8] font-semibold bg-[#F0F9FF] hover:bg-[#E0F3FC] border border-[#D0E9F7] rounded-full px-3 py-1 transition-colors">
-                    {isAr ? "عرض التفاصيل" : (isDe ? "Details anzeigen" : "View Details")}
-                  </span>
-                </div>
-              </div>
-            );
-          })
-        ) : (
-          <div className="rounded-[16px] border border-[#E5E7EB] bg-white p-12 text-center shadow-sm">
-            <img src="/portfolio/drop.svg" alt="Empty" className="w-16 h-16 mx-auto opacity-40 mb-4" />
-            <p className="text-gray-500 font-medium">
-              {statusFilter === "all"
-                ? (isAr ? "لا توجد تذاكر دعم فني مفتوحة حالياً للشركة" : (isDe ? "Derzeit sind keine Support-Tickets für das Unternehmen geöffnet" : "No corporate support tickets open at the moment"))
-                : (isAr ? "لا توجد تذاكر بهذه الحالة" : (isDe ? "Keine Tickets mit diesem Status" : "No tickets with this status"))}
-            </p>
-          </div>
-        )}
-      </div>
-
-      {/* ------------------------------------------------------------- */}
-      {/* TICKET DETAIL / REPLY MODAL */}
-      {/* ------------------------------------------------------------- */}
-      <Dialog open={showDetailModal} onOpenChange={setShowDetailModal}>
-        <DialogContent className="max-w-[600px] p-0 rounded-[20px] bg-white border-0 shadow-lg max-h-[90vh] overflow-hidden flex flex-col">
-          {selectedTicket && (
-            <>
-              {/* Header */}
-              <div className="p-6 pb-4 border-b border-gray-100 flex items-start justify-between gap-4">
-                <div className="min-w-0">
-                  <DialogTitle className={cn("text-[18px] leading-snug", gradientTitleClasses)}>
-                    {selectedTicket.subject}
-                  </DialogTitle>
-                  <div className="flex flex-wrap items-center gap-2 mt-2">
-                    <span className={cn(
-                      "text-[11px] font-bold px-3 py-1 rounded-full border",
-                      (selectedTicket.status || "pending") === "pending" && "border-[#FFB64D] bg-[#FFF8EE] text-[#FFB64D]",
-                      (selectedTicket.status || "pending") === "open" && "border-[#39DA8A] bg-[#EAFBF3] text-[#39DA8A]",
-                      (selectedTicket.status || "pending") === "answered" && "border-[#006EA8] bg-[#F0F9FF] text-[#006EA8]",
-                      (selectedTicket.status || "pending") === "closed" && "border-[#FF5B5C] bg-[#FFF5F5] text-[#FF5B5C]"
-                    )}>
-                      {getStatusLabel(selectedTicket.status || "pending")}
-                    </span>
-                    <span className={cn(
-                      "text-white text-[10px] font-bold px-2.5 py-0.5 rounded-full capitalize",
-                      getPriorityColor(selectedTicket.priority || "high")
-                    )}>
-                      {getPriorityLabel(selectedTicket.priority || "high")}
-                    </span>
-                    <span className="text-xs text-gray-400">
-                      {formatDate(selectedTicket.created_at)}
-                    </span>
-                  </div>
-                </div>
-                <button
-                  onClick={() => setShowDetailModal(false)}
-                  className="p-1 hover:bg-gray-100 rounded-full transition cursor-pointer shrink-0"
-                >
-                  <img src="/portfolio/close-circle.svg" alt="Close" className="w-7 h-7" />
-                </button>
-              </div>
-
-              {/* Scrollable body */}
-              <div className="flex-1 overflow-y-auto p-6 space-y-5">
-                {/* Original message */}
-                <div className="rounded-[12px] bg-[#F4FAFF] border border-[#E0F0FF] p-4">
-                  <p className="text-xs font-semibold text-[#006EA8] mb-2">
-                    {isAr ? "الرسالة الأصلية" : (isDe ? "Original-Nachricht" : "Original Message")}
-                  </p>
-                  <p className="text-[14px] text-[#032C44] leading-relaxed whitespace-pre-wrap">
-                    {selectedTicket.message}
-                  </p>
-                </div>
-
-                {/* Attachment */}
-                {(selectedTicket.file || selectedTicket.attachment) && (
-                  <div className="flex items-center gap-2 text-xs text-[#006EA8]">
-                    <img src="/portfolio/pdf.svg" alt="File" className="w-5 h-5 flex-shrink-0" />
-                    <a
-                      href={selectedTicket.file || selectedTicket.attachment}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="truncate font-semibold hover:underline"
-                      onClick={(e) => e.stopPropagation()}
-                    >
-                      {getFilenameFromUrl(selectedTicket.file || selectedTicket.attachment)}
-                    </a>
-                  </div>
-                )}
-
-                {/* Replies */}
-                {selectedTicket.replies && selectedTicket.replies.length > 0 && (
-                  <div className="space-y-3">
-                    <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                      {isAr ? "الردود" : (isDe ? "Antworten" : "Replies")} ({selectedTicket.replies.length})
+                {/* Scrollable body */}
+                <div className="flex-1 overflow-y-auto p-6 space-y-5">
+                  {/* Original message */}
+                  <div className="rounded-[12px] bg-[#F4FAFF] border border-[#E0F0FF] p-4">
+                    <p className="text-xs font-semibold text-[#006EA8] mb-2">
+                      {isAr ? "الرسالة الأصلية" : (isDe ? "Original-Nachricht" : "Original Message")}
                     </p>
-                    {selectedTicket.replies.map((reply: any, idx: number) => {
-                      const isSupport =
-                        reply.is_admin === true ||
-                        reply.is_admin === 1 ||
-                        reply.is_admin === "1" ||
-                        (reply.user &&
-                          typeof reply.user === "object" &&
-                          (reply.user.role === "admin" ||
-                            reply.user.role === "talent-seeker" ||
-                            (Array.isArray(reply.user.roles) && reply.user.roles.includes("admin")) ||
-                            reply.user.name === "talent-seeker" ||
-                            reply.user.email?.includes("admin") ||
-                            reply.user.email === "info@talent-sc.com")) ||
-                        (typeof reply.user === "string" &&
-                          (reply.user.toLowerCase() === "talent-seeker" ||
-                            reply.user.toLowerCase() === "admin" ||
-                            reply.user.toLowerCase().includes("support")));
+                    <p className="text-[14px] text-[#032C44] leading-relaxed whitespace-pre-wrap">
+                      {selectedTicket.message}
+                    </p>
+                  </div>
 
-                      return (
-                        <div
-                          key={reply.id || idx}
-                          className={cn(
-                            "rounded-[12px] p-4 border",
-                            isSupport
-                              ? "bg-[#FFF9F0] border-[#FFE5C2]"
-                              : "bg-white border-[#E5E7EB]"
-                          )}
-                        >
-                          <div className="flex items-center gap-2 mb-2">
-                            <span className="text-[13px] font-bold text-[#032C44]">
-                              {isSupport
-                                ? (isAr ? "الدعم الفني" : (isDe ? "Technischer Support" : "Technical Support"))
-                                : (isAr ? "أنت" : (isDe ? "Sie" : "You"))}
-                            </span>
-                            <span className="text-[11px] text-gray-400">
-                              {formatDate(reply.created_at)}
-                            </span>
-                          </div>
-                          <p className="text-[14px] text-gray-600 leading-relaxed whitespace-pre-wrap">
-                            {reply.message || reply.body || reply.content}
-                          </p>
+                  {/* Attachments */}
+                  {(selectedTicket.attachments || []).length > 0 && (
+                    <div className="space-y-2">
+                      {(selectedTicket.attachments || []).map((url, idx) => (
+                        <div key={idx} className="flex items-center gap-2 text-xs text-[#006EA8]">
+                          <img src="/portfolio/pdf.svg" alt="File" className="w-5 h-5 flex-shrink-0" />
+                          <a
+                            href={url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="truncate font-semibold hover:underline"
+                            onClick={(e) => e.stopPropagation()}
+                          >
+                            {getFilenameFromUrl(url)}
+                          </a>
                         </div>
-                      );
-                    })}
-                  </div>
-                )}
-
-                {loadingDetail && (
-                  <div className="flex justify-center py-4">
-                    <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-[#006EA8]"></div>
-                  </div>
-                )}
-              </div>
-
-              {/* Reply input - only show if ticket is not closed */}
-              {(selectedTicket.status || "pending") !== "closed" && (
-                <div className="p-6 pt-4 border-t border-gray-100 space-y-3">
-                  <Textarea
-                    rows={3}
-                    value={replyText}
-                    onChange={(e) => setReplyText(e.target.value)}
-                    placeholder={isAr ? "اكتب ردك هنا..." : (isDe ? "Schreiben Sie Ihre Antwort hier..." : "Type your reply here...")}
-                    className="border border-[#E5E7EB] focus:border-[#40A0CA] rounded-[8px] px-3 py-2 text-sm w-full outline-none resize-none"
-                  />
-                  <div className="flex justify-end">
-                    <PrimaryButton
-                      onClick={handleReply}
-                      disabled={replying || !replyText.trim()}
-                      className="px-6 w-auto cursor-pointer"
-                    >
-                      {replying
-                        ? (isAr ? "جاري الإرسال..." : (isDe ? "Wird gesendet..." : "Sending..."))
-                        : (isAr ? "إرسال الرد" : (isDe ? "Antwort senden" : "Send Reply"))}
-                    </PrimaryButton>
-                  </div>
-                </div>
-              )}
-            </>
-          )}
-        </DialogContent>
-      </Dialog>
-
-      {/* ------------------------------------------------------------- */}
-      {/* NEW TICKET MODAL */}
-      {/* ------------------------------------------------------------- */}
-      <Dialog open={showNewTicketModal} onOpenChange={setShowNewTicketModal}>
-        <DialogContent className="max-w-[550px] p-6 rounded-[20px] bg-white border-0 shadow-lg max-h-[90vh] overflow-y-auto">
-          <div className="flex items-center justify-between mb-5">
-            <DialogTitle className={gradientTitleClasses}>
-              {isAr ? "تذكرة جديدة" : (isDe ? "Neues Ticket" : "New Ticket")}
-            </DialogTitle>
-            <button
-              onClick={() => setShowNewTicketModal(false)}
-              className="p-1 hover:bg-gray-100 rounded-full transition cursor-pointer"
-            >
-              <img src="/portfolio/close-circle.svg" alt="Close" className="w-7 h-7" />
-            </button>
-          </div>
-
-          <form onSubmit={handleSubmit} className="space-y-4">
-            {/* Subject and Priority Row */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div className="space-y-1">
-                <label className="text-[14px] font-bold text-[#032C44]">
-                  {isAr ? "الموضوع *" : (isDe ? "Betreff *" : "Subject *")}
-                </label>
-                <Input
-                  type="text"
-                  value={subject}
-                  onChange={(e) => setSubject(e.target.value)}
-                  placeholder={isAr ? "موضوع التذكرة" : (isDe ? "Ticket-Betreff" : "Ticket Subject")}
-                  className="border border-[#E5E7EB] focus:border-[#40A0CA] rounded-[8px] px-3 py-2 text-sm w-full outline-none"
-                />
-              </div>
-
-              <div className="space-y-1">
-                <label className="text-[14px] font-bold text-[#032C44]">
-                  {isAr ? "الأولوية *" : (isDe ? "Priorität *" : "Priority *")}
-                </label>
-                <div className="relative">
-                  <select
-                    value={priority}
-                    onChange={(e) => setPriority(e.target.value as any)}
-                    className="appearance-none border border-[#E5E7EB] focus:border-[#40A0CA] bg-white rounded-[8px] px-3 py-2 pr-8 text-sm w-full outline-none text-[#032C44]"
-                  >
-                    <option value="high">{isAr ? "عالي" : (isDe ? "Hoch" : "High")}</option>
-                    <option value="medium">{isAr ? "متوسط" : (isDe ? "Mittel" : "Medium")}</option>
-                    <option value="low">{isAr ? "منخفض" : (isDe ? "Niedrig" : "Low")}</option>
-                  </select>
-                  <div className="absolute inset-y-0 right-3 flex items-center pointer-events-none">
-                    <img src="/portfolio/arrow-down.svg" alt="Select" className="w-3.5 h-3.5" />
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Message Body */}
-            <div className="space-y-1">
-              <label className="text-[14px] font-bold text-[#032C44]">
-                {isAr ? "نص الرسالة *" : (isDe ? "Nachricht *" : "Message *")}
-              </label>
-              <Textarea
-                rows={5}
-                value={message}
-                onChange={(e) => setMessage(e.target.value)}
-                placeholder={isAr ? "اكتب تفاصيل الاستفسار التجاري هنا..." : (isDe ? "Schreiben Sie hier Details zu Ihrer geschäftlichen Anfrage..." : "Write details about your corporate inquiry here...")}
-                className="border border-[#E5E7EB] focus:border-[#40A0CA] rounded-[8px] px-3 py-2 text-sm w-full outline-none resize-none"
-              />
-            </div>
-
-            {/* File Drag and Drop Zone */}
-            <div className="space-y-1">
-              <label className="text-[14px] font-bold text-[#032C44]">
-                {isAr ? "المرفقات" : (isDe ? "Anhänge" : "Attachments")}
-              </label>
-              <div
-                onClick={triggerFileSelect}
-                className="border-2 border-dashed border-[#40A0CA] bg-[#F4FAFF] hover:bg-[#EBF7FF] transition rounded-[12px] py-8 px-4 flex flex-col items-center justify-center cursor-pointer text-center"
-              >
-                <input
-                  type="file"
-                  ref={fileInputRef}
-                  onChange={handleFileChange}
-                  accept=".pdf,.jpg,.jpeg,.png"
-                  className="hidden"
-                />
-                <img src="/portfolio/drop.svg" alt="Upload" className="w-[42px] h-[42px] mb-2" />
-                <p className="text-[#032C44] text-[13px] font-medium">
-                  {attachmentFile ? (
-                    <span className="text-[#006EA8]">{attachmentFile.name}</span>
-                  ) : isAr ? (
-                    <>قم بسحب الملف هنا، أو <span className="text-[#006EA8] underline">تصفح</span></>
-                  ) : isDe ? (
-                    <>Datei hierher ziehen oder <span className="text-[#006EA8] underline">durchsuchen</span></>
-                  ) : (
-                    <>Drop a file, or <span className="text-[#006EA8] underline">browse</span></>
+                      ))}
+                    </div>
                   )}
-                </p>
-                <p className="text-[#6B7280] text-[10px] mt-1.5">
-                  {isAr
-                    ? "حجم الملف أقل من 10MB وصيغ الملفات المقبولة pdf, png, jpg, jpeg"
-                    : isDe
-                      ? "Die Dateigröße sollte weniger als 10 MB betragen und zulässige Formate sind pdf, png, jpg, jpeg"
-                      : "File size should be less than 10MB and file type should be jpg, jpeg, png, pdf"}
-                </p>
-              </div>
+
+                  {/* Replies */}
+                  {selectedTicket.replies && selectedTicket.replies.length > 0 && (
+                    <div className="space-y-3">
+                      <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                        {isAr ? "الردود" : (isDe ? "Antworten" : "Replies")} ({selectedTicket.replies.length})
+                      </p>
+                      {selectedTicket.replies.map((reply, idx) => {
+                        const isSupport = isSupportReply(reply, selectedTicket);
+
+                        return (
+                          <div
+                            key={idx}
+                            className={cn(
+                              "rounded-[12px] p-4 border",
+                              isSupport
+                                ? "bg-[#FFF9F0] border-[#FFE5C2]"
+                                : "bg-white border-[#E5E7EB]"
+                            )}
+                          >
+                            <div className="flex items-center gap-2 mb-2">
+                              <span className="text-[13px] font-bold text-[#032C44]">
+                                {isSupport
+                                  ? (isAr ? "الدعم الفني" : (isDe ? "Technischer Support" : "Technical Support"))
+                                  : (isAr ? "أنت" : (isDe ? "Sie" : "You"))}
+                              </span>
+                              <span className="text-[11px] text-gray-400">
+                                {formatDate(reply.date)}
+                              </span>
+                            </div>
+                            <p className="text-[14px] text-gray-600 leading-relaxed whitespace-pre-wrap">
+                              {reply.message}
+                            </p>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+
+                  {loadingDetail && (
+                    <div className="flex justify-center py-4">
+                      <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-[#006EA8]"></div>
+                    </div>
+                  )}
+                </div>
+
+                {/* Reply input - only show if ticket is not closed */}
+                {(selectedTicket.status || "pending") !== "closed" && (
+                  <div className="p-6 pt-4 border-t border-gray-100 space-y-3">
+                    <Textarea
+                      rows={3}
+                      value={replyText}
+                      onChange={(e) => setReplyText(e.target.value)}
+                      placeholder={isAr ? "اكتب ردك هنا..." : (isDe ? "Schreiben Sie Ihre Antwort hier..." : "Type your reply here...")}
+                      className="border border-[#E5E7EB] focus:border-[#40A0CA] rounded-[8px] px-3 py-2 text-sm w-full outline-none resize-none"
+                    />
+                    <div className="flex justify-end">
+                      <PrimaryButton
+                        onClick={handleReply}
+                        disabled={replying || !replyText.trim()}
+                        className="px-6 w-auto cursor-pointer"
+                      >
+                        {replying
+                          ? (isAr ? "جاري الإرسال..." : (isDe ? "Wird gesendet..." : "Sending..."))
+                          : (isAr ? "إرسال الرد" : (isDe ? "Antwort senden" : "Send Reply"))}
+                      </PrimaryButton>
+                    </div>
+                  </div>
+                )}
+              </>
+            )}
+          </DialogContent>
+        </Dialog>
+
+        {/* ------------------------------------------------------------- */}
+        {/* NEW TICKET MODAL */}
+        {/* ------------------------------------------------------------- */}
+        <Dialog open={showNewTicketModal} onOpenChange={setShowNewTicketModal}>
+          <DialogContent className="max-w-[550px] p-6 rounded-[20px] bg-white border-0 shadow-lg max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between mb-5">
+              <DialogTitle className={gradientTitleClasses}>
+                {isAr ? "تذكرة جديدة" : (isDe ? "Neues Ticket" : "New Ticket")}
+              </DialogTitle>
+              <button
+                onClick={() => setShowNewTicketModal(false)}
+                className="p-1 hover:bg-gray-100 rounded-full transition cursor-pointer"
+              >
+                <img src="/portfolio/close-circle.svg" alt="Close" className="w-7 h-7" />
+              </button>
             </div>
 
-            {/* Footer Buttons */}
-            <div className="flex items-center justify-center gap-4 mt-8">
-              <button
-                type="button"
-                onClick={() => setShowNewTicketModal(false)}
-                className="px-10 h-[44px] border border-[#006EA8] text-[#006EA8] bg-white hover:bg-[#F0F9FF] font-bold rounded-[12px] text-[15px] transition cursor-pointer"
-              >
-                {isAr ? "إلغاء" : (isDe ? "Abbrechen" : "Cancel")}
-              </button>
-              <PrimaryButton
-                type="submit"
-                disabled={submitting}
-                className="px-10 w-auto cursor-pointer"
-              >
-                {isAr ? "إرسال التذكرة" : (isDe ? "Absenden" : "Submit")}
-              </PrimaryButton>
-            </div>
-          </form>
-        </DialogContent>
-      </Dialog>
+            <form onSubmit={handleSubmit} className="space-y-4">
+              {/* Subject and Priority Row */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="space-y-1">
+                  <label className="text-[14px] font-bold text-[#032C44]">
+                    {isAr ? "الموضوع *" : (isDe ? "Betreff *" : "Subject *")}
+                  </label>
+                  <Input
+                    type="text"
+                    value={subject}
+                    onChange={(e) => setSubject(e.target.value)}
+                    placeholder={isAr ? "موضوع التذكرة" : (isDe ? "Ticket-Betreff" : "Ticket Subject")}
+                    className="border border-[#E5E7EB] focus:border-[#40A0CA] rounded-[8px] px-3 py-2 text-sm w-full outline-none"
+                  />
+                </div>
+
+                <div className="space-y-1">
+                  <label className="text-[14px] font-bold text-[#032C44]">
+                    {isAr ? "الأولوية *" : (isDe ? "Priorität *" : "Priority *")}
+                  </label>
+                  <div className="relative">
+                    <select
+                      value={priority}
+                      onChange={(e) => setPriority(e.target.value as "low" | "medium" | "high")}
+                      className="appearance-none border border-[#E5E7EB] focus:border-[#40A0CA] bg-white rounded-[8px] px-3 py-2 pr-8 text-sm w-full outline-none text-[#032C44]"
+                    >
+                      <option value="high">{isAr ? "عالي" : (isDe ? "Hoch" : "High")}</option>
+                      <option value="medium">{isAr ? "متوسط" : (isDe ? "Mittel" : "Medium")}</option>
+                      <option value="low">{isAr ? "منخفض" : (isDe ? "Niedrig" : "Low")}</option>
+                    </select>
+                    <div className="absolute inset-y-0 right-3 flex items-center pointer-events-none">
+                      <img src="/portfolio/arrow-down.svg" alt="Select" className="w-3.5 h-3.5" />
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Message Body */}
+              <div className="space-y-1">
+                <label className="text-[14px] font-bold text-[#032C44]">
+                  {isAr ? "نص الرسالة *" : (isDe ? "Nachricht *" : "Message *")}
+                </label>
+                <Textarea
+                  rows={5}
+                  value={message}
+                  onChange={(e) => setMessage(e.target.value)}
+                  placeholder={isAr ? "اكتب تفاصيل الاستفسار التجاري هنا..." : (isDe ? "Schreiben Sie hier Details zu Ihrer geschäftlichen Anfrage..." : "Write details about your corporate inquiry here...")}
+                  className="border border-[#E5E7EB] focus:border-[#40A0CA] rounded-[8px] px-3 py-2 text-sm w-full outline-none resize-none"
+                />
+              </div>
+
+              {/* File Drag and Drop Zone */}
+              <div className="space-y-1">
+                <label className="text-[14px] font-bold text-[#032C44]">
+                  {isAr ? "المرفقات" : (isDe ? "Anhänge" : "Attachments")}
+                </label>
+                <div
+                  onClick={triggerFileSelect}
+                  className="border-2 border-dashed border-[#40A0CA] bg-[#F4FAFF] hover:bg-[#EBF7FF] transition rounded-[12px] py-8 px-4 flex flex-col items-center justify-center cursor-pointer text-center"
+                >
+                  <input
+                    type="file"
+                    ref={fileInputRef}
+                    onChange={handleFileChange}
+                    accept=".pdf,.jpg,.jpeg,.png"
+                    className="hidden"
+                  />
+                  <img src="/portfolio/drop.svg" alt="Upload" className="w-[42px] h-[42px] mb-2" />
+                  <p className="text-[#032C44] text-[13px] font-medium">
+                    {attachmentFile ? (
+                      <span className="text-[#006EA8]">{attachmentFile.name}</span>
+                    ) : isAr ? (
+                      <>قم بسحب الملف هنا، أو <span className="text-[#006EA8] underline">تصفح</span></>
+                    ) : isDe ? (
+                      <>Datei hierher ziehen oder <span className="text-[#006EA8] underline">durchsuchen</span></>
+                    ) : (
+                      <>Drop a file, or <span className="text-[#006EA8] underline">browse</span></>
+                    )}
+                  </p>
+                  <p className="text-[#6B7280] text-[10px] mt-1.5">
+                    {isAr
+                      ? "حجم الملف أقل من 10MB وصيغ الملفات المقبولة pdf, png, jpg, jpeg"
+                      : isDe
+                        ? "Die Dateigröße sollte weniger als 10 MB betragen und zulässige Formate sind pdf, png, jpg, jpeg"
+                        : "File size should be less than 10MB and file type should be jpg, jpeg, png, pdf"}
+                  </p>
+                </div>
+              </div>
+
+              {/* Footer Buttons */}
+              <div className="flex items-center justify-center gap-4 mt-8">
+                <button
+                  type="button"
+                  onClick={() => setShowNewTicketModal(false)}
+                  className="px-10 h-[44px] border border-[#006EA8] text-[#006EA8] bg-white hover:bg-[#F0F9FF] font-bold rounded-[12px] text-[15px] transition cursor-pointer"
+                >
+                  {isAr ? "إلغاء" : (isDe ? "Abbrechen" : "Cancel")}
+                </button>
+                <PrimaryButton
+                  type="submit"
+                  disabled={submitting}
+                  className="px-10 w-auto cursor-pointer"
+                >
+                  {isAr ? "إرسال التذكرة" : (isDe ? "Absenden" : "Submit")}
+                </PrimaryButton>
+              </div>
+            </form>
+          </DialogContent>
+        </Dialog>
       </div>
     </DashboardPageShell>
   );
