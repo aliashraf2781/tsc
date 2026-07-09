@@ -3,6 +3,7 @@ import { getTranslations, getLocale } from "next-intl/server"
 import { PrimaryButton } from "@/components/ui/primary-button"
 import { SectionShell, StaggerInView, StaggerItem } from "@/features/shared-home"
 import { Link } from "@/i18n/navigation"
+import { HeroTitle } from "./hero-title"
 
 type HeroSectionProps = {
   title?: string
@@ -16,35 +17,6 @@ export async function HeroSection({ title: titleOverride, description: descripti
   const title = titleOverride || t("title")
   const description = descriptionOverride || t("description")
   const heroBackgroundImage = image || "/home/hero/hero-bg-image.png"
-
-  // Function to wrap the highlighted word
-  const renderTitle = () => {
-    const highlightWords = ["Germany", "ألمانيا", "Deutschland"]
-    let parts = [title]
-
-    for (const word of highlightWords) {
-      if (title.includes(word)) {
-        parts = title.split(word)
-        return (
-          <>
-            {parts[0]}
-            <span className="relative inline-block px-4 py-1">
-              <span className="relative z-10">{word}</span>
-              <Image
-                src="/home/splash.png"
-                alt=""
-                fill
-                className="absolute inset-0 z-0 h-full w-full scale-150 object-contain opacity-90"
-                aria-hidden
-              />
-            </span>
-            {parts[1]}
-          </>
-        )
-      }
-    }
-    return title
-  }
 
   return (
     <SectionShell
@@ -105,9 +77,10 @@ export async function HeroSection({ title: titleOverride, description: descripti
         </StaggerItem>
 
         <StaggerItem immediate>
-          <h1 className="font-heading mx-auto mt-2 max-w-[866px] text-balance text-center text-[32px] font-bold leading-relaxed text-white sm:mt-4 sm:text-[44px] md:text-[56px] lg:text-[56px] lg:leading-[1.15]">
-            {renderTitle()}
-          </h1>
+          <HeroTitle
+            title={title}
+            className="font-heading mx-auto mt-2 max-w-[866px] text-balance text-center text-[32px] font-bold leading-relaxed text-white sm:mt-4 sm:text-[44px] md:text-[56px] lg:text-[56px] lg:leading-[1.15]"
+          />
         </StaggerItem>
 
         <StaggerItem immediate>

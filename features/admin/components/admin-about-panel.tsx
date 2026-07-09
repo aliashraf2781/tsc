@@ -518,7 +518,8 @@ export function AdminAboutPanel({
                 feature={feature}
                 idx={idx}
                 isRTL={isRTL}
-                onUpdate={(field, lang, val) => updateFeatureField(idx, field, lang, val)}
+                editLocale={editLocale}
+                onUpdate={(field, val) => updateFeatureField(idx, field, editLocale, val)}
                 onRemove={() => removeFeature(idx)}
               />
             ))}
@@ -539,10 +540,10 @@ export function AdminAboutPanel({
 // ─── Feature Card ─────────────────────────────────────────────────────────────
 
 function FeatureCard({
-  feature, idx, isRTL, onUpdate, onRemove,
+  feature, idx, isRTL, editLocale, onUpdate, onRemove,
 }: {
-  feature: FeatureForm; idx: number; isRTL: boolean
-  onUpdate: (field: "title" | "description", lang: LocaleKey, val: string) => void
+  feature: FeatureForm; idx: number; isRTL: boolean; editLocale: LocaleKey
+  onUpdate: (field: "title" | "description", val: string) => void
   onRemove: () => void
 }) {
   const [open, setOpen] = useState(true)
@@ -571,28 +572,24 @@ function FeatureCard({
 
       {open && (
         <div className="p-4">
-          <div className="grid gap-3 sm:grid-cols-3">
-            {(["ar", "en", "de"] as LocaleKey[]).map((lang) => (
-              <div key={lang} className="space-y-2 rounded border bg-white p-3">
-                <span className="rounded bg-[#EAF4FB] px-1.5 py-0.5 text-xs font-bold text-[#006EA8]">
-                  {lang.toUpperCase()}
-                </span>
-                <input
-                  type="text"
-                  placeholder={isRTL ? "العنوان" : "Title"}
-                  value={feature.title[lang]}
-                  onChange={(e) => onUpdate("title", lang, e.target.value)}
-                  className="mt-1 w-full rounded border border-[#E5E7EB] px-2 py-1.5 text-sm focus:border-[#006EA8] focus:outline-none"
-                />
-                <textarea
-                  rows={2}
-                  placeholder={isRTL ? "الوصف" : "Description"}
-                  value={feature.description[lang]}
-                  onChange={(e) => onUpdate("description", lang, e.target.value)}
-                  className="w-full rounded border border-[#E5E7EB] px-2 py-1.5 text-sm focus:border-[#006EA8] focus:outline-none"
-                />
-              </div>
-            ))}
+          <div className="space-y-2 rounded border bg-white p-3">
+            <span className="rounded bg-[#EAF4FB] px-1.5 py-0.5 text-xs font-bold text-[#006EA8]">
+              {editLocale.toUpperCase()}
+            </span>
+            <input
+              type="text"
+              placeholder={isRTL ? "العنوان" : "Title"}
+              value={feature.title[editLocale]}
+              onChange={(e) => onUpdate("title", e.target.value)}
+              className="mt-1 w-full rounded border border-[#E5E7EB] px-2 py-1.5 text-sm focus:border-[#006EA8] focus:outline-none"
+            />
+            <textarea
+              rows={2}
+              placeholder={isRTL ? "الوصف" : "Description"}
+              value={feature.description[editLocale]}
+              onChange={(e) => onUpdate("description", e.target.value)}
+              className="w-full rounded border border-[#E5E7EB] px-2 py-1.5 text-sm focus:border-[#006EA8] focus:outline-none"
+            />
           </div>
         </div>
       )}

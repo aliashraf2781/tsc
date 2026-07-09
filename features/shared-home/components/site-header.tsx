@@ -118,6 +118,7 @@ export function SiteHeader({
   onMobileMenuClick 
 }: SiteHeaderProps) {
   const t = useTranslations("Landing.hero")
+  const th = useTranslations("SiteHeader")
   const currentLocale = useLocale()
   const rawPathname = usePathname()
   const normalizedHref = stripLocalePrefix(rawPathname ?? "/")
@@ -446,7 +447,7 @@ export function SiteHeader({
               size="icon"
               className="relative h-10 w-10 rounded-[12px] bg-gradient-to-br from-[#006EA8] to-[#005685] shadow-[0px_42px_107px_rgba(123,190,255,0.34)] transition-transform duration-150 hover:scale-105 sm:h-[44px] sm:w-[44px]"
               onClick={() => setShowNotifications(!showNotifications)}
-              aria-label={isRTL ? "الإشعارات" : "Notifications"}
+              aria-label={th("notificationsAria")}
             >
               <Bell className="h-5 w-5 text-white" />
               {unreadCount > 0 && (
@@ -466,7 +467,7 @@ export function SiteHeader({
               >
                   <div className="flex items-center justify-between p-4 border-b border-gray-100 bg-gradient-to-r from-[#006EA8]/5 to-[#005685]/5 flex-row shrink-0">
                     <h3 className="font-bold text-gray-900 text-[15px] sm:text-base">
-                      {currentLocale === "ar" ? `الإشعارات (${unreadCount})` : currentLocale === "de" ? `Benachrichtigungen (${unreadCount})` : `Notifications (${unreadCount})`}
+                      {th("notificationsTitle", { count: unreadCount })}
                     </h3>
                     <div className="flex items-center gap-2">
                       {unreadCount > 0 && (
@@ -482,7 +483,7 @@ export function SiteHeader({
                           }}
                           className="text-xs text-[#006EA8] hover:underline font-semibold cursor-pointer shrink-0"
                         >
-                          {currentLocale === "ar" ? "تحديد الكل كمقروء" : currentLocale === "de" ? "Alle als gelesen markieren" : "Mark all read"}
+                          {th("markAllRead")}
                         </button>
                       )}
                       <Button variant="ghost" size="sm" className="h-8 w-8 rounded-full p-0 hover:bg-gray-100" onClick={() => setShowNotifications(false)}>
@@ -492,10 +493,10 @@ export function SiteHeader({
                   </div>
                   <div className="divide-y divide-gray-50 flex-1 min-h-0 overflow-y-auto">
                     {notificationsLoading && (
-                      <div className="p-6 text-center text-sm text-gray-500">{currentLocale === "ar" ? "جاري التحميل..." : currentLocale === "de" ? "Wird geladen..." : "Loading..."}</div>
+                      <div className="p-6 text-center text-sm text-gray-500">{th("loading")}</div>
                     )}
                     {!notificationsLoading && notifications.length === 0 && (
-                      <div className="p-6 text-center text-sm text-gray-500">{currentLocale === "ar" ? "لا توجد إشعارات" : currentLocale === "de" ? "Keine Benachrichtigungen" : "No notifications"}</div>
+                      <div className="p-6 text-center text-sm text-gray-500">{th("noNotifications")}</div>
                     )}
                     {notifications.map((notification) => (
                       <div
@@ -538,7 +539,7 @@ export function SiteHeader({
               type="button"
               className="h-10 gap-1.5 rounded-[12px] border border-[#40A0CA]/50 bg-transparent px-2.5 text-white hover:bg-white/10 transition-colors sm:h-[44px] sm:gap-2 sm:px-3 flex items-center"
               onClick={() => setShowLocaleMenu((v) => !v)}
-              aria-label={isRTL ? "تغيير اللغة" : "Change language"}
+              aria-label={t("languageAria")}
               aria-expanded={showLocaleMenu}
             >
               <span className="text-base sm:text-lg">{currentLocaleOption.flag}</span>
@@ -597,7 +598,7 @@ export function SiteHeader({
                   type="button"
                   className="flex items-center justify-center focus:outline-none focus:ring-0 cursor-pointer"
                   onClick={() => setShowAvatarMenu(!showAvatarMenu)}
-                  aria-label={isRTL ? "قائمة المستخدم" : "User menu"}
+                  aria-label={th("userMenuAria")}
                   aria-expanded={showAvatarMenu}
                 >
                   <div className="h-10 w-10 cursor-pointer rounded-full bg-gradient-to-br from-[#006EA8] to-[#005685] p-0.5 shadow-[0px_42px_107px_rgba(123,190,255,0.34)] lg:h-[44px] lg:w-[44px] hover:scale-105 transition-transform duration-150">
@@ -625,15 +626,13 @@ export function SiteHeader({
                     {/* User Profile Summary */}
                     <div className="px-3 py-2.5 border-b border-gray-100 text-start">
                       <p className="text-sm font-semibold text-gray-900 truncate">
-                        {displayUser?.name || (isRTL ? "مستخدم" : "User")}
+                        {displayUser?.name || th("defaultUserName")}
                       </p>
                       <p className="text-xs text-gray-500 truncate mt-0.5">
                         {displayUser?.email || ""}
                       </p>
-                      <span className="inline-flex items-center rounded-full bg-blue-50 px-2 py-0.5 text-[10px] font-medium text-[#006EA8] mt-1.5 capitalize">
-                        {isRTL 
-                          ? (displayUserRole === "company" ? "شركة" : displayUserRole === "admin" ? "مدير" : "باحث عن عمل")
-                          : displayUserRole}
+                      <span className="inline-flex items-center rounded-full bg-blue-50 px-2 py-0.5 text-[10px] font-medium text-[#006EA8] mt-1.5">
+                        {th(`role.${displayUserRole}`)}
                       </span>
                     </div>
 
@@ -649,7 +648,7 @@ export function SiteHeader({
                         )}
                       >
                         <LayoutDashboard className="h-4 w-4 stroke-[1.5] text-gray-400 group-hover:text-[#006EA8]" />
-                        <span>{currentLocale === "ar" ? "لوحة التحكم" : currentLocale === "de" ? "Dashboard" : "Dashboard"}</span>
+                        <span>{th("dashboard")}</span>
                       </Link>
 
                       <Link
@@ -662,7 +661,7 @@ export function SiteHeader({
                         )}
                       >
                         <Settings className="h-4 w-4 stroke-[1.5] text-gray-400 group-hover:text-[#006EA8]" />
-                        <span>{currentLocale === "ar" ? "الملف الشخصي" : currentLocale === "de" ? "Profileinstellungen" : "Profile Settings"}</span>
+                        <span>{th("profileSettings")}</span>
                       </Link>
                     </div>
 
@@ -675,7 +674,7 @@ export function SiteHeader({
                         "flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-sm text-red-600 hover:bg-red-50 hover:text-red-700 transition-colors duration-100 cursor-pointer",
                         isRTL ? "text-right" : "text-left"
                       )}
-                      label={currentLocale === "ar" ? "تسجيل الخروج" : currentLocale === "de" ? "Abmelden" : "Logout"}
+                      label={th("logout")}
                       isRTL={isRTL}
                     />
                   </div>
@@ -703,7 +702,7 @@ export function SiteHeader({
               variant="outline"
               size="icon"
               className="h-10 w-10 shrink-0 rounded-[12px] border-white/20 bg-white/5 text-white hover:bg-white/10 lg:hidden shadow-sm"
-              aria-label={isRTL ? "فتح القائمة" : "Open menu"}
+              aria-label={th("openMenu")}
               onClick={() => {
                 onMobileMenuClick?.()
                 mobileMenu.open()
@@ -714,12 +713,12 @@ export function SiteHeader({
           ) : (
             <Sheet open={publicMobileMenuOpen} onOpenChange={setPublicMobileMenuOpen}>
               <SheetTrigger asChild>
-                <Button type="button" variant="outline" size="icon" className="h-10 w-10 shrink-0 rounded-[12px] border-white/20 bg-white/5 text-white hover:bg-white/10 lg:hidden shadow-sm" aria-label={isRTL ? "فتح القائمة" : "Open menu"}>
+                <Button type="button" variant="outline" size="icon" className="h-10 w-10 shrink-0 rounded-[12px] border-white/20 bg-white/5 text-white hover:bg-white/10 lg:hidden shadow-sm" aria-label={th("openMenu")}>
                   <Menu className="h-5 w-5" />
                 </Button>
               </SheetTrigger>
               <SheetContent side={isRTL ? "right" : "left"} className="w-[min(100vw,310px)] p-0 lg:hidden">
-                <SheetTitle className="sr-only">{isRTL ? "القائمة" : "Menu"}</SheetTitle>
+                <SheetTitle className="sr-only">{th("menuTitle")}</SheetTitle>
                 <div className="flex h-full flex-col bg-[#F0F4F8]">
                   <div className="flex h-[88px] sm:h-[110px] items-center border-b border-[#E2E8F0] bg-[#F0F4F8] px-4 justify-between flex-row">
                     <Link locale={currentLocale} href="/" aria-label={safeT("brand", "Brand")} className="flex shrink-0 items-center">
@@ -727,7 +726,7 @@ export function SiteHeader({
                     </Link>
 
                     <SheetClose asChild>
-                      <Button type="button" variant="ghost" size="icon" className="h-8 w-8 text-gray-500 hover:text-gray-800 hover:bg-transparent transition-colors" aria-label={isRTL ? "إغلاق القائمة" : "Close menu"}>
+                      <Button type="button" variant="ghost" size="icon" className="h-8 w-8 text-gray-500 hover:text-gray-800 hover:bg-transparent transition-colors" aria-label={th("closeMenu")}>
                         <Image src="/jobs/icon-close-circle.svg" alt="" width={28} height={28} className="h-7 w-7" aria-hidden />
                       </Button>
                     </SheetClose>
@@ -753,7 +752,7 @@ export function SiteHeader({
                       <div className="px-2 pb-2">
                         <Link locale={currentLocale} href={isLoggedIn && user ? getDashboardPath(normalizeRole(user)) : "/dashboard"} onClick={closePublicMobileMenu} className={cn("flex h-11 w-full items-center gap-2.5 rounded-lg border border-[#006EA8]/20 bg-gradient-to-r from-[#EBF5FB] to-[#F0F9FF] px-4 text-[#006EA8] transition-colors duration-150", "hover:border-[#006EA8]/40 hover:from-[#D6EFFA] hover:to-[#E4F4FC] hover:shadow-sm")}>
                           <ExternalLink className="h-[18px] w-[18px] flex-none opacity-70" />
-                          <span className="text-[14px] font-semibold">{isRTL ? "لوحة التحكم" : currentLocale === "de" ? "Dashboard" : "Dashboard"}</span>
+                          <span className="text-[14px] font-semibold">{th("dashboard")}</span>
                         </Link>
                       </div>
                     )}

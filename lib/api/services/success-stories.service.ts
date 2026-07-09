@@ -152,7 +152,7 @@ export async function updateSuccessStory(
   token: string,
   locale = "ar"
 ): Promise<SuccessStory> {
-  const response = await api.post<ApiResponse<unknown>>(`/success-stories/${id}?_method=PUT`, formData, {
+  const response = await api.post<ApiResponse<unknown>>(`/success-stories/${id}`, formData, {
     token,
     locale,
   })

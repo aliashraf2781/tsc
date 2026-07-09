@@ -138,7 +138,7 @@ export default async function AdminJobsPage({
         <Link
           locale={locale}
           href="/dashboard/admin/jobs/create"
-          className="inline-flex h-10 w-full items-center justify-center gap-2 rounded-lg bg-[url('/contact/button-noise.png'),linear-gradient(180deg,#006EA8_0%,#005685_100%)] px-5 text-sm font-semibold text-white shadow-sm transition hover:brightness-105 sm:w-auto"
+          className="inline-flex h-10 w-full items-center justify-center gap-2 rounded-lg border border-[#E8F2FF] bg-white px-5 text-sm font-semibold text-[#006EA8] shadow-none transition hover:bg-[#F5F9FC] sm:w-auto"
         >
           <Plus className="h-4 w-4 shrink-0" />
           {t("addJob")}

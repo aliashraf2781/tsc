@@ -507,6 +507,32 @@ export async function getAdminUsers(
   return { data, meta }
 }
 
+export async function getAdminUserStats(
+  token: string,
+  locale = "ar",
+  role: string = "user"
+): Promise<{ total: number; verified: number; unverified: number }> {
+  const perPage = 100
+  const first = await getAdminUsers(token, role, 1, locale, perPage)
+  const lastPage = Math.max(first.meta?.last_page ?? 1, 1)
+
+  let allUsers = first.data
+  if (lastPage > 1) {
+    const remainingPages = Array.from({ length: lastPage - 1 }, (_, i) => i + 2)
+    const rest = await Promise.all(
+      remainingPages.map((page) =>
+        getAdminUsers(token, role, page, locale, perPage).catch(() => ({ data: [] as User[] }))
+      )
+    )
+    allUsers = allUsers.concat(...rest.map((r) => r.data))
+  }
+
+  const verified = allUsers.filter((u) => u.emailVerified).length
+  const total = first.meta?.total ?? allUsers.length
+
+  return { total, verified, unverified: allUsers.length - verified }
+}
+
 export async function getAdminStats(
   token: string,
   locale = "ar"

@@ -12,7 +12,17 @@ import { AdminPagination } from "./admin-pagination"
 import { cn } from "@/lib/utils"
 import { toast } from "sonner"
 
-export function AdminUsersPanel({ users, locale, meta }: { users: User[]; locale: string; meta?: PaginationMeta }) {
+export function AdminUsersPanel({
+  users,
+  locale,
+  meta,
+  stats,
+}: {
+  users: User[]
+  locale: string
+  meta?: PaginationMeta
+  stats?: { total: number; verified: number; unverified: number }
+}) {
   const t = useTranslations("Admin.users")
   const router = useRouter()
   const pathname = usePathname()
@@ -41,25 +51,25 @@ export function AdminUsersPanel({ users, locale, meta }: { users: User[]; locale
     return dateB - dateA
   })
 
-  // Calculate user-specific statistics
-  const totalUsers = meta?.total ?? sortedUsers.length
-  const verifiedUsers = sortedUsers.filter((u) => u.emailVerified).length
-  const unverifiedUsers = sortedUsers.length - verifiedUsers
+  // Calculate user-specific statistics across all accounts (not just the current page)
+  const totalUsers = stats?.total ?? meta?.total ?? sortedUsers.length
+  const verifiedUsers = stats?.verified ?? sortedUsers.filter((u) => u.emailVerified).length
+  const unverifiedUsers = stats?.unverified ?? sortedUsers.length - verifiedUsers
 
   const columns = [
     { key: "name", label: t("columns.name"), className: "w-[15%]" },
     { key: "email", label: t("columns.email"), className: "w-[20%]" },
     { key: "phone", label: t("columns.phone"), className: "w-[12%]" },
     { key: "country", label: t("columns.country"), className: "w-[12%]" },
-    { key: "createdAt", label: isAr ? "تاريخ التسجيل" : "Registration Date", className: "w-[15%]" },
-    { key: "verification", label: isAr ? "التحقق" : "Verification", className: "w-[10%]" },
+    { key: "createdAt", label: t("columns.registrationDate"), className: "w-[15%]" },
+    { key: "verification", label: t("columns.verification"), className: "w-[10%]" },
     { key: "actions", label: t("columns.actions"), className: "w-[16%]" },
   ]
 
   function handleDelete(user: User) {
-    toast(isAr ? "حذف هذا المستخدم؟" : "Delete this user?", {
+    toast(t("deleteConfirm"), {
       action: {
-        label: isAr ? "حذف" : "Delete",
+        label: t("delete"),
         onClick: () => {
           setError(null)
           startTransition(async () => {
@@ -69,13 +79,13 @@ export function AdminUsersPanel({ users, locale, meta }: { users: User[]; locale
               toast.error(result.message ?? t("error"))
               return
             }
-            toast.success(isAr ? "تم حذف المستخدم" : "User deleted")
+            toast.success(t("deleteSuccess"))
             router.refresh()
           })
         },
       },
       cancel: {
-        label: isAr ? "إلغاء" : "Cancel",
+        label: t("cancel"),
         onClick: () => {},
       },
     })
@@ -84,29 +94,27 @@ export function AdminUsersPanel({ users, locale, meta }: { users: User[]; locale
   function handleToggleSuspend(user: User) {
     const currentStatus = user.status || "active"
     const isSuspended = currentStatus === "suspended"
-    const confirmMsg = isAr
-      ? (isSuspended ? "هل تريد تفعيل هذا الحساب؟" : "هل تريد تعليق هذا الحساب؟")
-      : (isSuspended ? "Do you want to activate this account?" : "Do you want to suspend this account?")
+    const confirmMsg = isSuspended ? t("activateConfirm") : t("suspendConfirm")
 
     toast(confirmMsg, {
       action: {
-        label: isAr ? "تأكيد" : "Confirm",
+        label: t("confirm"),
         onClick: () => {
           setError(null)
           startTransition(async () => {
             const result = await suspendUserAction({ id: user.id, uuid: user.uuid }, !isSuspended, locale)
             if (!result.ok) {
-              setError(result.message ?? (isAr ? "فشل تغيير حالة الحساب" : "Failed to change user status"))
-              toast.error(result.message ?? (isAr ? "فشل تغيير حالة الحساب" : "Failed to change user status"))
+              setError(result.message ?? t("statusUpdateError"))
+              toast.error(result.message ?? t("statusUpdateError"))
               return
             }
-            toast.success(isAr ? "تم تحديث حالة الحساب" : "Account status updated")
+            toast.success(t("statusUpdateSuccess"))
             router.refresh()
           })
         },
       },
       cancel: {
-        label: isAr ? "إلغاء" : "Cancel",
+        label: t("cancel"),
         onClick: () => {},
       },
     })
@@ -118,28 +126,28 @@ export function AdminUsersPanel({ users, locale, meta }: { users: User[]; locale
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-3 gap-4">
         <div className="rounded-lg border border-[#E5E7EB] bg-white p-4 shadow-sm">
           <div className="text-xs font-medium text-[#6B7280] mb-2">
-            {locale === "ar" ? "إجمالي المستخدمين" : "Total Users"}
+            {t("stats.total")}
           </div>
           <div className="text-2xl font-bold text-[#111827]">{totalUsers}</div>
         </div>
-        
+
         <div className="rounded-lg border border-[#E5E7EB] bg-white p-4 shadow-sm">
           <div className="text-xs font-medium text-[#6B7280] mb-2">
-            {locale === "ar" ? "الحسابات المؤكدة" : "Verified Accounts"}
+            {t("stats.verified")}
           </div>
           <div className="text-2xl font-bold text-[#059669]">{verifiedUsers}</div>
           <div className="text-xs text-[#6B7280]">
-            {locale === "ar" ? "مؤكد" : "Verified"}
+            {t("stats.verifiedLabel")}
           </div>
         </div>
-        
+
         <div className="rounded-lg border border-[#E5E7EB] bg-white p-4 shadow-sm">
           <div className="text-xs font-medium text-[#6B7280] mb-2">
-            {locale === "ar" ? "الحسابات غير المؤكدة" : "Unverified Accounts"}
+            {t("stats.unverified")}
           </div>
           <div className="text-2xl font-bold text-[#D97706]">{unverifiedUsers}</div>
           <div className="text-xs text-[#6B7280]">
-            {locale === "ar" ? "غير مؤكد" : "Not Verified"}
+            {t("stats.unverifiedLabel")}
           </div>
         </div>
       </div>
@@ -185,7 +193,7 @@ export function AdminUsersPanel({ users, locale, meta }: { users: User[]; locale
                   "inline-flex rounded-full px-2.5 py-1 text-xs font-semibold capitalize",
                   user.emailVerified ? "bg-[#DCFCE7] text-[#166534]" : "bg-[#FEE2E2] text-[#991B1B]"
                 )}>
-                  {user.emailVerified ? (isAr ? "مؤكد" : "Verified") : (isAr ? "غير مؤكد" : "Not Verified")}
+                  {user.emailVerified ? t("verification.verified") : t("verification.notVerified")}
                 </span>
               </AdminTableCell>
               <AdminTableCell className="w-[16%] flex items-center gap-2">
@@ -194,7 +202,7 @@ export function AdminUsersPanel({ users, locale, meta }: { users: User[]; locale
                   href={`/dashboard/admin/users/${user.id}`}
                   className="text-xs font-semibold text-[#006EA8] hover:underline"
                 >
-                  {isAr ? "تعديل" : "Edit"}
+                  {t("edit")}
                 </Link>
                 <span className="text-[#E5E7EB]">|</span>
                 <button
@@ -203,7 +211,7 @@ export function AdminUsersPanel({ users, locale, meta }: { users: User[]; locale
                   onClick={() => handleToggleSuspend(user)}
                   className="text-xs font-semibold text-amber-600 hover:underline disabled:opacity-50"
                 >
-                  {user.status === "suspended" ? (isAr ? "تفعيل" : "Activate") : (isAr ? "تعليق" : "Suspend")}
+                  {user.status === "suspended" ? t("activate") : t("suspend")}
                 </button>
                 <span className="text-[#E5E7EB]">|</span>
                 <button
@@ -225,11 +233,7 @@ export function AdminUsersPanel({ users, locale, meta }: { users: User[]; locale
         lastPage={lastPage}
         onPageChange={goToPage}
         isAr={isAr}
-        summary={
-          isAr
-            ? `الصفحة ${currentPage} من ${lastPage} · ${totalUsers} مستخدم`
-            : `Page ${currentPage} of ${lastPage} · ${totalUsers} users`
-        }
+        summary={t("pagination", { page: currentPage, last: lastPage, total: totalUsers })}
       />
     </div>
   )
