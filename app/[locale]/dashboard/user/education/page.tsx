@@ -2,7 +2,7 @@
 import { redirect } from "next/navigation"
 import { setRequestLocale } from "next-intl/server"
 import { getSession } from "@/lib/auth-token"
-import UserEducationClient from "./client"
+import { UserPortfolioPage } from "@/features/user-portfolio"
 import { getUserPortfolio } from "@/lib/api/services/portfolio.service"
 
 export default async function UserEducationPage({ params }: { params: Promise<{ locale: string }> }) {
@@ -21,5 +21,5 @@ export default async function UserEducationPage({ params }: { params: Promise<{ 
     // ignore - client will fetch if needed
   }
 
-  return <UserEducationClient locale={locale} initialPortfolio={initialPortfolio} />
+  return <UserPortfolioPage locale={locale} initialPortfolio={initialPortfolio} />
 }

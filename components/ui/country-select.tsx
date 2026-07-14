@@ -3,7 +3,8 @@
 
 "use client"
 
-import { COUNTRIES, type CountryData } from "@/lib/countries"
+import { COUNTRIES } from "@/lib/countries"
+import { cn } from "@/lib/utils"
 import {
   Select,
   SelectContent,
@@ -37,7 +38,12 @@ export function CountrySelect({ value, onValueChange, placeholder, disabled }: C
           )}
         </SelectValue>
       </SelectTrigger>
-      <SelectContent className="max-h-[300px]">
+      <SelectContent
+        position="popper"
+        align="start"
+        sideOffset={4}
+        className="max-h-56 w-[calc(100vw-2rem)] max-w-[320px] sm:max-h-80 sm:w-[320px]"
+      >
         {COUNTRIES.map((country) => (
           <SelectItem key={country.id} value={String(country.id)}>
             <span className="flex items-center gap-2">
@@ -96,32 +102,44 @@ export function CountryPhoneSelect({
   value,
   onValueChange,
   placeholder,
+  className,
+  contentClassName,
 }: {
   value?: string
   onValueChange?: (value: string) => void
   placeholder?: string
+  className?: string
+  contentClassName?: string
 }) {
-  const selectedCountry = COUNTRIES.find((c) => c.dialCode === value)
+  const selectedCountry = COUNTRIES.find((c) => c.code === value)
 
   return (
     <Select value={value} onValueChange={onValueChange}>
-      <SelectTrigger className="w-auto">
+      <SelectTrigger className={cn("h-9 w-auto shrink-0 gap-1", className)}>
         <SelectValue placeholder={placeholder || "رمز الدولة"}>
           {selectedCountry && (
-            <span className="flex items-center gap-2 whitespace-nowrap">
+            <span className="flex items-center gap-1.5 whitespace-nowrap">
               <span>{selectedCountry.flag}</span>
               <span>{selectedCountry.dialCode}</span>
             </span>
           )}
         </SelectValue>
       </SelectTrigger>
-      <SelectContent className="max-h-[300px]">
+      <SelectContent
+        position="popper"
+        align="start"
+        sideOffset={4}
+        className={cn(
+          "max-h-56 w-[calc(100vw-2rem)] max-w-[220px] sm:max-h-72 sm:w-[220px]",
+          contentClassName
+        )}
+      >
         {COUNTRIES.map((country) => (
-          <SelectItem key={country.id} value={country.dialCode}>
-            <span className="flex items-center gap-2">
-              <span>{country.flag}</span>
-              <span>{country.name}</span>
-              <span className="text-xs text-gray-500">{country.dialCode}</span>
+          <SelectItem key={country.id} value={country.code} className="gap-2">
+            <span className="flex w-full min-w-0 items-center gap-2">
+              <span className="shrink-0">{country.flag}</span>
+              <span className="min-w-0 flex-1 truncate">{country.name}</span>
+              <span className="shrink-0 text-xs text-gray-500">{country.dialCode}</span>
             </span>
           </SelectItem>
         ))}

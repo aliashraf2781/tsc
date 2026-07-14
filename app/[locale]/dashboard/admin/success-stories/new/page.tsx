@@ -3,7 +3,7 @@ import { setRequestLocale } from "next-intl/server"
 import { getSession } from "@/lib/auth-token"
 import { normalizeRole } from "@/lib/auth-token"
 import { AdminPageLayout } from "@/features/admin/components/admin-page-layout"
-import { AdminSuccessStoryEditForm } from "@/features/admin/components/admin-success-story-edit-form"
+import { AdminSuccessStoryCreateForm } from "@/features/admin/components/admin-success-story-create-form"
 
 type PageProps = {
   params: Promise<{ locale: string }>
@@ -32,7 +32,7 @@ export default async function AdminSuccessStoryNewPage({ params }: PageProps) {
           : "Add details, localization translations, and set a profile image for the success story to show on landing page"
       }
     >
-      <AdminSuccessStoryEditForm locale={locale} isNew={true} />
+      <AdminSuccessStoryCreateForm locale={locale} />
     </AdminPageLayout>
   )
 }

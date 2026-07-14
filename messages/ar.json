@@ -99,6 +99,26 @@
       }
     }
   },
+  "SiteHeader": {
+    "notificationsAria": "الإشعارات",
+    "notificationsTitle": "الإشعارات ({count})",
+    "markAllRead": "تحديد الكل كمقروء",
+    "loading": "جاري التحميل...",
+    "noNotifications": "لا توجد إشعارات",
+    "userMenuAria": "قائمة المستخدم",
+    "defaultUserName": "مستخدم",
+    "role": {
+      "user": "باحث عن عمل",
+      "company": "شركة",
+      "admin": "مدير"
+    },
+    "dashboard": "لوحة التحكم",
+    "profileSettings": "الملف الشخصي",
+    "logout": "تسجيل الخروج",
+    "openMenu": "فتح القائمة",
+    "closeMenu": "إغلاق القائمة",
+    "menuTitle": "القائمة"
+  },
   "Landing": {
     "hero": {
       "brand": "تالنت سيكر",
@@ -493,6 +513,7 @@
         "emailPlaceholder": "أدخل بريدك الإلكتروني",
         "phoneLabel": "الهاتف",
         "phonePlaceholder": "أدخل رقم هاتفك",
+        "countryPlaceholder": "الدولة",
         "subjectLabel": "الموضوع",
         "subjectPlaceholder": "أدخل الموضوع",
         "messageLabel": "الرسالة",
@@ -500,7 +521,16 @@
         "send": "إرسال",
         "sending": "جاري الإرسال...",
         "success": "تم إرسال رسالتك بنجاح!",
-        "error": "حدث خطأ. حاول مرة أخرى."
+        "error": "حدث خطأ. حاول مرة أخرى.",
+        "errors": {
+          "nameRequired": "الاسم مطلوب",
+          "emailRequired": "البريد الإلكتروني مطلوب",
+          "emailInvalid": "البريد الإلكتروني غير صالح",
+          "subjectRequired": "الموضوع مطلوب",
+          "messageRequired": "الرسالة مطلوبة",
+          "phoneInvalid": "رقم الهاتف يجب أن يحتوي على أرقام فقط",
+          "countryRequired": "يرجى اختيار رمز الدولة"
+        }
       },
       "info": {
         "phoneLabel": "رقم الهاتف",
@@ -540,16 +570,16 @@
   },
   "Ui": {
     "common": {
-      "loading": "جارٍ التحميل...",
-      "pleaseWait": "الرجاء الانتظار...",
-      "newTicket": "تذكرة جديدة"
+      "loading": "جاري التحميل...",
+      "pleaseWait": "يرجى الانتظار...",
+      "openTicket": "فتح تذكرة"
     },
     "dialog": {
       "close": "إغلاق",
-      "description": "محتوى مربع الحوار"
+      "description": "محتوى الحوار"
     },
     "sheet": {
-      "title": "درج القائمة الجانبية",
+      "title": "الشريط الجانبي",
       "close": "إغلاق"
     },
     "sidebar": {
@@ -571,7 +601,7 @@
       "next": "التالي",
       "goToPrevious": "الانتقال إلى الصفحة السابقة",
       "goToNext": "الانتقال إلى الصفحة التالية",
-      "morePages": "صفحات أكثر"
+      "morePages": "المزيد من الصفحات"
     }
   },
   "CompanyJobs": {
@@ -587,6 +617,7 @@
     "submitting": "جاري النشر...",
     "compressing": "جاري ضغط الصورة...",
     "imageSizeHint": "يتم ضغط الصورة قبل الرفع لتسريع النشر. JPG أو PNG أو WebP حتى 12 ميجابايت.",
+    "openCalendar": "فتح التقويم",
     "delete": "حذف",
     "stop": "إيقاف",
     "applications": "الطلبات",
@@ -880,17 +911,41 @@
         "category": "التصنيف",
         "status": "الحالة",
         "role": "الدور",
-        "actions": "الإجراءات"
+        "actions": "الإجراءات",
+        "registrationDate": "تاريخ التسجيل",
+        "verification": "التحقق"
       },
       "roles": {
         "user": "مستخدم",
         "company": "شركة",
         "admin": "أدمن"
       },
+      "stats": {
+        "total": "إجمالي المستخدمين",
+        "verified": "الحسابات المؤكدة",
+        "unverified": "الحسابات غير المؤكدة",
+        "verifiedLabel": "مؤكد",
+        "unverifiedLabel": "غير مؤكد"
+      },
+      "verification": {
+        "verified": "مؤكد",
+        "notVerified": "غير مؤكد"
+      },
+      "edit": "تعديل",
+      "suspend": "تعليق",
+      "activate": "تفعيل",
+      "confirm": "تأكيد",
+      "cancel": "إلغاء",
       "delete": "حذف",
       "deleteConfirm": "هل تريد حذف هذا المستخدم؟",
+      "deleteSuccess": "تم حذف المستخدم",
+      "suspendConfirm": "هل تريد تعليق هذا الحساب؟",
+      "activateConfirm": "هل تريد تفعيل هذا الحساب؟",
+      "statusUpdateSuccess": "تم تحديث حالة الحساب",
+      "statusUpdateError": "فشل تغيير حالة الحساب",
       "empty": "لا يوجد مستخدمون",
-      "error": "تعذر الحذف"
+      "error": "تعذر الحذف",
+      "pagination": "الصفحة {page} من {last} · {total} مستخدم"
     },
     "companies": {
       "title": "الشركات",
@@ -941,7 +996,86 @@
       "deleteConfirm": "حذف هذه القصة؟",
       "empty": "لا توجد قصص نجاح",
       "error": "تعذر الحفظ",
-      "locationRequired": "حقل الموقع مطلوب"
+      "locationRequired": "حقل الموقع مطلوب",
+      "labels": {
+        "language": "اللغة:"
+      },
+      "sections": {
+        "storyAndPerson": "بيانات القصة وصاحبها",
+        "profilePicture": "الصورة الشخصية"
+      },
+      "nameRequired": "يجب إدخال الاسم باللغة العربية على الأقل",
+      "savedRedirect": "✓ تم الحفظ بنجاح، جاري التوجيه...",
+      "actions": {
+        "saving": "جاري الحفظ...",
+        "create": "إنشاء القصة",
+        "saveChanges": "حفظ التغييرات",
+        "back": "رجوع"
+      }
+    },
+    "categories": {
+      "manageCategories": "إدارة الفئات",
+      "manageCategoriesDesc": "أضف وعدّل فئات الوظائف المعروضة في صفحة الوظائف والرئيسية",
+      "language": "اللغة:",
+      "noCategories": "لا توجد فئات. اضغط \"إضافة فئة\" للبدء.",
+      "defaultName": "فئة",
+      "categoryName": "اسم الفئة",
+      "icon": "الأيقونة",
+      "changeIcon": "تغيير الأيقونة",
+      "uploadIcon": "رفع أيقونة",
+      "remove": "إزالة",
+      "subCategories": "الفئات الفرعية",
+      "addSub": "إضافة فرعية",
+      "noSubCategories": "لا توجد فئات فرعية",
+      "subCategory": "فئة فرعية",
+      "newItem": "جديدة",
+      "name": "الاسم",
+      "saving": "جاري الحفظ...",
+      "saveCategory": "حفظ الفئة",
+      "savedSuccessfully": "تم الحفظ بنجاح",
+      "addCategory": "إضافة فئة",
+      "deleteCategoryTitle": "حذف الفئة",
+      "confirmDeleteTitle": "تأكيد الحذف",
+      "confirmDeleteBody": "هل أنت متأكد من حذف هذه الفئة؟ لا يمكن التراجع عن هذا الإجراء.",
+      "cancel": "إلغاء",
+      "deleting": "جاري الحذف...",
+      "delete": "حذف",
+      "deleteFailed": "فشل الحذف",
+      "errors": {
+        "nameRequired": "اسم الفئة مطلوب",
+        "save": "فشل الحفظ"
+      }
+    },
+    "services": {
+      "language": "اللغة:",
+      "feature": "ميزة",
+      "newItem": "جديدة",
+      "removeFeature": "حذف الميزة",
+      "featuresAndAdvantages": "المزايا والخصائص ({count})",
+      "addFeature": "إضافة ميزة",
+      "noFeaturesYet": "لا توجد مزايا. اضغط \"إضافة ميزة\" لإضافة أولى المزايا.",
+      "featureTitle": "عنوان الميزة",
+      "featureDescription": "وصف الميزة",
+      "iconUrlLabel": "رابط الأيقونة (URL أو مسار)",
+      "iconUrlPlaceholder": "/icons/my-icon.svg أو https://...",
+      "orUploadIconFile": "أو رفع ملف أيقونة",
+      "serviceImage": "صورة الخدمة",
+      "errors": {
+        "titleRequired": "عنوان الخدمة مطلوب",
+        "descriptionRequired": "وصف الخدمة مطلوب"
+      },
+      "coreServiceData": "بيانات الخدمة الأساسية",
+      "titleLabel": "عنوان الخدمة",
+      "descriptionLabel": "وصف الخدمة",
+      "actions": {
+        "saving": "جاري الحفظ...",
+        "create": "إنشاء الخدمة",
+        "saveChanges": "حفظ التغييرات",
+        "back": "رجوع"
+      },
+      "messages": {
+        "saved": "✓ تم الحفظ بنجاح، جاري التوجيه..."
+      }
     },
     "faqs": {
       "title": "الأسئلة الشائعة",
@@ -1083,46 +1217,191 @@
       "delete": "حذف",
       "deleteConfirm": "حذف هذا الخبر؟",
       "error": "حدث خطأ"
+    },
+    "mediaUpload": {
+      "change": "تغيير الصورة",
+      "upload": "رفع صورة",
+      "remove": "إزالة",
+      "hint": "PNG أو JPG أو WEBP · حجم أقصى 5MB",
+      "errors": {
+        "unsupportedFileType": "نوع الملف غير مدعوم. استخدم PNG أو JPG أو WEBP",
+        "fileTooLarge": "حجم الملف أكبر من 5MB"
+      }
+    },
+    "news": {
+      "titles": {
+        "content": "محتوى الخبر"
+      },
+      "labels": {
+        "language": "اللغة:"
+      },
+      "fields": {
+        "title": "عنوان الخبر",
+        "description": "وصف/تفاصيل الخبر",
+        "image": "صورة الخبر المعروضة"
+      },
+      "actions": {
+        "saving": "جاري الحفظ...",
+        "create": "إنشاء الخبر",
+        "saveChanges": "حفظ التغييرات",
+        "back": "رجوع"
+      },
+      "messages": {
+        "saved": "✓ تم الحفظ بنجاح، جاري التوجيه..."
+      },
+      "errors": {
+        "titleRequired": "يجب إدخال عنوان واحد على الأقل",
+        "save": "فشل الحفظ"
+      }
     }
   },
-  "Ui": {
+  "UserPortfolio": {
+    "loading": "جاري التحميل...",
     "common": {
-      "loading": "جاري التحميل",
-      "pleaseWait": "يرجى الانتظار..."
+      "edit": "تعديل",
+      "addNew": "إضافة جديد",
+      "cancel": "إلغاء",
+      "confirm": "تأكيد",
+      "delete": "حذف",
+      "remove": "إزالة",
+      "attachmentsLabel": "المرفقات",
+      "browse": "تصفح",
+      "noAttachment": "لا توجد مرفقات"
     },
-    "dialog": {
-      "close": "إغلاق",
-      "description": "محتوى الحوار"
+    "levels": {
+      "beginner": "مبتدئ",
+      "intermediate": "متوسط",
+      "fluent": "محادثة",
+      "native": "اللغة الأم"
     },
-    "sheet": {
-      "title": "الشريط الجانبي",
-      "close": "إغلاق"
+    "eduLevelLabels": {
+      "high_school": "ثانوية عامة",
+      "bachelor": "بكالوريوس",
+      "master": "ماجستير",
+      "phd": "دكتوراه"
     },
-    "sidebar": {
-      "title": "الشريط الجانبي",
-      "mobileDescription": "يعرض الشريط الجانبي على الجوال.",
-      "toggle": "تبديل الشريط الجانبي"
+    "eduLevelOptions": {
+      "high_school": "ثانوية عامة",
+      "bachelor": "بكالوريوس",
+      "master": "ماجستير",
+      "phd": "دكتوراه"
     },
-    "breadcrumb": {
-      "label": "مسار التنقل",
-      "more": "المزيد"
+    "grades": {
+      "excellent": "امتياز <ltr>(A = 90-100%)</ltr>",
+      "very_good": "جيد جداً <ltr>(B = 80-89%)</ltr>",
+      "good": "جيد <ltr>(C = 70-79%)</ltr>",
+      "pass": "مقبول <ltr>(D = 50-69%)</ltr>"
     },
-    "carousel": {
-      "previousSlide": "الشريحة السابقة",
-      "nextSlide": "الشريحة التالية"
+    "gradeOptions": {
+      "excellent": "ممتاز ‎(A = 90-100%)",
+      "very_good": "جيد جداً ‎(B = 80-89%)",
+      "good": "جيد ‎(C = 70-79%)",
+      "pass": "مقبول ‎(D = 50-69%)"
     },
-    "pagination": {
-      "navigation": "ترقيم الصفحات",
-      "previous": "السابق",
-      "next": "التالي",
-      "goToPrevious": "الانتقال إلى الصفحة السابقة",
-      "goToNext": "الانتقال إلى الصفحة التالية",
-      "morePages": "المزيد من الصفحات"
+    "cv": {
+      "title": "CV",
+      "dropText": "قم بسحب سيرتك الذاتية هنا، أو <browse>تصفح</browse>",
+      "supportsPdf": "يدعم بصيغة PDF",
+      "pendingSave": "بانتظار الحفظ",
+      "viewFile": "عرض الملف",
+      "pdfOnlyError": "يجب رفع ملف بصيغة PDF فقط",
+      "loadError": "فشل تحميل البيانات"
     },
-    "common": {
-      "loading": "جاري التحميل...",
-      "pleaseWait": "يرجى الانتظار...",
-      "openTicket": "فتح تذكرة"
+    "validation": {
+      "languagesRequired": "يجب إضافة لغة واحدة على الأقل قبل الحفظ",
+      "educationsRequired": "يجب إضافة مؤهل تعليمي واحد على الأقل قبل الحفظ",
+      "experiencesRequired": "يجب إضافة خبرة عملية واحدة على الأقل قبل الحفظ",
+      "skillsRequired": "يجب إضافة مهارة واحدة على الأقل قبل الحفظ"
+    },
+    "saveSuccess": "تم حفظ البيانات بنجاح",
+    "saveError": "فشل حفظ البيانات",
+    "language": {
+      "heading": "اللغات",
+      "empty": "لم يتم إضافة لغات بعد",
+      "modal": {
+        "description": "إضافة وتعديل اللغات في سيرتك الذاتية",
+        "rowLanguageLabel": "اللغة *",
+        "rowLanguagePlaceholder": "مثال: الإنجليزية",
+        "rowLevelLabel": "المستوى *",
+        "deleteRowTitle": "حذف الصف",
+        "empty": "لم تقم بإضافة لغة بعد. انقر على إضافة صف أدناه.",
+        "addRow": "إضافة لغة جديدة",
+        "errors": {
+          "languageRequired": "الرجاء تحديد اسم اللغة لكل الصفوف",
+          "atLeastOne": "يجب إضافة لغة واحدة على الأقل"
+        }
+      }
+    },
+    "education": {
+      "heading": "المؤهلات العلمية",
+      "empty": "لم يتم إضافة مؤهلات تعليمية بعد",
+      "noAttachment": "لا توجد شهادة مرفقة",
+      "modal": {
+        "description": "إضافة أو تعديل المؤهل التعليمي",
+        "universityLabel": "الجامعة *",
+        "universityPlaceholder": "أدخل اسم الجامعة",
+        "levelLabel": "المستوى التعليمي *",
+        "yearLabel": "سنة التخرج *",
+        "specializationLabel": "التخصص *",
+        "specializationPlaceholder": "مثال: هندسة برمجيات",
+        "gradeLabel": "التقدير النهائي *",
+        "dropText": "قم بسحب الملف هنا، أو <browse>تصفح</browse>",
+        "sizeNote": "حجم الملف أقل من 10MB والصيغة PDF فقط",
+        "errors": {
+          "universityRequired": "الرجاء إدخال اسم الجامعة",
+          "specializationRequired": "الرجاء إدخال التخصص",
+          "graduationYearRequired": "الرجاء تحديد سنة التخرج",
+          "levelRequired": "الرجاء تحديد المستوى التعليمي",
+          "gradeRequired": "الرجاء تحديد التقدير النهائي",
+          "atLeastOne": "يجب أن تحتوي سيرتك الذاتية على مؤهل تعليمي واحد على الأقل."
+        }
+      }
+    },
+    "experience": {
+      "heading": "الخبرات العملية",
+      "empty": "لم يتم إضافة خبرات عملية بعد",
+      "present": "حالياً",
+      "noAttachment": "لا توجد مرفقات",
+      "modal": {
+        "description": "إضافة أو تعديل خبرة عملية في سيرتك الذاتية",
+        "companyLabel": "اسم الشركة *",
+        "companyPlaceholder": "أدخل اسم الشركة",
+        "departmentLabel": "القسم *",
+        "departmentPlaceholder": "مثال: قسم البرمجة",
+        "periodLabel": "فترة العمل *",
+        "from": "من",
+        "to": "إلى",
+        "untilNow": "حتى الآن",
+        "currentlyWorking": "أعمل هنا حالياً",
+        "responsibilitiesLabel": "المسؤوليات *",
+        "responsibilitiesPlaceholder": "اكتب تفاصيل مهامك ومسؤولياتك",
+        "dropText": "قم بسحب الملف هنا، أو <browse>تصفح</browse>",
+        "fileTypesNote": "صيغ الملفات المدعومة: pdf, jpg, jpeg, png وحجم أقل من 10MB",
+        "errors": {
+          "companyRequired": "الرجاء إدخال اسم الشركة",
+          "departmentRequired": "الرجاء إدخال القسم",
+          "startDateRequired": "الرجاء تحديد تاريخ البدء",
+          "endDateRequired": "الرجاء تحديد تاريخ النهاية",
+          "responsibilitiesRequired": "الرجاء إدخال المسؤوليات",
+          "atLeastOne": "يجب أن تحتوي سيرتك الذاتية على خبرة عملية واحدة على الأقل."
+        }
+      }
+    },
+    "skills": {
+      "heading": "المهارات",
+      "empty": "لم يتم إضافة مهارات بعد",
+      "modal": {
+        "description": "إضافة وتعديل المهارات في سيرتك الذاتية",
+        "label": "المهارة *",
+        "placeholder": "أدخل اسم المهارة واضغط Enter",
+        "duplicateError": "المهارة مضافة بالفعل",
+        "atLeastOneError": "يجب إضافة مهارة واحدة على الأقل",
+        "addOption": "إضافة \"{skill}\""
+      }
+    },
+    "submit": {
+      "saving": "جاري الحفظ...",
+      "submit": "حفظ التغييرات"
     }
   }
 }

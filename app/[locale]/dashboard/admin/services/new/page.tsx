@@ -3,7 +3,7 @@ import { setRequestLocale } from "next-intl/server"
 import { getSession } from "@/lib/auth-token"
 import { normalizeRole } from "@/lib/auth-token"
 import { AdminPageLayout } from "@/features/admin/components/admin-page-layout"
-import { AdminServiceAddForm } from "@/features/admin/components/admin-service-add-form"
+import { AdminServiceCreateForm } from "@/features/admin/components/admin-service-create-form"
 
 type PageProps = {
   params: Promise<{ locale: string }>
@@ -32,7 +32,7 @@ export default async function AdminServiceNewPage({ params }: PageProps) {
           : "Create a new service with titles, descriptions, and features in all languages"
       }
     >
-      <AdminServiceAddForm locale={locale} />
+      <AdminServiceCreateForm locale={locale} />
     </AdminPageLayout>
   )
 }

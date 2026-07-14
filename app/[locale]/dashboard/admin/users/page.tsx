@@ -2,7 +2,7 @@ import { redirect } from "next/navigation"
 import { getTranslations, setRequestLocale } from "next-intl/server"
 import { getSession } from "@/lib/auth-token"
 import { normalizeRole } from "@/lib/auth-token"
-import { getAdminUsers } from "@/lib/api/services/admin.service"
+import { getAdminUsers, getAdminUserStats } from "@/lib/api/services/admin.service"
 import { AdminUsersPanel } from "@/features/admin/components/admin-users-panel"
 import { AdminPageLayout } from "@/features/admin/components/admin-page-layout"
 
@@ -35,9 +35,16 @@ export default async function AdminUsersPage({
     // ignore
   }
 
+  let stats: Awaited<ReturnType<typeof getAdminUserStats>> | undefined
+  try {
+    stats = await getAdminUserStats(session.accessToken!, locale, "user")
+  } catch (err) {
+    // ignore
+  }
+
   return (
     <AdminPageLayout title={t("title")} description={t("description")}>
-      <AdminUsersPanel users={users} locale={locale} meta={meta} />
+      <AdminUsersPanel users={users} locale={locale} meta={meta} stats={stats} />
     </AdminPageLayout>
   )
 }

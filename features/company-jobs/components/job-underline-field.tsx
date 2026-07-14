@@ -3,15 +3,23 @@
 import { useRef } from "react"
 import { cn } from "@/lib/utils"
 import { NewsCalendarIcon } from "@/features/news/components/news-icons"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 
 type FieldProps = {
   label: string
   required?: boolean
+  error?: string
   className?: string
   children: React.ReactNode
 }
 
-export function JobFieldGroup({ label, required, className, children }: FieldProps) {
+export function JobFieldGroup({ label, required, error, className, children }: FieldProps) {
   return (
     <div className={cn("flex w-full flex-col gap-2 sm:gap-3", className)}>
       <div className="flex items-center gap-1">
@@ -25,6 +33,11 @@ export function JobFieldGroup({ label, required, className, children }: FieldPro
         ) : null}
       </div>
       {children}
+      {error ? (
+        <p className="text-sm text-[#FF2D55]" role="alert">
+          {error}
+        </p>
+      ) : null}
     </div>
   )
 }
@@ -85,39 +98,27 @@ export function JobUnderlineSelect({
   className?: string
 }) {
   return (
-    <div className={cn("relative w-full", className)}>
-      <select
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        {...(disabled ? { disabled: true } : {})}
+    <Select value={value || undefined} onValueChange={onChange} disabled={disabled}>
+      <SelectTrigger
         className={cn(
-          underlineClass,
-          "cursor-pointer appearance-none pe-10 disabled:cursor-not-allowed disabled:opacity-60 font-medium",
-          !value && "text-[#B0B0B0]"
+          "h-12 w-full min-h-[48px] justify-between rounded-xl border border-[#E0E0E0] bg-white px-4 text-sm font-medium text-[#525252] shadow-none transition-colors hover:border-[#006EA8]/50 focus-visible:border-[#006EA8] focus-visible:ring-[#006EA8]/20 data-placeholder:text-[#B0B0B0] disabled:cursor-not-allowed disabled:opacity-60 sm:min-h-[52px] sm:text-base",
+          className
         )}
       >
-        {placeholder ? (
-          <option value="" disabled>
-            {placeholder}
-          </option>
-        ) : null}
-        {options.map((o) => (
-          <option key={o.value} value={o.value}>
-            {o.label}
-          </option>
-        ))}
-      </select>
-      <svg
-        className="pointer-events-none absolute end-2 top-1/2 h-5 w-5 -translate-y-1/2"
-        viewBox="0 0 20 20"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
-        aria-hidden
+        <SelectValue placeholder={placeholder} />
+      </SelectTrigger>
+      <SelectContent
+        position="popper"
+        sideOffset={6}
+        className="max-h-[min(18rem,var(--radix-select-content-available-height,600px))]"
       >
-        <path opacity="0.5" d="M12.9003 11.0247L9.74194 6.81641H5.06695C4.26695 6.81641 3.86695 7.78307 4.43361 8.34974L8.75028 12.6664C9.44195 13.3581 10.5669 13.3581 11.2586 12.6664L12.9003 11.0247Z" fill="#006EA8" />
-        <path d="M14.9329 6.81641H9.74121L12.8995 11.0247L15.5745 8.34974C16.1329 7.78307 15.7329 6.81641 14.9329 6.81641Z" fill="#006EA8" />
-      </svg>
-    </div>
+        {options.map((o) => (
+          <SelectItem key={o.value} value={o.value}>
+            {o.label}
+          </SelectItem>
+        ))}
+      </SelectContent>
+    </Select>
   )
 }
 
@@ -125,10 +126,14 @@ export function JobUnderlineDate({
   value,
   onChange,
   className,
+  ariaLabel,
+  openLabel,
 }: {
   value: string
   onChange: (v: string) => void
   className?: string
+  ariaLabel?: string
+  openLabel?: string
 }) {
   const inputRef = useRef<HTMLInputElement>(null)
   const minDate = new Date().toISOString().slice(0, 10)
@@ -172,7 +177,7 @@ export function JobUnderlineDate({
           value={value}
           min={minDate}
           onChange={(e) => onChange(e.target.value)}
-          aria-label="Application deadline"
+          aria-label={ariaLabel}
           tabIndex={-1}
           className="pointer-events-none absolute h-0 w-0 opacity-0"
         />
@@ -189,7 +194,7 @@ export function JobUnderlineDate({
             openPicker()
           }}
           className="shrink-0 rounded p-1 transition hover:bg-[#E6F6FF]"
-          aria-label="Open calendar"
+          aria-label={openLabel}
         >
           <NewsCalendarIcon className="h-5 w-5 text-[#006EA8]" aria-hidden />
         </button>

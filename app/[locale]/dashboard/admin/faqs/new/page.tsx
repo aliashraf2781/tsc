@@ -3,7 +3,7 @@ import { setRequestLocale } from "next-intl/server"
 import { getSession } from "@/lib/auth-token"
 import { normalizeRole } from "@/lib/auth-token"
 import { AdminPageLayout } from "@/features/admin/components/admin-page-layout"
-import { AdminFaqEditForm } from "@/features/admin/components/admin-faq-edit-form"
+import { AdminFaqCreateForm } from "@/features/admin/components/admin-faq-create-form"
 
 type PageProps = {
   params: Promise<{ locale: string }>
@@ -28,7 +28,7 @@ export default async function AdminFaqNewPage({ params }: PageProps) {
       title={isRTL ? "إضافة سؤال شائع" : "Add FAQ"}
       description={isRTL ? "أضف سؤالاً وإجابته" : "Add a question and its answer"}
     >
-      <AdminFaqEditForm locale={locale} isNew={true} />
+      <AdminFaqCreateForm locale={locale} />
     </AdminPageLayout>
   )
 }

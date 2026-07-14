@@ -3,7 +3,7 @@ import { setRequestLocale } from "next-intl/server"
 import { getSession } from "@/lib/auth-token"
 import { normalizeRole } from "@/lib/auth-token"
 import { AdminPageLayout } from "@/features/admin/components/admin-page-layout"
-import { AdminNewsEditForm } from "@/features/admin/components/admin-news-edit-form"
+import { AdminNewsCreateForm } from "@/features/admin/components/admin-news-create-form"
 
 type PageProps = {
   params: Promise<{ locale: string }>
@@ -32,7 +32,7 @@ export default async function AdminNewsNewPage({ params }: PageProps) {
           : "Enter the details, translations, and set an image for the new article displayed on public news section"
       }
     >
-      <AdminNewsEditForm locale={locale} isNew={true} />
+      <AdminNewsCreateForm locale={locale} />
     </AdminPageLayout>
   )
 }

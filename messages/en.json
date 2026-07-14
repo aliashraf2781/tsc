@@ -101,12 +101,57 @@
     "common": {
       "loading": "Loading...",
       "pleaseWait": "Please wait...",
-      "newTicket": "New Ticket"
+      "openTicket": "Open Ticket"
     },
     "dialog": {
       "close": "Close",
       "description": "Dialog content"
+    },
+    "sheet": {
+      "title": "Sidebar drawer",
+      "close": "Close"
+    },
+    "sidebar": {
+      "title": "Sidebar",
+      "mobileDescription": "Displays the mobile sidebar.",
+      "toggle": "Toggle Sidebar"
+    },
+    "breadcrumb": {
+      "label": "breadcrumb",
+      "more": "More"
+    },
+    "carousel": {
+      "previousSlide": "Previous slide",
+      "nextSlide": "Next slide"
+    },
+    "pagination": {
+      "navigation": "pagination",
+      "previous": "Previous",
+      "next": "Next",
+      "goToPrevious": "Go to previous page",
+      "goToNext": "Go to next page",
+      "morePages": "More pages"
     }
+  },
+  "SiteHeader": {
+    "notificationsAria": "Notifications",
+    "notificationsTitle": "Notifications ({count})",
+    "markAllRead": "Mark all read",
+    "loading": "Loading...",
+    "noNotifications": "No notifications",
+    "userMenuAria": "User menu",
+    "defaultUserName": "User",
+    "role": {
+      "user": "Job Seeker",
+      "company": "Company",
+      "admin": "Admin"
+    },
+    "dashboard": "Dashboard",
+    "profileSettings": "Profile Settings",
+    "logout": "Logout",
+    "openMenu": "Open menu",
+    "closeMenu": "Close menu",
+    "menuTitle": "Menu"
   },
   "Landing": {
     "hero": {
@@ -502,6 +547,7 @@
         "emailPlaceholder": "Enter your email",
         "phoneLabel": "Phone",
         "phonePlaceholder": "Enter your phone",
+        "countryPlaceholder": "Country",
         "subjectLabel": "Subject",
         "subjectPlaceholder": "Enter the subject",
         "messageLabel": "Message",
@@ -509,7 +555,16 @@
         "send": "Send",
         "sending": "Sending...",
         "success": "Your message has been sent successfully!",
-        "error": "An error occurred. Please try again."
+        "error": "An error occurred. Please try again.",
+        "errors": {
+          "nameRequired": "Name is required",
+          "emailRequired": "Email is required",
+          "emailInvalid": "Invalid email address",
+          "subjectRequired": "Subject is required",
+          "messageRequired": "Message is required",
+          "phoneInvalid": "Phone number must contain digits only",
+          "countryRequired": "Please select a country code"
+        }
       },
       "info": {
         "phoneLabel": "Phone Number",
@@ -560,6 +615,7 @@
     "submitting": "Publishing...",
     "compressing": "Optimizing image...",
     "imageSizeHint": "Images are compressed before upload for faster publishing. JPG, PNG, or WebP up to 12 MB.",
+    "openCalendar": "Open calendar",
     "delete": "Delete",
     "stop": "Stop",
     "applications": "Applications",
@@ -853,17 +909,41 @@
         "category": "Category",
         "status": "Status",
         "role": "Role",
-        "actions": "Actions"
+        "actions": "Actions",
+        "registrationDate": "Registration Date",
+        "verification": "Verification"
       },
       "roles": {
         "user": "User",
         "company": "Company",
         "admin": "Admin"
       },
+      "stats": {
+        "total": "Total Users",
+        "verified": "Verified Accounts",
+        "unverified": "Unverified Accounts",
+        "verifiedLabel": "Verified",
+        "unverifiedLabel": "Not Verified"
+      },
+      "verification": {
+        "verified": "Verified",
+        "notVerified": "Not Verified"
+      },
+      "edit": "Edit",
+      "suspend": "Suspend",
+      "activate": "Activate",
+      "confirm": "Confirm",
+      "cancel": "Cancel",
       "delete": "Delete",
       "deleteConfirm": "Delete this user?",
+      "deleteSuccess": "User deleted",
+      "suspendConfirm": "Do you want to suspend this account?",
+      "activateConfirm": "Do you want to activate this account?",
+      "statusUpdateSuccess": "Account status updated",
+      "statusUpdateError": "Failed to change user status",
       "empty": "No users",
-      "error": "Delete failed"
+      "error": "Delete failed",
+      "pagination": "Page {page} of {last} · {total} users"
     },
     "companies": {
       "title": "Companies",
@@ -914,7 +994,86 @@
       "deleteConfirm": "Delete this story?",
       "empty": "No success stories",
       "error": "Save failed",
-      "locationRequired": "Location is required"
+      "locationRequired": "Location is required",
+      "labels": {
+        "language": "Language:"
+      },
+      "sections": {
+        "storyAndPerson": "Story & Person Data",
+        "profilePicture": "Profile Picture"
+      },
+      "nameRequired": "At least Arabic name is required",
+      "savedRedirect": "✓ Saved successfully, redirecting...",
+      "actions": {
+        "saving": "Saving...",
+        "create": "Create Story",
+        "saveChanges": "Save Changes",
+        "back": "Back"
+      }
+    },
+    "categories": {
+      "manageCategories": "Manage Categories",
+      "manageCategoriesDesc": "Add and edit job categories shown on the jobs and home pages",
+      "language": "Language:",
+      "noCategories": "No categories. Click \"Add Category\" to start.",
+      "defaultName": "Category",
+      "categoryName": "Category Name",
+      "icon": "Icon",
+      "changeIcon": "Change Icon",
+      "uploadIcon": "Upload Icon",
+      "remove": "Remove",
+      "subCategories": "Sub-Categories",
+      "addSub": "Add Sub",
+      "noSubCategories": "No sub-categories",
+      "subCategory": "Sub-Category",
+      "newItem": "New",
+      "name": "Name",
+      "saving": "Saving...",
+      "saveCategory": "Save Category",
+      "savedSuccessfully": "Saved successfully",
+      "addCategory": "Add Category",
+      "deleteCategoryTitle": "Delete Category",
+      "confirmDeleteTitle": "Confirm Delete",
+      "confirmDeleteBody": "Are you sure you want to delete this category? This action cannot be undone.",
+      "cancel": "Cancel",
+      "deleting": "Deleting...",
+      "delete": "Delete",
+      "deleteFailed": "Failed to delete",
+      "errors": {
+        "nameRequired": "Category name is required",
+        "save": "Failed to save"
+      }
+    },
+    "services": {
+      "language": "Language:",
+      "feature": "Feature",
+      "newItem": "New",
+      "removeFeature": "Remove feature",
+      "featuresAndAdvantages": "Features & Advantages ({count})",
+      "addFeature": "Add Feature",
+      "noFeaturesYet": "No features yet. Click \"Add Feature\" to start.",
+      "featureTitle": "Feature Title",
+      "featureDescription": "Feature Description",
+      "iconUrlLabel": "Icon URL / Path",
+      "iconUrlPlaceholder": "/icons/my-icon.svg or https://...",
+      "orUploadIconFile": "Or upload icon file",
+      "serviceImage": "Service Image",
+      "errors": {
+        "titleRequired": "Service title is required",
+        "descriptionRequired": "Service description is required"
+      },
+      "coreServiceData": "Core Service Data",
+      "titleLabel": "Service Title",
+      "descriptionLabel": "Service Description",
+      "actions": {
+        "saving": "Saving...",
+        "create": "Create Service",
+        "saveChanges": "Save Changes",
+        "back": "Back"
+      },
+      "messages": {
+        "saved": "✓ Saved successfully, redirecting..."
+      }
     },
     "faqs": {
       "title": "Frequently Asked Questions",
@@ -1056,45 +1215,191 @@
       "delete": "Delete",
       "deleteConfirm": "Delete this article?",
       "error": "Something went wrong"
+    },
+    "mediaUpload": {
+      "change": "Change Image",
+      "upload": "Upload Image",
+      "remove": "Remove",
+      "hint": "PNG, JPG or WEBP · Max size 5MB",
+      "errors": {
+        "unsupportedFileType": "Unsupported file type. Use PNG, JPG or WEBP",
+        "fileTooLarge": "File is larger than 5MB"
+      }
+    },
+    "news": {
+      "titles": {
+        "content": "News Content"
+      },
+      "labels": {
+        "language": "Language:"
+      },
+      "fields": {
+        "title": "News Title",
+        "description": "News Description/Content",
+        "image": "News Display Image"
+      },
+      "actions": {
+        "saving": "Saving...",
+        "create": "Create News",
+        "saveChanges": "Save Changes",
+        "back": "Back"
+      },
+      "messages": {
+        "saved": "✓ Saved successfully, redirecting..."
+      },
+      "errors": {
+        "titleRequired": "At least one title is required",
+        "save": "Failed to save"
+      }
     }
   },
-  "Ui": {
+  "UserPortfolio": {
+    "loading": "Loading...",
     "common": {
-      "loading": "Loading"
+      "edit": "Edit",
+      "addNew": "Add New",
+      "cancel": "Cancel",
+      "confirm": "Submit",
+      "delete": "Delete",
+      "remove": "Remove",
+      "attachmentsLabel": "Attachments",
+      "browse": "browse",
+      "noAttachment": "No attachment"
     },
-    "dialog": {
-      "close": "Close",
-      "description": "Dialog content"
+    "levels": {
+      "beginner": "Beginner",
+      "intermediate": "Intermediate",
+      "fluent": "Conversational",
+      "native": "Native or Bilingual"
     },
-    "sheet": {
-      "title": "Sidebar drawer",
-      "close": "Close"
+    "eduLevelLabels": {
+      "high_school": "High School",
+      "bachelor": "Bachelor",
+      "master": "Master",
+      "phd": "PhD"
     },
-    "sidebar": {
-      "title": "Sidebar",
-      "mobileDescription": "Displays the mobile sidebar.",
-      "toggle": "Toggle Sidebar"
+    "eduLevelOptions": {
+      "high_school": "High School",
+      "bachelor": "Bachelor",
+      "master": "Master",
+      "phd": "PhD"
     },
-    "breadcrumb": {
-      "label": "breadcrumb",
-      "more": "More"
+    "grades": {
+      "excellent": "<ltr>A = 90-100%</ltr>",
+      "very_good": "<ltr>B = 80-89%</ltr>",
+      "good": "<ltr>C = 70-79%</ltr>",
+      "pass": "<ltr>D = 50-69%</ltr>"
     },
-    "carousel": {
-      "previousSlide": "Previous slide",
-      "nextSlide": "Next slide"
+    "gradeOptions": {
+      "excellent": "A = 90-100%",
+      "very_good": "B = 80-89%",
+      "good": "C = 70-79%",
+      "pass": "D = 50-69%"
     },
-    "pagination": {
-      "navigation": "pagination",
-      "previous": "Previous",
-      "next": "Next",
-      "goToPrevious": "Go to previous page",
-      "goToNext": "Go to next page",
-      "morePages": "More pages"
+    "cv": {
+      "title": "CV",
+      "dropText": "Drop your CV here, or <browse>browse</browse>",
+      "supportsPdf": "Supports PDF",
+      "pendingSave": "Pending save",
+      "viewFile": "View File",
+      "pdfOnlyError": "Only PDF files are allowed",
+      "loadError": "Failed to load data"
     },
-    "common": {
-      "loading": "Loading...",
-      "pleaseWait": "Please wait...",
-      "openTicket": "Open Ticket"
+    "validation": {
+      "languagesRequired": "Please add at least one language before saving",
+      "educationsRequired": "Please add at least one education entry before saving",
+      "experiencesRequired": "Please add at least one work experience before saving",
+      "skillsRequired": "Please add at least one skill before saving"
+    },
+    "saveSuccess": "Portfolio saved successfully",
+    "saveError": "Failed to save data",
+    "language": {
+      "heading": "Language",
+      "empty": "No languages added yet",
+      "modal": {
+        "description": "Add and edit languages in your portfolio",
+        "rowLanguageLabel": "Language *",
+        "rowLanguagePlaceholder": "e.g. English",
+        "rowLevelLabel": "level *",
+        "deleteRowTitle": "Delete Row",
+        "empty": "No languages added yet. Click Add Row below.",
+        "addRow": "Add New Language",
+        "errors": {
+          "languageRequired": "Please specify the language name for all rows",
+          "atLeastOne": "At least one language is required"
+        }
+      }
+    },
+    "education": {
+      "heading": "Education",
+      "empty": "No education added yet",
+      "noAttachment": "No attachment",
+      "modal": {
+        "description": "Add or edit an education qualification",
+        "universityLabel": "University *",
+        "universityPlaceholder": "Enter university name",
+        "levelLabel": "Level Of Education *",
+        "yearLabel": "Graduation Year *",
+        "specializationLabel": "Specialization *",
+        "specializationPlaceholder": "e.g. Software Engineering",
+        "gradeLabel": "Final Grade *",
+        "dropText": "Drop a file, or <browse>browse</browse>",
+        "sizeNote": "File size should be less than 10MB and file type should be pdf",
+        "errors": {
+          "universityRequired": "Please enter the university name",
+          "specializationRequired": "Please enter the specialization",
+          "graduationYearRequired": "Please select graduation year",
+          "levelRequired": "Please select education level",
+          "gradeRequired": "Please select final grade",
+          "atLeastOne": "Your portfolio must contain at least one education item."
+        }
+      }
+    },
+    "experience": {
+      "heading": "Work Experience",
+      "empty": "No work experience added yet",
+      "present": "Present",
+      "noAttachment": "No attachment",
+      "modal": {
+        "description": "Add or edit a work experience entry",
+        "companyLabel": "Company Name *",
+        "companyPlaceholder": "Enter company name",
+        "departmentLabel": "Department *",
+        "departmentPlaceholder": "e.g. IT Department",
+        "periodLabel": "Employment Period *",
+        "from": "from",
+        "to": "to",
+        "untilNow": "Present",
+        "currentlyWorking": "Currently Work Here",
+        "responsibilitiesLabel": "Responsibilities *",
+        "responsibilitiesPlaceholder": "Write details about your roles and tasks",
+        "dropText": "Drop a file, or <browse>browse</browse>",
+        "fileTypesNote": "File size should be less than 10MB and file type should be jpg, jpeg, png, pdf",
+        "errors": {
+          "companyRequired": "Please enter the company name",
+          "departmentRequired": "Please enter the department",
+          "startDateRequired": "Please select start date",
+          "endDateRequired": "Please select end date",
+          "responsibilitiesRequired": "Please enter responsibilities",
+          "atLeastOne": "Your portfolio must contain at least one work experience."
+        }
+      }
+    },
+    "skills": {
+      "heading": "Skills",
+      "empty": "No skills added yet",
+      "modal": {
+        "description": "Add and manage skills in your portfolio",
+        "label": "Skill *",
+        "placeholder": "Type a skill and press Enter",
+        "duplicateError": "Skill already added",
+        "atLeastOneError": "At least one skill is required",
+        "addOption": "Add \"{skill}\""
+      }
+    },
+    "submit": {
+      "saving": "Saving...",
+      "submit": "Submit"
     }
   }
 }

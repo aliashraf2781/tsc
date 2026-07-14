@@ -48,7 +48,7 @@ export function AboutStorySection({
 
   const [activeTabKey, setActiveTabKey] = useState<string>(dynamicTabs[0]?.key ?? "mission")
   const activeTab = dynamicTabs.find((t) => t.key === activeTabKey) ?? dynamicTabs[0]
-
+  console.log(features)
   const isRemoteImage = /^https?:\/\//.test(storyImageSrc)
 
   return (

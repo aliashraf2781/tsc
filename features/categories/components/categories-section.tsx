@@ -4,6 +4,7 @@ import { getTranslations } from "next-intl/server"
 import { getLocale } from "next-intl/server"
 import { SectionShell, StaggerInView, StaggerItem } from "@/features/shared-home"
 import { getCategories } from "@/lib/api/services/categories.service"
+import { getPublicJobs } from "@/lib/api/services/jobs.service"
 import { Link } from "@/i18n/navigation"
 import { CategoryIconFor } from "@/features/categories/components/category-icons"
 import { cn, resolveImageUrl } from "@/lib/utils"
@@ -12,6 +13,18 @@ import Image from "next/image"
 
 const CARD_HOVER_SHADOW =
   "hover:border-[#4BB7E7] hover:bg-[url('/contact/button-noise.png'),linear-gradient(180deg,#006EA8_0%,#005685_100%)] hover:bg-size-[150px_150px,auto] hover:bg-blend-[plus-lighter,normal] hover:text-white hover:shadow-[0_0_0_5px_#FFFFFF,0_0_0_4px_#C2E3FA,0_4px_5px_rgba(75,183,231,0.15),0_10px_13px_rgba(75,183,231,0.22),0_24px_32px_rgba(75,183,231,0.19)]"
+
+function formatMetricCount(total: number): string {
+  const withUnit = (value: number, unit: string) => {
+    const rounded = Math.floor(value * 10) / 10
+    const trimmed = Number.isInteger(rounded) ? String(rounded) : rounded.toFixed(1)
+    return `${trimmed}${unit}+`
+  }
+
+  if (total >= 1_000_000) return withUnit(total / 1_000_000, "m")
+  if (total >= 1_000) return withUnit(total / 1_000, "k")
+  return `${total}+`
+}
 
 type CategoriesSectionProps = {
   override?: {
@@ -30,9 +43,10 @@ export async function CategoriesSection({ override }: CategoriesSectionProps) {
   const categories = await getCategories(locale)
   const title = override?.title ?? t("title")
   const description = override?.description ?? t("description")
-  
-  // Static metric display as requested
-  const metricDisplay = "27k+"
+
+  const { meta } = await getPublicJobs({ per_page: 1 }, locale)
+  const totalJobs = meta?.total ?? 0
+  const metricDisplay = override?.heroStats?.total ?? formatMetricCount(totalJobs)
 
   return (
     <SectionShell id="categories" stagger={false} className="overflow-hidden bg-white py-12 sm:py-16 lg:py-[82px]">

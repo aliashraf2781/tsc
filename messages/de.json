@@ -101,12 +101,57 @@
     "common": {
       "loading": "Wird geladen...",
       "pleaseWait": "Bitte warten...",
-      "newTicket": "Neues Ticket"
+      "openTicket": "Ticket erstellen"
     },
     "dialog": {
       "close": "Schließen",
-      "description": "Dialog-Inhalt"
+      "description": "Inhalt des Dialogs"
+    },
+    "sheet": {
+      "title": "Seitenleisten-Drawer",
+      "close": "Schließen"
+    },
+    "sidebar": {
+      "title": "Seitenleiste",
+      "mobileDescription": "Zeigt die mobile Seitenleiste an.",
+      "toggle": "Seitenleiste umschalten"
+    },
+    "breadcrumb": {
+      "label": "Brotkrumenpfad",
+      "more": "Mehr"
+    },
+    "carousel": {
+      "previousSlide": "Vorherige Folie",
+      "nextSlide": "Nächste Folie"
+    },
+    "pagination": {
+      "navigation": "Seitennavigation",
+      "previous": "Zurück",
+      "next": "Weiter",
+      "goToPrevious": "Zur vorherigen Seite",
+      "goToNext": "Zur nächsten Seite",
+      "morePages": "Weitere Seiten"
     }
+  },
+  "SiteHeader": {
+    "notificationsAria": "Benachrichtigungen",
+    "notificationsTitle": "Benachrichtigungen ({count})",
+    "markAllRead": "Alle als gelesen markieren",
+    "loading": "Wird geladen...",
+    "noNotifications": "Keine Benachrichtigungen",
+    "userMenuAria": "Benutzermenü",
+    "defaultUserName": "Benutzer",
+    "role": {
+      "user": "Jobsuchender",
+      "company": "Unternehmen",
+      "admin": "Admin"
+    },
+    "dashboard": "Dashboard",
+    "profileSettings": "Profileinstellungen",
+    "logout": "Abmelden",
+    "openMenu": "Menü öffnen",
+    "closeMenu": "Menü schließen",
+    "menuTitle": "Menü"
   },
   "Landing": {
     "hero": {
@@ -117,11 +162,11 @@
       "cta": "Chancen entdecken",
       "login": "Anmelden",
       "nav": {
-        "home": "Start",
+        "home": "Startseite",
         "about": "Über uns",
-        "services": "Services",
+        "services": "Leistungen",
         "jobs": "Jobs",
-        "news": "News",
+        "news": "Neuigkeiten",
         "contact": "Kontakt"
       },
       "languageAria": "Sprache wechseln",
@@ -502,6 +547,7 @@
         "emailPlaceholder": "Geben Sie Ihre E-Mail ein",
         "phoneLabel": "Telefon",
         "phonePlaceholder": "Geben Sie Ihre Telefonnummer ein",
+        "countryPlaceholder": "Land",
         "subjectLabel": "Betreff",
         "subjectPlaceholder": "Betreff eingeben",
         "messageLabel": "Nachricht",
@@ -509,7 +555,16 @@
         "send": "Senden",
         "sending": "Wird gesendet...",
         "success": "Ihre Nachricht wurde erfolgreich gesendet!",
-        "error": "Ein Fehler ist aufgetreten. Bitte versuchen Sie es erneut."
+        "error": "Ein Fehler ist aufgetreten. Bitte versuchen Sie es erneut.",
+        "errors": {
+          "nameRequired": "Name ist erforderlich",
+          "emailRequired": "E-Mail ist erforderlich",
+          "emailInvalid": "Ungueltige E-Mail-Adresse",
+          "subjectRequired": "Betreff ist erforderlich",
+          "messageRequired": "Nachricht ist erforderlich",
+          "phoneInvalid": "Die Telefonnummer darf nur Ziffern enthalten",
+          "countryRequired": "Bitte waehlen Sie eine Landesvorwahl"
+        }
       },
       "info": {
         "phoneLabel": "Telefonnummer",
@@ -560,6 +615,7 @@
     "submitting": "Wird veröffentlicht...",
     "compressing": "Bild wird optimiert...",
     "imageSizeHint": "Bilder werden vor dem Upload komprimiert. JPG, PNG oder WebP bis 12 MB.",
+    "openCalendar": "Kalender öffnen",
     "delete": "Löschen",
     "stop": "Stoppen",
     "applications": "Bewerbungen",
@@ -853,17 +909,41 @@
         "category": "Kategorie",
         "status": "Status",
         "role": "Rolle",
-        "actions": "Aktionen"
+        "actions": "Aktionen",
+        "registrationDate": "Registrierungsdatum",
+        "verification": "Verifizierung"
       },
       "roles": {
         "user": "Benutzer",
         "company": "Unternehmen",
         "admin": "Admin"
       },
+      "stats": {
+        "total": "Benutzer insgesamt",
+        "verified": "Verifizierte Konten",
+        "unverified": "Nicht verifizierte Konten",
+        "verifiedLabel": "Verifiziert",
+        "unverifiedLabel": "Nicht verifiziert"
+      },
+      "verification": {
+        "verified": "Verifiziert",
+        "notVerified": "Nicht verifiziert"
+      },
+      "edit": "Bearbeiten",
+      "suspend": "Sperren",
+      "activate": "Aktivieren",
+      "confirm": "Bestätigen",
+      "cancel": "Abbrechen",
       "delete": "Löschen",
       "deleteConfirm": "Diesen Benutzer löschen?",
+      "deleteSuccess": "Benutzer gelöscht",
+      "suspendConfirm": "Möchten Sie dieses Konto sperren?",
+      "activateConfirm": "Möchten Sie dieses Konto aktivieren?",
+      "statusUpdateSuccess": "Kontostatus aktualisiert",
+      "statusUpdateError": "Kontostatus konnte nicht geändert werden",
       "empty": "Keine Benutzer",
-      "error": "Löschen fehlgeschlagen"
+      "error": "Löschen fehlgeschlagen",
+      "pagination": "Seite {page} von {last} · {total} Benutzer"
     },
     "companies": {
       "title": "Unternehmen",
@@ -914,7 +994,86 @@
       "deleteConfirm": "Diese Geschichte löschen?",
       "empty": "Keine Erfolgsgeschichten",
       "error": "Speichern fehlgeschlagen",
-      "locationRequired": "Ort ist erforderlich"
+      "locationRequired": "Ort ist erforderlich",
+      "labels": {
+        "language": "Sprache:"
+      },
+      "sections": {
+        "storyAndPerson": "Geschichte & Persondaten",
+        "profilePicture": "Profilbild"
+      },
+      "nameRequired": "Mindestens ein arabischer Name ist erforderlich",
+      "savedRedirect": "✓ Erfolgreich gespeichert, Weiterleitung...",
+      "actions": {
+        "saving": "Speichern...",
+        "create": "Geschichte erstellen",
+        "saveChanges": "Änderungen speichern",
+        "back": "Zurück"
+      }
+    },
+    "categories": {
+      "manageCategories": "Kategorien verwalten",
+      "manageCategoriesDesc": "Jobkategorien hinzufügen und bearbeiten, die auf der Jobs- und Startseite angezeigt werden",
+      "language": "Sprache:",
+      "noCategories": "Keine Kategorien vorhanden. Klicken Sie auf \"Kategorie hinzufügen\", um zu beginnen.",
+      "defaultName": "Kategorie",
+      "categoryName": "Kategoriename",
+      "icon": "Symbol",
+      "changeIcon": "Symbol ändern",
+      "uploadIcon": "Symbol hochladen",
+      "remove": "Entfernen",
+      "subCategories": "Unterkategorien",
+      "addSub": "Unterkategorie hinzufügen",
+      "noSubCategories": "Keine Unterkategorien",
+      "subCategory": "Unterkategorie",
+      "newItem": "Neu",
+      "name": "Name",
+      "saving": "Wird gespeichert...",
+      "saveCategory": "Kategorie speichern",
+      "savedSuccessfully": "Erfolgreich gespeichert",
+      "addCategory": "Kategorie hinzufügen",
+      "deleteCategoryTitle": "Kategorie löschen",
+      "confirmDeleteTitle": "Löschen bestätigen",
+      "confirmDeleteBody": "Möchten Sie diese Kategorie wirklich löschen? Diese Aktion kann nicht rückgängig gemacht werden.",
+      "cancel": "Abbrechen",
+      "deleting": "Wird gelöscht...",
+      "delete": "Löschen",
+      "deleteFailed": "Löschen fehlgeschlagen",
+      "errors": {
+        "nameRequired": "Kategoriename ist erforderlich",
+        "save": "Speichern fehlgeschlagen"
+      }
+    },
+    "services": {
+      "language": "Sprache:",
+      "feature": "Merkmal",
+      "newItem": "Neu",
+      "removeFeature": "Merkmal entfernen",
+      "featuresAndAdvantages": "Merkmale & Vorteile ({count})",
+      "addFeature": "Merkmal hinzufügen",
+      "noFeaturesYet": "Noch keine Merkmale. Klicken Sie auf \"Merkmal hinzufügen\", um zu beginnen.",
+      "featureTitle": "Merkmalstitel",
+      "featureDescription": "Merkmalsbeschreibung",
+      "iconUrlLabel": "Symbol-URL / Pfad",
+      "iconUrlPlaceholder": "/icons/my-icon.svg oder https://...",
+      "orUploadIconFile": "Oder Symboldatei hochladen",
+      "serviceImage": "Dienstleistungsbild",
+      "errors": {
+        "titleRequired": "Titel der Dienstleistung ist erforderlich",
+        "descriptionRequired": "Beschreibung der Dienstleistung ist erforderlich"
+      },
+      "coreServiceData": "Kerndaten der Dienstleistung",
+      "titleLabel": "Titel der Dienstleistung",
+      "descriptionLabel": "Beschreibung der Dienstleistung",
+      "actions": {
+        "saving": "Speichern...",
+        "create": "Dienstleistung erstellen",
+        "saveChanges": "Änderungen speichern",
+        "back": "Zurück"
+      },
+      "messages": {
+        "saved": "✓ Erfolgreich gespeichert, Weiterleitung..."
+      }
     },
     "faqs": {
       "title": "Häufig gestellte Fragen (FAQs)",
@@ -1056,46 +1215,191 @@
       "delete": "Löschen",
       "deleteConfirm": "Diesen Artikel löschen?",
       "error": "Etwas ist schiefgelaufen"
+    },
+    "mediaUpload": {
+      "change": "Bild ändern",
+      "upload": "Bild hochladen",
+      "remove": "Entfernen",
+      "hint": "PNG, JPG oder WEBP · Max. 5MB",
+      "errors": {
+        "unsupportedFileType": "Nicht unterstützter Dateityp. Verwenden Sie PNG, JPG oder WEBP",
+        "fileTooLarge": "Datei ist größer als 5MB"
+      }
+    },
+    "news": {
+      "titles": {
+        "content": "Nachrichteninhalt"
+      },
+      "labels": {
+        "language": "Sprache:"
+      },
+      "fields": {
+        "title": "Nachrichtentitel",
+        "description": "Nachrichtenbeschreibung/-inhalt",
+        "image": "Anzeigebild der Nachricht"
+      },
+      "actions": {
+        "saving": "Speichern...",
+        "create": "Nachricht erstellen",
+        "saveChanges": "Änderungen speichern",
+        "back": "Zurück"
+      },
+      "messages": {
+        "saved": "✓ Erfolgreich gespeichert, Weiterleitung..."
+      },
+      "errors": {
+        "titleRequired": "Mindestens ein Titel ist erforderlich",
+        "save": "Speichern fehlgeschlagen"
+      }
     }
   },
-  "Ui": {
+  "UserPortfolio": {
+    "loading": "Wird geladen...",
     "common": {
-      "loading": "Wird geladen",
-      "pleaseWait": "Bitte warten..."
+      "edit": "Bearbeiten",
+      "addNew": "Neu hinzufügen",
+      "cancel": "Abbrechen",
+      "confirm": "Bestätigen",
+      "delete": "Löschen",
+      "remove": "Entfernen",
+      "attachmentsLabel": "Anhänge",
+      "browse": "durchsuchen",
+      "noAttachment": "Kein Anhang"
     },
-    "dialog": {
-      "close": "Schließen",
-      "description": "Inhalt des Dialogs"
+    "levels": {
+      "beginner": "Anfänger",
+      "intermediate": "Mittelstufe",
+      "fluent": "Konversationssicher",
+      "native": "Muttersprache"
     },
-    "sheet": {
-      "title": "Seitenleisten-Drawer",
-      "close": "Schließen"
+    "eduLevelLabels": {
+      "high_school": "Abitur / Oberschule",
+      "bachelor": "Bachelor-Abschluss",
+      "master": "Master-Abschluss",
+      "phd": "Promotion / PhD"
     },
-    "sidebar": {
-      "title": "Seitenleiste",
-      "mobileDescription": "Zeigt die mobile Seitenleiste an.",
-      "toggle": "Seitenleiste umschalten"
+    "eduLevelOptions": {
+      "high_school": "Abitur / Oberschule",
+      "bachelor": "Bachelor",
+      "master": "Master",
+      "phd": "Promotion / PhD"
     },
-    "breadcrumb": {
-      "label": "Brotkrumenpfad",
-      "more": "Mehr"
+    "grades": {
+      "excellent": "Sehr gut / Ausgezeichnet <ltr>(A = 90-100%)</ltr>",
+      "very_good": "Gut <ltr>(B = 80-89%)</ltr>",
+      "good": "Befriedigend <ltr>(C = 70-79%)</ltr>",
+      "pass": "Ausreichend <ltr>(D = 50-69%)</ltr>"
     },
-    "carousel": {
-      "previousSlide": "Vorherige Folie",
-      "nextSlide": "Nächste Folie"
+    "gradeOptions": {
+      "excellent": "Sehr gut / Ausgezeichnet (A = 90-100%)",
+      "very_good": "Gut (B = 80-89%)",
+      "good": "Befriedigend (C = 70-79%)",
+      "pass": "Ausreichend (D = 50-69%)"
     },
-    "pagination": {
-      "navigation": "Seitennavigation",
-      "previous": "Zurück",
-      "next": "Weiter",
-      "goToPrevious": "Zur vorherigen Seite",
-      "goToNext": "Zur nächsten Seite",
-      "morePages": "Weitere Seiten"
+    "cv": {
+      "title": "CV",
+      "dropText": "Ziehen Sie Ihren Lebenslauf hierher oder <browse>durchsuchen Sie</browse>",
+      "supportsPdf": "Unterstützt PDF",
+      "pendingSave": "Ausstehend",
+      "viewFile": "Datei anzeigen",
+      "pdfOnlyError": "Es sind nur PDF-Dateien erlaubt",
+      "loadError": "Fehler beim Laden der Daten"
     },
-    "common": {
-      "loading": "Wird geladen...",
-      "pleaseWait": "Bitte warten...",
-      "openTicket": "Ticket erstellen"
+    "validation": {
+      "languagesRequired": "Bitte fügen Sie mindestens eine Sprache hinzu, bevor Sie speichern",
+      "educationsRequired": "Bitte fügen Sie mindestens einen Bildungseintrag hinzu, bevor Sie speichern",
+      "experiencesRequired": "Bitte fügen Sie mindestens eine Berufserfahrung hinzu, bevor Sie speichern",
+      "skillsRequired": "Bitte fügen Sie mindestens eine Fähigkeit hinzu, bevor Sie speichern"
+    },
+    "saveSuccess": "Portfolio erfolgreich gespeichert",
+    "saveError": "Fehler beim Speichern der Daten",
+    "language": {
+      "heading": "Sprachen",
+      "empty": "Bisher keine Sprachen hinzugefügt",
+      "modal": {
+        "description": "Sprachen in Ihrem Portfolio hinzufügen und bearbeiten",
+        "rowLanguageLabel": "Sprache *",
+        "rowLanguagePlaceholder": "z.B. Englisch",
+        "rowLevelLabel": "Stufe *",
+        "deleteRowTitle": "Zeile löschen",
+        "empty": "Bisher keine Sprachen hinzugefügt. Klicken Sie unten auf Zeile hinzufügen.",
+        "addRow": "Neue Sprache hinzufügen",
+        "errors": {
+          "languageRequired": "Bitte geben Sie für alle Zeilen einen Sprachnamen an",
+          "atLeastOne": "Es ist mindestens eine Sprache erforderlich"
+        }
+      }
+    },
+    "education": {
+      "heading": "Ausbildung",
+      "empty": "Bisher keine Ausbildung hinzugefügt",
+      "noAttachment": "Kein Anhang",
+      "modal": {
+        "description": "Ausbildungsqualifikation hinzufügen oder bearbeiten",
+        "universityLabel": "Universität/Schule *",
+        "universityPlaceholder": "Name der Universität eingeben",
+        "levelLabel": "Bildungsgrad *",
+        "yearLabel": "Abschlussjahr *",
+        "specializationLabel": "Fachrichtung *",
+        "specializationPlaceholder": "z.B. Softwareentwicklung",
+        "gradeLabel": "Abschlussnote *",
+        "dropText": "Datei hierher ziehen oder <browse>durchsuchen</browse>",
+        "sizeNote": "Dateigröße unter 10MB und nur als PDF",
+        "errors": {
+          "universityRequired": "Bitte geben Sie den Namen der Universität ein",
+          "specializationRequired": "Bitte geben Sie die Fachrichtung ein",
+          "graduationYearRequired": "Bitte wählen Sie das Abschlussjahr aus",
+          "levelRequired": "Bitte wählen Sie den Bildungsgrad aus",
+          "gradeRequired": "Bitte wählen Sie die Abschlussnote aus",
+          "atLeastOne": "Ihr Portfolio muss mindestens einen Bildungseintrag enthalten."
+        }
+      }
+    },
+    "experience": {
+      "heading": "Berufserfahrung",
+      "empty": "Bisher keine Berufserfahrung hinzugefügt",
+      "present": "Gegenwart",
+      "noAttachment": "Kein Anhang",
+      "modal": {
+        "description": "Berufserfahrung hinzufügen oder bearbeiten",
+        "companyLabel": "Name des Unternehmens *",
+        "companyPlaceholder": "Name des Unternehmens eingeben",
+        "departmentLabel": "Abteilung/Position *",
+        "departmentPlaceholder": "z.B. IT-Abteilung",
+        "periodLabel": "Beschäftigungszeitraum *",
+        "from": "von",
+        "to": "bis",
+        "untilNow": "heute",
+        "currentlyWorking": "Ich arbeite derzeit hier",
+        "responsibilitiesLabel": "Verantwortlichkeiten *",
+        "responsibilitiesPlaceholder": "Beschreiben Sie Ihre Aufgaben und Verantwortlichkeiten",
+        "dropText": "Datei hierher ziehen oder <browse>durchsuchen</browse>",
+        "fileTypesNote": "Unterstützte Formate: pdf, jpg, jpeg, png unter 10MB",
+        "errors": {
+          "companyRequired": "Bitte geben Sie den Namen des Unternehmens ein",
+          "departmentRequired": "Bitte geben Sie die Abteilung ein",
+          "startDateRequired": "Bitte wählen Sie das Startdatum aus",
+          "endDateRequired": "Bitte wählen Sie das Enddatum aus",
+          "responsibilitiesRequired": "Bitte geben Sie die Verantwortlichkeiten ein",
+          "atLeastOne": "Ihr Portfolio muss mindestens eine Berufserfahrung enthalten."
+        }
+      }
+    },
+    "skills": {
+      "heading": "Fähigkeiten",
+      "empty": "Bisher keine Fähigkeiten hinzugefügt",
+      "modal": {
+        "description": "Fähigkeiten in Ihrem Portfolio hinzufügen und bearbeiten",
+        "label": "Fähigkeit *",
+        "placeholder": "Fähigkeit eingeben und Enter drücken",
+        "duplicateError": "Fähigkeit bereits hinzugefügt",
+        "atLeastOneError": "Es ist mindestens eine Fähigkeit erforderlich",
+        "addOption": "\"{skill}\" hinzufügen"
+      }
+    },
+    "submit": {
+      "saving": "Wird gespeichert...",
+      "submit": "Änderungen speichern"
     }
   }
 }

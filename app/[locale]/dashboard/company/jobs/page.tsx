@@ -18,7 +18,6 @@ import {
 } from "@/features/company-profile/lib/profile-logo"
 import { CompanyAvatar } from "@/features/company-profile/components/company-avatar"
 import { DashboardStatusBadge } from "@/features/dashboard/components/dashboard-status-badge"
-import { PrimaryButton } from "@/components/ui/primary-button"
 import { DashboardPageShell } from "@/features/dashboard/components/dashboard-page-shell"
 import { ApiError } from "@/lib/api/client"
 import { cn } from "@/lib/utils"
@@ -113,9 +112,13 @@ export default async function CompanyJobsPage({
       title={t("listTitle")}
       isRTL={isRtl}
       action={
-        <PrimaryButton asChild className="h-9 rounded-lg px-4 w-auto text-sm">
-          <Link locale={locale} href="/dashboard/company/jobs/create">{t("addJob")}</Link>
-        </PrimaryButton>
+        <Link
+          locale={locale}
+          href="/dashboard/company/jobs/create"
+          className="inline-flex h-9 w-auto items-center justify-center rounded-lg border border-[#E8F2FF] bg-white px-4 text-sm font-semibold text-[#006EA8] shadow-none transition hover:bg-[#F5F9FC]"
+        >
+          {t("addJob")}
+        </Link>
       }
     >
       <div className="overflow-hidden rounded-[8px] shadow-[0_32px_64px_-12px_rgba(16,24,40,0.14)] ">
