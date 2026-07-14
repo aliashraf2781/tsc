@@ -7,11 +7,10 @@ import { useRouter } from "@/i18n/navigation"
 import { saveServiceAction } from "@/features/admin/actions/admin-actions"
 import { ServiceFormShell } from "./service-form/service-form-shell"
 import { serviceFormSchema } from "./service-form/schema"
-import type { ServiceFormValues } from "./service-form/types"
-import { normalizeServiceToFormValues } from "./service-form/normalize"
+import { emptyServiceForm, type ServiceFormValues } from "./service-form/types"
 import { serviceFormToFormData } from "./service-form/to-form-data"
 
-export function AdminServiceEditForm({ service, locale }: { service: any; locale: string }) {
+export function AdminServiceAddForm({ locale }: { locale: string }) {
   const isRTL = locale === "ar"
   const router = useRouter()
   const [pending, startTransition] = useTransition()
@@ -20,7 +19,7 @@ export function AdminServiceEditForm({ service, locale }: { service: any; locale
 
   const form = useForm<ServiceFormValues>({
     resolver: zodResolver(serviceFormSchema),
-    defaultValues: normalizeServiceToFormValues(service, locale),
+    defaultValues: emptyServiceForm(),
   })
 
   function onSubmit(data: ServiceFormValues) {
@@ -28,7 +27,7 @@ export function AdminServiceEditForm({ service, locale }: { service: any; locale
     setSuccess(false)
 
     startTransition(async () => {
-      const result = await saveServiceAction(serviceFormToFormData(data, service.id), locale, service.id)
+      const result = await saveServiceAction(serviceFormToFormData(data), locale)
       if (!result.ok) {
         setSubmitError(result.message ?? (isRTL ? "فشل الحفظ" : "Failed to save"))
         return
@@ -49,7 +48,7 @@ export function AdminServiceEditForm({ service, locale }: { service: any; locale
       pending={pending}
       submitError={submitError}
       success={success}
-      submitLabel={isRTL ? "حفظ التغييرات" : "Save Changes"}
+      submitLabel={isRTL ? "إنشاء الخدمة" : "Create Service"}
       pendingLabel={isRTL ? "جاري الحفظ..." : "Saving..."}
       successMessage={isRTL ? "✓ تم الحفظ بنجاح، جاري التوجيه..." : "✓ Saved successfully, redirecting..."}
       backHref="/dashboard/admin/services"

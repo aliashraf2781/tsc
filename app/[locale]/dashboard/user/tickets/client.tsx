@@ -9,7 +9,8 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { DashboardPageShell } from "@/features/dashboard/components/dashboard-page-shell";
 import { AdminPagination } from "@/features/admin/components/admin-pagination";
-import type { Ticket, TicketReply, PaginationMeta } from "@/lib/api/types";
+import { useTicketChat, TicketChatThread } from "@/features/tickets";
+import type { Ticket, PaginationMeta } from "@/lib/api/types";
 import { Trash2 } from "lucide-react";
 
 type Props = {
@@ -30,9 +31,14 @@ export default function TicketsClient({ locale, initialTickets, initialMeta }: P
   // Detail / reply states
   const [selectedTicket, setSelectedTicket] = useState<Ticket | null>(null);
   const [showDetailModal, setShowDetailModal] = useState(false);
-  const [replyText, setReplyText] = useState("");
-  const [replying, setReplying] = useState(false);
-  const [loadingDetail, setLoadingDetail] = useState(false);
+
+  const { ticket: chatTicket, messages, loading: loadingDetail, sending, sendMessage } = useTicketChat({
+    ticketId: selectedTicket?.id ?? null,
+    role: "user",
+    locale,
+    enabled: showDetailModal,
+  });
+  const activeTicket = chatTicket || selectedTicket;
 
   // Filter state
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
@@ -135,71 +141,18 @@ export default function TicketsClient({ locale, initialTickets, initialMeta }: P
     }
   };
 
-  // ── Open ticket detail ──
-  const openTicketDetail = async (ticket: Ticket) => {
+  // ── Open ticket detail ── (full detail + replies are loaded by useTicketChat)
+  const openTicketDetail = (ticket: Ticket) => {
     setSelectedTicket(ticket);
-    setReplyText("");
     setShowDetailModal(true);
-
-    // Try to fetch latest version with replies
-    try {
-      setLoadingDetail(true);
-      const res = await fetch(`/api/user/tickets/${ticket.id}?locale=${locale}`);
-      if (res.ok) {
-        const data = await res.json();
-        setSelectedTicket(data.data || data);
-      }
-    } catch {
-      // keep showing what we have
-    } finally {
-      setLoadingDetail(false);
-    }
   };
 
-  // ── Reply to ticket ──
-  const handleReply = async () => {
-    if (!replyText.trim()) {
-      toast.error(isAr ? "الرجاء إدخال نص الرد" : isDe ? "Bitte geben Sie eine Antwortnachricht ein" : "Please enter a reply message");
-      return;
-    }
-    if (!selectedTicket) return;
-
-    try {
-      setReplying(true);
-      const res = await fetch(`/api/user/tickets/${selectedTicket.id}/reply`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Accept-Language": locale,
-        },
-        body: JSON.stringify({ message: replyText }),
-      });
-
-      if (!res.ok) {
-        const errData = await res.json().catch(() => ({}));
-        throw new Error(errData.message || "Failed to reply");
-      }
-
-      toast.success(isAr ? "تم إرسال الرد بنجاح" : isDe ? "Antwort erfolgreich gesendet" : "Reply sent successfully");
-      setReplyText("");
-
-      // Refresh the detail
-      try {
-        const detailRes = await fetch(`/api/user/tickets/${selectedTicket.id}?locale=${locale}`);
-        if (detailRes.ok) {
-          const data = await detailRes.json();
-          setSelectedTicket(data.data || data);
-        }
-      } catch { /* ignore */ }
-
-      // Refresh current page
-      await fetchTickets();
-    } catch (err) {
-      console.error("[Reply error]", err);
-      const errMessage = err instanceof Error ? err.message : undefined;
-      toast.error(errMessage || (isAr ? "فشل إرسال الرد" : isDe ? "Fehler beim Senden der Antwort" : "Failed to send reply"));
-    } finally {
-      setReplying(false);
+  const handleDetailModalOpenChange = (open: boolean) => {
+    setShowDetailModal(open);
+    if (!open) {
+      setSelectedTicket(null);
+      // Pick up any status/last-reply changes made while the chat was open
+      fetchTickets();
     }
   };
 
@@ -308,11 +261,6 @@ export default function TicketsClient({ locale, initialTickets, initialMeta }: P
       return dateStr;
     }
   };
-
-  // A reply written by the ticket owner carries the ticket's own `sender` name;
-  // anything else came from support.
-  const isSupportReply = (reply: TicketReply, ticket: Ticket) =>
-    reply.user.trim().toLowerCase() !== (ticket.sender || "").trim().toLowerCase();
 
   // Status counts — "all" reflects the true server-side total, the rest reflect the loaded page
   const statusCounts = {
@@ -486,48 +434,48 @@ export default function TicketsClient({ locale, initialTickets, initialMeta }: P
           />
         )}
 
-        {/* ── TICKET DETAIL / REPLY MODAL ── */}
-        <Dialog open={showDetailModal} onOpenChange={setShowDetailModal}>
-          <DialogContent className="max-w-[600px] lg:max-w-[750px] p-0 rounded-[20px] bg-white border-0 shadow-lg max-h-[90vh] overflow-hidden flex flex-col text-start">
-            {selectedTicket && (
+        {/* ── TICKET DETAIL / CHAT MODAL ── */}
+        <Dialog open={showDetailModal} onOpenChange={handleDetailModalOpenChange}>
+          <DialogContent className="max-w-[600px] lg:max-w-[750px] p-0 rounded-[20px] bg-white border-0 shadow-lg h-[90vh] overflow-hidden flex flex-col text-start">
+            {activeTicket && (
               <>
                 {/* Header */}
                 <div className="p-6 pb-4 border-b border-gray-100 flex items-start justify-between gap-4">
                   <div className="min-w-0">
                     <DialogTitle className={cn("text-[18px] leading-snug", gradientTitleClasses)}>
-                      {selectedTicket.subject}
+                      {activeTicket.subject}
                     </DialogTitle>
                     <div className="flex flex-wrap items-center gap-2 mt-2">
                       <span className={cn(
                         "text-[11px] font-bold px-3 py-1 rounded-full border",
-                        (selectedTicket.status || "pending") === "pending" && "border-[#FFB64D] bg-[#FFF8EE] text-[#FFB64D]",
-                        (selectedTicket.status || "pending") === "open" && "border-[#39DA8A] bg-[#EAFBF3] text-[#39DA8A]",
-                        (selectedTicket.status || "pending") === "answered" && "border-[#006EA8] bg-[#F0F9FF] text-[#006EA8]",
-                        (selectedTicket.status || "pending") === "closed" && "border-[#FF5B5C] bg-[#FFF5F5] text-[#FF5B5C]"
+                        (activeTicket.status || "pending") === "pending" && "border-[#FFB64D] bg-[#FFF8EE] text-[#FFB64D]",
+                        (activeTicket.status || "pending") === "open" && "border-[#39DA8A] bg-[#EAFBF3] text-[#39DA8A]",
+                        (activeTicket.status || "pending") === "answered" && "border-[#006EA8] bg-[#F0F9FF] text-[#006EA8]",
+                        (activeTicket.status || "pending") === "closed" && "border-[#FF5B5C] bg-[#FFF5F5] text-[#FF5B5C]"
                       )}>
-                        {getStatusLabel(selectedTicket.status || "pending")}
+                        {getStatusLabel(activeTicket.status || "pending")}
                       </span>
                       <span className={cn(
                         "text-white text-[10px] font-bold px-2.5 py-0.5 rounded-full capitalize",
-                        getPriorityColor(selectedTicket.priority || "high")
+                        getPriorityColor(activeTicket.priority || "high")
                       )}>
-                        {getPriorityLabel(selectedTicket.priority || "high")}
+                        {getPriorityLabel(activeTicket.priority || "high")}
                       </span>
                       <span className="text-xs text-gray-400">
-                        {formatDate(selectedTicket.created_at)}
+                        {formatDate(activeTicket.created_at)}
                       </span>
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
                     <button
-                      onClick={(e) => { e.stopPropagation(); setDeleteTargetId(selectedTicket.id); }}
+                      onClick={(e) => { e.stopPropagation(); setDeleteTargetId(activeTicket.id); }}
                       className="p-1.5 hover:bg-red-50 rounded-full transition cursor-pointer group/del"
                       title={isAr ? "حذف التذكرة" : isDe ? "Ticket löschen" : "Delete ticket"}
                     >
                       <Trash2 className="w-5 h-5 text-gray-400 group-hover/del:text-[#FF5B5C] transition-colors" />
                     </button>
                     <button
-                      onClick={() => setShowDetailModal(false)}
+                      onClick={() => handleDetailModalOpenChange(false)}
                       className="p-1 hover:bg-gray-100 rounded-full transition cursor-pointer shrink-0"
                     >
                       <img src="/portfolio/close-circle.svg" alt="Close" className="w-7 h-7" />
@@ -535,22 +483,20 @@ export default function TicketsClient({ locale, initialTickets, initialMeta }: P
                   </div>
                 </div>
 
-                {/* Scrollable body */}
-                <div className="flex-1 overflow-y-auto p-6 space-y-5">
-                  {/* Original message */}
+                {/* Original message */}
+                <div className="px-6 pt-4 space-y-3 shrink-0">
                   <div className="rounded-[12px] bg-[#F4FAFF] border border-[#E0F0FF] p-4">
                     <p className="text-xs font-semibold text-[#006EA8] mb-2">
                       {isAr ? "الرسالة الأصلية" : isDe ? "Originalnachricht" : "Original Message"}
                     </p>
                     <p className="text-[14px] text-[#032C44] leading-relaxed whitespace-pre-wrap">
-                      {selectedTicket.message}
+                      {activeTicket.message}
                     </p>
                   </div>
 
-                  {/* Attachments */}
-                  {(selectedTicket.attachments || []).length > 0 && (
+                  {(activeTicket.attachments || []).length > 0 && (
                     <div className="space-y-2">
-                      {(selectedTicket.attachments || []).map((url, idx) => (
+                      {(activeTicket.attachments || []).map((url, idx) => (
                         <div key={idx} className="flex items-center gap-2 text-xs text-[#006EA8]">
                           <img src="/portfolio/pdf.svg" alt="File" className="w-5 h-5 flex-shrink-0" />
                           <a
@@ -566,75 +512,19 @@ export default function TicketsClient({ locale, initialTickets, initialMeta }: P
                       ))}
                     </div>
                   )}
-
-                  {/* Replies */}
-                  {selectedTicket.replies && selectedTicket.replies.length > 0 && (
-                    <div className="space-y-3">
-                      <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                        {isAr ? "الردود" : isDe ? "Antworten" : "Replies"} ({selectedTicket.replies.length})
-                      </p>
-                      {selectedTicket.replies.map((reply, idx) => {
-                        const isSupport = isSupportReply(reply, selectedTicket);
-
-                        return (
-                          <div
-                            key={idx}
-                            className={cn(
-                              "rounded-[12px] p-4 border",
-                              isSupport
-                                ? "bg-[#FFF9F0] border-[#FFE5C2]"
-                                : "bg-white border-[#E5E7EB]"
-                            )}
-                          >
-                            <div className="flex items-center gap-2 mb-2">
-                              <span className="text-[13px] font-bold text-[#032C44]">
-                                {isSupport
-                                  ? (isAr ? "الدعم الفني" : isDe ? "Technischer Support" : "Technical Support")
-                                  : (isAr ? "أنت" : isDe ? "Sie" : "You")}
-                              </span>
-                              <span className="text-[11px] text-gray-400">
-                                {formatDate(reply.date)}
-                              </span>
-                            </div>
-                            <p className="text-[14px] text-gray-600 leading-relaxed whitespace-pre-wrap">
-                              {reply.message}
-                            </p>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  )}
-
-                  {loadingDetail && (
-                    <div className="flex justify-center py-4">
-                      <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-[#006EA8]"></div>
-                    </div>
-                  )}
                 </div>
 
-                {/* Reply input - only show if ticket is not closed */}
-                {(selectedTicket.status || "pending") !== "closed" && (
-                  <div className="p-6 pt-4 border-t border-gray-100 space-y-3">
-                    <Textarea
-                      rows={3}
-                      value={replyText}
-                      onChange={(e) => setReplyText(e.target.value)}
-                      placeholder={isAr ? "اكتب ردك هنا..." : isDe ? "Schreiben Sie hier Ihre Antwort..." : "Type your reply here..."}
-                      className="border border-[#E5E7EB] focus:border-[#40A0CA] rounded-[8px] px-3 py-2 text-sm w-full outline-none resize-none"
-                    />
-                    <div className="flex justify-end">
-                      <PrimaryButton
-                        onClick={handleReply}
-                        disabled={replying || !replyText.trim()}
-                        className="px-6 w-auto cursor-pointer"
-                      >
-                        {replying
-                          ? (isAr ? "جاري الإرسال..." : isDe ? "Wird gesendet..." : "Sending...")
-                          : (isAr ? "إرسال الرد" : isDe ? "Antwort senden" : "Send Reply")}
-                      </PrimaryButton>
-                    </div>
-                  </div>
-                )}
+                {/* Real-time chat thread */}
+                <div className="flex-1 min-h-0">
+                  <TicketChatThread
+                    messages={messages}
+                    loading={loadingDetail}
+                    sending={sending}
+                    disabled={(activeTicket.status || "pending") === "closed"}
+                    locale={locale}
+                    onSend={sendMessage}
+                  />
+                </div>
               </>
             )}
           </DialogContent>

@@ -113,10 +113,14 @@ export async function replyToTicket(
   ticketId: number,
   message: string,
   token: string,
-  locale = "ar"
+  locale = "ar",
+  file?: File | null
 ): Promise<Ticket> {
   const formData = new FormData()
   formData.append("message", message)
+  if (file) {
+    formData.append("file", file)
+  }
 
   // Try admin reply endpoint first, fall back to user reply endpoint
   let response: ApiResponse<Ticket>

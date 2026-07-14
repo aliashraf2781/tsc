@@ -200,10 +200,15 @@ export interface Ticket {
 }
 
 export interface TicketReply {
-  user: string
+  id?: number
+  ticket_id?: number
   message: string
-  date: string
+  /** Newer API responses / Pusher payloads send a user object; older ones send a plain name string. */
+  user: string | { id?: number; name?: string; is_admin?: boolean; email?: string; role?: string }
   files?: string[]
+  created_at?: string
+  /** Legacy field name used by some older responses instead of created_at. */
+  date?: string
 }
 
 export interface Notification {

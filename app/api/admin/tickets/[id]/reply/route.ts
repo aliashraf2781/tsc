@@ -26,6 +26,7 @@ export async function POST(
     const locale = request.headers.get("accept-language")?.split(",")[0] || "ar"
 
     let message = ""
+    let file: File | null = null
     const contentType = request.headers.get("content-type") || ""
 
     if (contentType.includes("application/json")) {
@@ -34,6 +35,8 @@ export async function POST(
     } else {
       const formData = await request.formData()
       message = formData.get("message") as string
+      const f = formData.get("file")
+      if (f instanceof File && f.size > 0) file = f
     }
 
     if (!message || typeof message !== "string" || !message.trim()) {
@@ -47,7 +50,7 @@ export async function POST(
       return NextResponse.json({ data: mock })
     }
 
-    const ticket = await replyToTicket(Number(id), message.trim(), token!, locale)
+    const ticket = await replyToTicket(Number(id), message.trim(), token!, locale, file)
     return NextResponse.json({ data: ticket })
   } catch (error) {
     console.error("[Admin Ticket Reply POST] Exception:", error)
