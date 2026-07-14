@@ -50,6 +50,7 @@ export async function POST(request: Request) {
       subject,
       message,
       priority,
+      receiver_id: "1",
       file
     }, token, locale)
 

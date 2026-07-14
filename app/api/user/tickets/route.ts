@@ -61,6 +61,8 @@ export async function POST(request: Request) {
       subject,
       message,
       priority,
+      // Legacy user→support tickets target the default admin receiver
+      receiver_id: "1",
       file
     }, token, locale)
 

@@ -16,18 +16,19 @@ export async function createTicket(
   locale = "ar"
 ): Promise<Ticket> {
   const formData = new FormData()
-  
-  // Set default receiver_id if not present
-  const payload = {
-    receiver_id: "1",
-    priority: "medium",
-    ...data
+
+  const payload: Record<string, string | File | null | undefined> = {
+    subject: data.subject,
+    message: data.message,
+    priority: data.priority || "medium",
+    receiver_id: data.receiver_id,
+    file: data.file,
   }
 
   Object.entries(payload).forEach(([key, value]) => {
     if (value instanceof File) {
       formData.append(key, value)
-    } else if (value !== null && value !== undefined) {
+    } else if (value !== null && value !== undefined && value !== "") {
       formData.append(key, String(value))
     }
   })
@@ -43,10 +44,11 @@ export async function createTicket(
 export async function getTickets(
   token: string,
   page = 1,
-  locale = "ar"
+  locale = "ar",
+  perPage = 15
 ): Promise<{ data: Ticket[]; meta: PaginationMeta }> {
   const response = await api.get<ApiResponse<Ticket[]>>(
-    `/tickets?page=${page}`,
+    `/tickets?page=${page}&per_page=${perPage}`,
     { token, locale }
   )
   return { data: response.data, meta: response.meta! }
@@ -68,18 +70,19 @@ export async function getTicket(
 export async function getAdminTickets(
   token: string,
   page = 1,
-  locale = "ar"
+  locale = "ar",
+  perPage = 15
 ): Promise<{ data: Ticket[]; meta: PaginationMeta }> {
   // Prefer admin list endpoint when available, fall back to generic tickets list
   let response: ApiResponse<Ticket[]>
   try {
     response = await api.get<ApiResponse<Ticket[]>>(
-      `/admin/tickets?page=${page}`,
+      `/admin/tickets?page=${page}&per_page=${perPage}`,
       { token, locale }
     )
   } catch {
     response = await api.get<ApiResponse<Ticket[]>>(
-      `/tickets?page=${page}`,
+      `/tickets?page=${page}&per_page=${perPage}`,
       { token, locale }
     )
   }

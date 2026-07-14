@@ -60,7 +60,7 @@ export function AdminServiceEditForm({
   const onSubmit = handleSubmit((values) => {
     setSubmitError(null)
     setSuccess(false)
-    const formData = buildServiceFormData(values, service.id)
+    const formData = buildServiceFormData(values)
 
     startTransition(async () => {
       const result = await saveServiceAction(formData, locale, service.id)

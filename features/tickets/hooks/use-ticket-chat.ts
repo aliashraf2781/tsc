@@ -5,7 +5,37 @@ import { useRouter } from "next/navigation"
 import { toast } from "sonner"
 import type { Ticket } from "@/lib/api/types"
 import { getEcho, leaveTicketChannel, ticketChannelName } from "@/lib/echo"
-import { normalizeReply, type NormalizedTicketMessage } from "../lib/normalize-reply"
+import { buildRootMessage, normalizeReply, type NormalizedTicketMessage } from "../lib/normalize-reply"
+
+function readAdminCreatedFlag(ticketId: number): boolean {
+  if (typeof window === "undefined") return false
+  try {
+    const raw = sessionStorage.getItem(`ticket-receiver-${ticketId}`)
+    if (!raw) return false
+    const parsed = JSON.parse(raw) as { adminCreated?: boolean }
+    return Boolean(parsed.adminCreated)
+  } catch {
+    return false
+  }
+}
+
+function messagesFromTicket(data: Ticket, includeRoot: boolean): NormalizedTicketMessage[] {
+  const replies = (data.replies || []).map((r: unknown) => normalizeReply(r as Record<string, unknown>, data))
+  if (!includeRoot || !data.message) return replies
+
+  const adminCreated = readAdminCreatedFlag(data.id)
+  const root = buildRootMessage(data, adminCreated || roleIsImpliedAdmin(data))
+  const filteredReplies = replies.filter(
+    (r) => !(r.message === root.message && r.createdAt === root.createdAt)
+  )
+  return [root, ...filteredReplies]
+}
+
+/** When admin starts chat, ticket.sender is typically an admin/support label. */
+function roleIsImpliedAdmin(ticket: Ticket): boolean {
+  const name = (ticket.sender || "").trim().toLowerCase()
+  return name === "admin" || name.includes("support") || name.includes("talent")
+}
 
 type Role = "user" | "company" | "admin"
 
@@ -72,7 +102,7 @@ export function useTicketChat({ ticketId, role, locale, initialTicket = null, en
       .then((data) => {
         if (cancelled || !data) return
         setTicket(data)
-        setMessages((data.replies || []).map((r: unknown) => normalizeReply(r as Record<string, unknown>, data)))
+        setMessages(messagesFromTicket(data, role === "admin"))
       })
       .catch((err) => {
         console.error("[useTicketChat] load error", err)

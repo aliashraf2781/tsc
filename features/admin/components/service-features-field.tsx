@@ -112,7 +112,13 @@ export function ServiceFeaturesField({
   editLocale: LocaleKey
 }) {
   const t = useTranslations("Admin.services")
-  const { fields, append, remove } = useFieldArray({ control, name: "features" })
+  // keyName must NOT be "id" — feature DB ids live on `id` and must survive
+  // into FormData as features[n][id] on update.
+  const { fields, append, remove } = useFieldArray({
+    control,
+    name: "features",
+    keyName: "fieldKey",
+  })
 
   return (
     <div className="rounded-[12px] border border-[#E5E7EB] bg-white p-5 sm:p-6 shadow-sm space-y-5">
@@ -143,7 +149,7 @@ export function ServiceFeaturesField({
       <div className="space-y-4">
         {fields.map((field, index) => (
           <ServiceFeatureItem
-            key={field.id}
+            key={field.fieldKey}
             index={index}
             control={control}
             register={register}

@@ -2,11 +2,9 @@ import { redirect, notFound } from "next/navigation"
 import { setRequestLocale } from "next-intl/server"
 import { getSession } from "@/lib/auth-token"
 import { normalizeRole } from "@/lib/auth-token"
-import { getServicesRaw } from "@/lib/api/services/services.service"
+import { getServiceRaw } from "@/lib/api/services/services.service"
 import { AdminPageLayout } from "@/features/admin/components/admin-page-layout"
 import { AdminServiceEditForm } from "@/features/admin/components/admin-service-edit-form"
-import { Link } from "@/i18n/navigation"
-import { ArrowLeft } from "lucide-react"
 
 type PageProps = {
   params: Promise<{ locale: string; id: string }>
@@ -25,16 +23,13 @@ export default async function AdminServiceEditPage({ params }: PageProps) {
   }
 
   const isRTL = locale === "ar"
-  // Fetch raw service data for all locales so admin can edit translations
-  const [arList, enList, deList] = await Promise.all([
-    getServicesRaw("ar"),
-    getServicesRaw("en"),
-    getServicesRaw("de"),
+  // Show endpoint is locale-scoped (title/description as current-locale strings),
+  // so fetch ar/en/de separately and stitch them for the multilingual edit form.
+  const [arService, enService, deService] = await Promise.all([
+    getServiceRaw(id, "ar"),
+    getServiceRaw(id, "en"),
+    getServiceRaw(id, "de"),
   ])
-
-  const arService = arList.find((s) => String(s.id) === id) || null
-  const enService = enList.find((s) => String(s.id) === id) || null
-  const deService = deList.find((s) => String(s.id) === id) || null
 
   if (!arService && !enService && !deService) {
     notFound()

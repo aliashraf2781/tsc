@@ -120,12 +120,54 @@ export async function getServicesRaw(locale?: string): Promise<any[]> {
   }
 }
 
+/** Raw show payload for a single service (locale-scoped title/description strings). */
+export async function getServiceRaw(
+  id: number | string,
+  locale = "ar"
+): Promise<Record<string, unknown> | null> {
+  try {
+    const response = await api.get<unknown>(`/service/${id}`, {
+      locale,
+      cache: "no-store",
+    })
+    if (!response || typeof response !== "object") return null
+
+    const root = response as Record<string, unknown>
+    const data = root.data
+    if (data && typeof data === "object" && !Array.isArray(data)) {
+      return data as Record<string, unknown>
+    }
+    return root
+  } catch (err) {
+    console.error("[getServiceRaw] error:", err)
+    return null
+  }
+}
+
+function extractServiceId(response: unknown, fallback?: number): number | null {
+  if (!response || typeof response !== "object") return fallback ?? null
+
+  const root = response as Record<string, unknown>
+  const data = root.data
+
+  if (data && typeof data === "object" && !Array.isArray(data)) {
+    const id = (data as Record<string, unknown>).id
+    if (typeof id === "number") return id
+    if (typeof id === "string" && id.trim() && !Number.isNaN(Number(id))) return Number(id)
+  }
+
+  if (typeof root.id === "number") return root.id
+  return fallback ?? null
+}
+
 export async function createServiceAdmin(
   formData: FormData,
   token: string,
   locale = "ar"
-): Promise<void> {
-  await api.post<unknown>("/service", formData, { token, locale })
+): Promise<{ id: number | null }> {
+  formData.delete("id")
+  const response = await api.post<unknown>("/service", formData, { token, locale })
+  return { id: extractServiceId(response) }
 }
 
 export async function updateServiceAdmin(
@@ -133,11 +175,16 @@ export async function updateServiceAdmin(
   formData: FormData,
   token: string,
   locale = "ar"
-): Promise<void> {
-  // Some backends expect update via the same `/service` endpoint (POST with id in payload).
-  // Ensure `id` exists in the form data and use the canonical `/service` POST endpoint.
-  if (!formData.has("id")) formData.append("id", String(id))
-  await api.post<unknown>(`/service`, formData, { token, locale })
+): Promise<{ id: number }> {
+  // Backend expects POST /service/{id} for multipart updates (not PUT/PATCH).
+  // Path owns the id — strip any body id so this never hits the create route.
+  formData.delete("id")
+  const response = await api.post<unknown>(`/service/${id}`, formData, { token, locale })
+  const returnedId = extractServiceId(response, id)
+  if (returnedId == null) {
+    throw new Error("Service update response did not include an id")
+  }
+  return { id: returnedId }
 }
 
 export async function deleteServiceAdmin(

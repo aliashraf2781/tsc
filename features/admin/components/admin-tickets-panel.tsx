@@ -3,6 +3,8 @@
 import { useState } from "react"
 import { cn } from "@/lib/utils"
 import { AdminTicketDetail } from "./admin-ticket-detail"
+import { AdminCreateTicketDialog } from "./admin-create-ticket-dialog"
+import { PrimaryButton } from "@/components/ui/primary-button"
 import { Input } from "@/components/ui/input"
 import { Search, ChevronDown, ChevronUp } from "lucide-react"
 
@@ -15,6 +17,7 @@ export function AdminTicketsPanel({ tickets: initialTickets = [], locale }: Prop
   const [tickets, setTickets] = useState<any[]>(initialTickets)
   const [selectedTicketId, setSelectedTicketId] = useState<number | null>(null)
   const [showDetailModal, setShowDetailModal] = useState(false)
+  const [showCreateModal, setShowCreateModal] = useState(false)
   const [statusFilter, setStatusFilter] = useState<string>("all")
   const [searchQuery, setSearchQuery] = useState("")
   const [expandedIds, setExpandedIds] = useState<Set<number>>(new Set())
@@ -205,18 +208,29 @@ export function AdminTicketsPanel({ tickets: initialTickets = [], locale }: Prop
           })}
         </div>
 
-        {/* Search Input */}
-        <div className="relative w-full md:w-72">
-          <Input
-            type="text"
-            placeholder={isAr ? "البحث عن تذكرة..." : isDe ? "Tickets suchen..." : "Search tickets..."}
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-9 pr-3 py-2 border border-[#E5E7EB] focus:border-[#40A0CA] rounded-lg text-sm bg-white outline-none"
-          />
-          <div className={cn("absolute inset-y-0 flex items-center pointer-events-none text-gray-400", isAr ? "left-3" : "right-3")}>
-            <Search className="h-4 w-4" />
+        <div className="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center">
+          {/* Search Input */}
+          <div className="relative w-full md:w-72">
+            <Input
+              type="text"
+              placeholder={isAr ? "البحث عن تذكرة..." : isDe ? "Tickets suchen..." : "Search tickets..."}
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full pl-9 pr-3 py-2 border border-[#E5E7EB] focus:border-[#40A0CA] rounded-lg text-sm bg-white outline-none"
+            />
+            <div className={cn("absolute inset-y-0 flex items-center pointer-events-none text-gray-400", isAr ? "left-3" : "right-3")}>
+              <Search className="h-4 w-4" />
+            </div>
           </div>
+
+          <PrimaryButton
+            type="button"
+            onClick={() => setShowCreateModal(true)}
+            className="h-[42px] w-auto px-5 whitespace-nowrap shrink-0 text-sm"
+          >
+            <span className="text-[16px] font-bold me-1">+</span>
+            {isAr ? "بدء محادثة" : isDe ? "Chat starten" : "Start Chat"}
+          </PrimaryButton>
         </div>
       </div>
 
@@ -361,6 +375,15 @@ export function AdminTicketsPanel({ tickets: initialTickets = [], locale }: Prop
         }}
         locale={locale}
         onTicketUpdated={fetchTickets}
+      />
+
+      <AdminCreateTicketDialog
+        open={showCreateModal}
+        onOpenChange={setShowCreateModal}
+        locale={locale}
+        onCreated={() => {
+          fetchTickets()
+        }}
       />
     </div>
   )

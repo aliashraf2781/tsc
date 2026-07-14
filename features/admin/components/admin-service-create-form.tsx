@@ -20,6 +20,7 @@ export function AdminServiceCreateForm({ locale }: { locale: string }) {
   const router = useRouter()
   const [pending, startTransition] = useTransition()
   const [submitError, setSubmitError] = useState<string | null>(null)
+  const [success, setSuccess] = useState(false)
 
   const [editLocale, setEditLocale] = useState<LocaleKey>((locale as LocaleKey) || "ar")
 
@@ -44,6 +45,7 @@ export function AdminServiceCreateForm({ locale }: { locale: string }) {
 
   const onSubmit = handleSubmit((values) => {
     setSubmitError(null)
+    setSuccess(false)
     const formData = buildServiceFormData(values)
 
     startTransition(async () => {
@@ -52,8 +54,11 @@ export function AdminServiceCreateForm({ locale }: { locale: string }) {
         setSubmitError(result.message ?? t("errors.save"))
         return
       }
-      router.push(`/dashboard/admin/services`)
+      setSuccess(true)
       router.refresh()
+      setTimeout(() => {
+        router.push(`/dashboard/admin/services`)
+      }, 1200)
     })
   })
 
@@ -63,6 +68,12 @@ export function AdminServiceCreateForm({ locale }: { locale: string }) {
         <div className="flex items-center gap-2 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">
           <X className="h-4 w-4 shrink-0" />
           <span>{submitError}</span>
+        </div>
+      )}
+      {success && (
+        <div className="flex items-center gap-2 rounded-lg border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-800">
+          <Save className="h-4 w-4 shrink-0" />
+          <span>{t("messages.saved")}</span>
         </div>
       )}
 
@@ -127,7 +138,7 @@ export function AdminServiceCreateForm({ locale }: { locale: string }) {
 
       {/* Submit / Cancel */}
       <div className="flex items-center gap-4 pt-2">
-        <PrimaryButton type="submit" disabled={pending} className="h-11 rounded-lg px-8 text-sm">
+        <PrimaryButton type="submit" disabled={pending || success} className="h-11 rounded-lg px-8 text-sm">
           <Save className="h-4 w-4 me-2 shrink-0" />
           <span>{pending ? t("actions.saving") : t("actions.create")}</span>
         </PrimaryButton>

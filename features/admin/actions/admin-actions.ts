@@ -329,7 +329,13 @@ export async function saveServiceAction(
   try {
     const { token } = await requireAdmin(locale)
     if (serviceId) {
-      await updateServiceAdmin(serviceId, formData, token, locale)
+      const updated = await updateServiceAdmin(serviceId, formData, token, locale)
+      if (updated.id !== serviceId) {
+        return {
+          ok: false as const,
+          message: `Update returned service id ${updated.id}, expected ${serviceId}`,
+        }
+      }
     } else {
       await createServiceAdmin(formData, token, locale)
     }

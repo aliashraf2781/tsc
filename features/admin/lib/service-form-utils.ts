@@ -14,29 +14,47 @@ export function emptyServiceFeature(): ServiceFeatureFormValues {
   return { title: emptyLocalizedText(), description: emptyLocalizedText(), icon: "" }
 }
 
+function toPositiveId(value: unknown): number | undefined {
+  if (typeof value === "number" && Number.isFinite(value) && value > 0) return value
+  if (typeof value === "string" && value.trim() && !Number.isNaN(Number(value))) {
+    const n = Number(value)
+    if (n > 0) return n
+  }
+  return undefined
+}
+
 // Icon URL text is preview-only — the backend only accepts an uploaded icon
 // file, so a typed URL is never submitted (mirrors the original form's
 // behavior to avoid sending un-validated plain strings as the icon field).
-export function buildServiceFormData(values: ServiceFormValues, id?: number): FormData {
+//
+// Nested keys match Laravel multipart: title[en], features[0][id], etc.
+// Never put a top-level `id` here — create uses POST /service, update uses
+// POST /service/{id} (path owns the id).
+export function buildServiceFormData(values: ServiceFormValues): FormData {
   const formData = new FormData()
-  if (id) formData.append("id", String(id))
 
   for (const lang of LOCALES) {
-    const title = values.title[lang]?.trim()
-    const description = values.description[lang]?.trim()
-    if (title) formData.append(`title[${lang}]`, title)
-    if (description) formData.append(`description[${lang}]`, description)
+    const title = values.title[lang]?.trim() ?? ""
+    const description = values.description[lang]?.trim() ?? ""
+    formData.append(`title[${lang}]`, title)
+    formData.append(`description[${lang}]`, description)
   }
 
   if (values.imageFile) formData.append("image", values.imageFile)
 
   values.features.forEach((feature, index) => {
-    if (feature.id) formData.append(`features[${index}][id]`, String(feature.id))
+    // Existing feature DB ids MUST be sent on update so Laravel updates
+    // in place instead of recreating features.
+    if (typeof feature.id === "number" && feature.id > 0) {
+      formData.append(`features[${index}][id]`, String(feature.id))
+    }
+    formData.append(`features[${index}][sort_order]`, String(index))
+
     for (const lang of LOCALES) {
-      const title = feature.title[lang]?.trim()
-      const description = feature.description[lang]?.trim()
-      if (title) formData.append(`features[${index}][title][${lang}]`, title)
-      if (description) formData.append(`features[${index}][description][${lang}]`, description)
+      const title = feature.title[lang]?.trim() ?? ""
+      const description = feature.description[lang]?.trim() ?? ""
+      formData.append(`features[${index}][title][${lang}]`, title)
+      formData.append(`features[${index}][description][${lang}]`, description)
     }
     if (feature.iconFile) formData.append(`features[${index}][icon]`, feature.iconFile)
   })
@@ -119,14 +137,15 @@ export function mapServiceToFormDefaults(service: any, locale: string): ServiceF
     const idSet = new Set<number>()
     for (const loc of LOCALES) {
       for (const f of featuresByLocale[loc]) {
-        if (f && typeof f.id === "number") idSet.add(f.id)
+        const fid = toPositiveId(f?.id)
+        if (fid != null) idSet.add(fid)
       }
     }
 
     const features: ServiceFeatureFormValues[] = []
     if (idSet.size > 0) {
       for (const id of idSet) {
-        features.push(buildFeatureAcrossLocales(featuresByLocale, (f) => f?.id === id, id))
+        features.push(buildFeatureAcrossLocales(featuresByLocale, (f) => toPositiveId(f?.id) === id, id))
       }
     } else {
       const maxLen = Math.max(0, ...LOCALES.map((l) => featuresByLocale[l].length))
@@ -154,7 +173,7 @@ export function mapServiceToFormDefaults(service: any, locale: string): ServiceF
 
   const features: ServiceFeatureFormValues[] = Array.isArray(service?.features)
     ? service.features.map((f: any) => ({
-        id: f.id,
+        id: toPositiveId(f.id),
         title: parseLocalizedField(f.title ?? f.title_raw ?? f, locale as LocaleKey),
         description: parseLocalizedField(f.description ?? f.content ?? f, locale as LocaleKey),
         icon: f.icon ?? "",

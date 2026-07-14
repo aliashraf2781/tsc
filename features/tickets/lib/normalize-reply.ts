@@ -9,6 +9,32 @@ export interface NormalizedTicketMessage {
   createdAt?: string
 }
 
+/** Build the opening bubble from ticket.message (API omits it from replies[]). */
+export function buildRootMessage(ticket: Ticket, forceAdminSender = false): NormalizedTicketMessage {
+  const attachments = Array.isArray(ticket.attachments) ? ticket.attachments : []
+  const senderName = ticket.sender || ""
+
+  let isAdmin = forceAdminSender
+  if (!forceAdminSender) {
+    // Prefer an explicit heuristic when we know this was an admin-started chat.
+    isAdmin = resolveIsAdmin(
+      { user: { name: senderName } },
+      { name: senderName },
+      senderName,
+      null
+    )
+  }
+
+  return {
+    id: `ticket-root-${ticket.id}`,
+    message: ticket.message || "",
+    isAdmin,
+    senderName,
+    files: attachments,
+    createdAt: ticket.created_at,
+  }
+}
+
 /**
  * Reduces the various reply shapes this backend has sent over time (flat
  * `{user: string, date}` vs the newer `{user: {id, name, is_admin}, created_at}`,

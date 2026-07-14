@@ -1,12 +1,14 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { toast } from "sonner"
 import { cn } from "@/lib/utils"
 import { Link } from "@/i18n/navigation"
 import { useTicketChat, TicketChatThread } from "@/features/tickets"
 import type { Ticket } from "@/lib/api/types"
-import { ChevronLeft, ChevronRight, ChevronDown, ChevronUp, Loader2 } from "lucide-react"
+import { ChevronLeft, ChevronRight, Loader2 } from "lucide-react"
+
+type ReceiverInfo = { id: number; name: string; email: string }
 
 type Props = {
   initialTicket: Ticket | null
@@ -14,11 +16,28 @@ type Props = {
   locale: string
 }
 
+function readReceiver(ticketId: number): ReceiverInfo | null {
+  if (typeof window === "undefined") return null
+  try {
+    const raw = sessionStorage.getItem(`ticket-receiver-${ticketId}`)
+    if (!raw) return null
+    const parsed = JSON.parse(raw) as ReceiverInfo
+    if (!parsed?.id || !parsed?.name) return null
+    return parsed
+  } catch {
+    return null
+  }
+}
+
 export function AdminTicketInlineView({ initialTicket, ticketId, locale }: Props) {
   const [updatingStatus, setUpdatingStatus] = useState(false)
   const [statusOverride, setStatusOverride] = useState<string | null>(null)
-  const [messageExpanded, setMessageExpanded] = useState(false)
+  const [receiver, setReceiver] = useState<ReceiverInfo | null>(null)
   const isAr = locale === "ar"
+
+  useEffect(() => {
+    setReceiver(readReceiver(ticketId))
+  }, [ticketId])
 
   const { ticket: chatTicket, messages, loading, sending, sendMessage } = useTicketChat({
     ticketId,
@@ -80,7 +99,9 @@ export function AdminTicketInlineView({ initialTicket, ticketId, locale }: Props
         hour: "2-digit",
         minute: "2-digit",
       })
-    } catch { return dateStr }
+    } catch {
+      return dateStr
+    }
   }
 
   const getFilenameFromUrl = (url?: string | null) => {
@@ -94,10 +115,6 @@ export function AdminTicketInlineView({ initialTicket, ticketId, locale }: Props
     "from-[#032C44] to-[#41A0CA]"
   )
 
-  const messageText: string = ticket?.message || ""
-  const MESSAGE_PREVIEW_LEN = 220
-  const isMessageLong = messageText.length > MESSAGE_PREVIEW_LEN
-
   if (!ticket) {
     return (
       <div className="rounded-[16px] border border-[#E5E7EB] bg-white p-12 text-center shadow-sm">
@@ -110,118 +127,106 @@ export function AdminTicketInlineView({ initialTicket, ticketId, locale }: Props
     )
   }
 
+  const ticketUser = (ticket as Ticket & { user?: { name?: string; email?: string; role?: string } }).user
+  const attachments = Array.isArray(ticket.attachments) ? ticket.attachments : []
+  const attachment =
+    (ticket as Ticket & { file?: string; attachment?: string }).file ||
+    (ticket as Ticket & { attachment?: string }).attachment ||
+    attachments[0]
+
   return (
     <div className="w-full space-y-6 pb-10" dir={isAr ? "rtl" : "ltr"}>
-      {/* Back link */}
       <Link locale={locale} href="/dashboard/admin/tickets" className="inline-flex items-center gap-1.5 text-[#006EA8] text-sm font-semibold hover:underline">
         {isAr ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
         {isAr ? "العودة إلى جميع التذاكر" : "Back to all tickets"}
       </Link>
 
-      {/* Ticket card */}
-      <div className="rounded-[16px] border border-[#E5E7EB] bg-white shadow-sm overflow-hidden">
-        {/* Header */}
+      <div className="rounded-[16px] border border-[#E5E7EB] bg-white shadow-sm overflow-hidden flex flex-col min-h-[70vh]">
         <div className="p-6 border-b border-gray-100">
           <div className="flex flex-wrap items-start justify-between gap-4">
             <div className="min-w-0 flex-1">
               <h2 className={cn("text-xl", gradientTitleClasses)}>{ticket.subject}</h2>
               <div className="flex flex-wrap items-center gap-2 mt-2">
-                <span className={cn("text-[11px] font-bold px-2.5 py-0.5 rounded-full border",
-                  ticket.status === "pending" && "border-[#FFB64D] bg-[#FFF8EE] text-[#FFB64D]",
-                  ticket.status === "open" && "border-[#39DA8A] bg-[#EAFBF3] text-[#39DA8A]",
-                  ticket.status === "answered" && "border-[#006EA8] bg-[#F0F9FF] text-[#006EA8]",
-                  ticket.status === "closed" && "border-[#FF5B5C] bg-[#FFF5F5] text-[#FF5B5C]",
-                  ticket.status === "rejected" && "border-[#FF5B5C] bg-[#FFF5F5] text-[#FF5B5C]"
-                )}>{getStatusLabel(ticket.status || "pending")}</span>
-                <span className="bg-[#032C44] text-white text-[10px] font-bold px-2.5 py-0.5 rounded-full capitalize">{getPriorityLabel(ticket.priority || "high")}</span>
+                <span
+                  className={cn(
+                    "text-[11px] font-bold px-2.5 py-0.5 rounded-full border",
+                    ticket.status === "pending" && "border-[#FFB64D] bg-[#FFF8EE] text-[#FFB64D]",
+                    ticket.status === "open" && "border-[#39DA8A] bg-[#EAFBF3] text-[#39DA8A]",
+                    ticket.status === "answered" && "border-[#006EA8] bg-[#F0F9FF] text-[#006EA8]",
+                    ticket.status === "closed" && "border-[#FF5B5C] bg-[#FFF5F5] text-[#FF5B5C]",
+                    ticket.status === "rejected" && "border-[#FF5B5C] bg-[#FFF5F5] text-[#FF5B5C]"
+                  )}
+                >
+                  {getStatusLabel(ticket.status || "pending")}
+                </span>
+                <span className="bg-[#032C44] text-white text-[10px] font-bold px-2.5 py-0.5 rounded-full capitalize">
+                  {getPriorityLabel(ticket.priority || "high")}
+                </span>
                 <span className="text-xs text-gray-400">{formatDate(ticket.created_at)}</span>
               </div>
-              {(ticket as any).user && (
+
+              {ticketUser && (
                 <div className="mt-3 text-xs bg-[#F8FAFC] border border-gray-100 rounded-lg p-2.5 flex items-center justify-between flex-wrap gap-2">
                   <div>
                     <span className="font-bold text-gray-600">{isAr ? "المرسل: " : "From: "}</span>
-                    <span className="text-gray-900 font-semibold">{(ticket as any).user.name}</span>
+                    <span className="text-gray-900 font-semibold">{ticketUser.name}</span>
                     <span className="text-gray-400 mx-1.5">|</span>
-                    <span className="text-gray-500">{(ticket as any).user.email}</span>
+                    <span className="text-gray-500">{ticketUser.email}</span>
                   </div>
                   <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-[#E4ECF5] text-[#006EA8] capitalize">
-                    {(ticket as any).user.role === "company" ? (isAr ? "شركة" : "Company") : (isAr ? "باحث عن عمل" : "Job Seeker")}
+                    {ticketUser.role === "company" ? (isAr ? "شركة" : "Company") : (isAr ? "باحث عن عمل" : "Job Seeker")}
                   </span>
+                </div>
+              )}
+
+              {receiver && (
+                <div className="mt-3 text-xs bg-[#FFF8EE] border border-[#FFE4B8] rounded-lg p-2.5">
+                  <span className="font-bold text-gray-600">{isAr ? "المستلم: " : "To: "}</span>
+                  <span className="text-gray-900 font-semibold">{receiver.name}</span>
+                  <span className="text-gray-400 mx-1.5">|</span>
+                  <span className="text-gray-500">{receiver.email}</span>
+                </div>
+              )}
+
+              {attachment && (
+                <div className="flex items-center gap-2 text-xs text-[#006EA8] mt-3">
+                  <img src="/portfolio/pdf.svg" alt="file" className="w-5 h-5 flex-shrink-0" />
+                  <a href={attachment} target="_blank" rel="noopener noreferrer" className="font-semibold hover:underline truncate">
+                    {getFilenameFromUrl(attachment)}
+                  </a>
                 </div>
               )}
             </div>
 
-            {/* Status update buttons */}
             <div className="flex flex-wrap gap-2">
-              {(["pending", "open", "closed"] as const).map((st) => (
+              {(["pending", "open", "answered", "closed"] as const).map((st) => (
                 <button
                   key={st}
                   disabled={updatingStatus}
                   onClick={() => handleStatusChange(st)}
-                  className={cn("px-3 py-1.5 rounded-lg text-xs font-bold border transition-all cursor-pointer disabled:opacity-60",
-                    ticket.status === st || (st === "open" && ticket.status === "answered")
-                      ? st === "pending" ? "bg-[#FFB64D] border-transparent text-white"
-                        : st === "open" ? "bg-[#39DA8A] border-transparent text-white"
-                        : "bg-[#FF5B5C] border-transparent text-white"
+                  className={cn(
+                    "px-3 py-1.5 rounded-lg text-xs font-bold border transition-all cursor-pointer disabled:opacity-60",
+                    ticket.status === st
+                      ? st === "pending"
+                        ? "bg-[#FFB64D] border-transparent text-white"
+                        : st === "open"
+                          ? "bg-[#39DA8A] border-transparent text-white"
+                          : st === "answered"
+                            ? "bg-[#006EA8] border-transparent text-white"
+                            : "bg-[#FF5B5C] border-transparent text-white"
                       : "bg-white border-gray-200 text-gray-600 hover:bg-gray-100"
                   )}
-                >{getStatusLabel(st)}</button>
+                >
+                  {getStatusLabel(st)}
+                </button>
               ))}
             </div>
           </div>
         </div>
 
-        {/* Collapsible original message */}
-        <div className="border-b border-gray-100">
-          <button
-            type="button"
-            onClick={() => setMessageExpanded((v) => !v)}
-            className="w-full flex items-center justify-between px-6 py-3.5 bg-[#F4FAFF] hover:bg-[#E8F4FC] transition-colors text-start"
-          >
-            <span className="text-xs font-semibold text-[#006EA8]">
-              {isAr ? "نص الرسالة الأصلية" : "Original Message"}
-            </span>
-            {messageExpanded
-              ? <ChevronUp className="h-4 w-4 text-[#006EA8] shrink-0" />
-              : <ChevronDown className="h-4 w-4 text-[#006EA8] shrink-0" />
-            }
-          </button>
-
-          <div className={cn("px-6 overflow-hidden transition-all duration-200", messageExpanded ? "py-4" : "py-3")}>
-            <p className="text-sm text-[#032C44] leading-relaxed whitespace-pre-wrap">
-              {isMessageLong && !messageExpanded
-                ? messageText.slice(0, MESSAGE_PREVIEW_LEN) + "…"
-                : messageText
-              }
-            </p>
-            {isMessageLong && (
-              <button
-                type="button"
-                onClick={() => setMessageExpanded((v) => !v)}
-                className="mt-2 text-xs text-[#006EA8] font-semibold hover:underline"
-              >
-                {messageExpanded
-                  ? (isAr ? "عرض أقل ↑" : "Show less ↑")
-                  : (isAr ? "عرض المزيد ↓" : "Show more ↓")
-                }
-              </button>
-            )}
-          </div>
-
-          {((ticket as any).file || (ticket as any).attachment) && (
-            <div className="flex items-center gap-2 text-xs text-[#006EA8] px-6 pb-4">
-              <img src="/portfolio/pdf.svg" alt="file" className="w-5 h-5 flex-shrink-0" />
-              <a href={(ticket as any).file || (ticket as any).attachment} target="_blank" rel="noopener noreferrer" className="font-semibold hover:underline truncate">
-                {getFilenameFromUrl((ticket as any).file || (ticket as any).attachment)}
-              </a>
-            </div>
-          )}
-        </div>
-
-        {/* Real-time chat thread */}
-        <div className="h-130">
+        <div className="flex-1 min-h-[420px]">
           {loading && messages.length === 0 ? (
-            <div className="flex items-center justify-center h-full">
+            <div className="flex items-center justify-center h-full min-h-[420px]">
               <Loader2 className="h-6 w-6 animate-spin text-[#006EA8]" />
             </div>
           ) : (
