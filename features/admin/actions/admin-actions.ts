@@ -135,7 +135,7 @@ export async function createAdminJobAction(formData: FormData, locale: string) {
 }
 
 export async function deleteUserAction(
-  userId: number | string | { id?: number | string; uuid?: string | null },
+  userId: number | string | { id?: number | string; uuid?: string | null; email?: string | null },
   locale: string
 ) {
   try {
@@ -380,7 +380,7 @@ export async function saveCategoryAction(
     revalidatePath(`/${locale}/dashboard/admin/categories`)
     return { ok: true as const }
   } catch (err) {
-    const message = err instanceof ApiError ? err.message : "Failed to save category"
+    const message = formatApiValidationMessage(err, "Failed to save category")
     return { ok: false as const, message }
   }
 }
@@ -414,7 +414,7 @@ export async function deleteContactMessageAction(id: number, locale: string) {
 }
 
 export async function suspendUserAction(
-  userId: number | string | { id?: number | string; uuid?: string | null },
+  userId: number | string | { id?: number | string; uuid?: string | null; email?: string | null },
   suspend: boolean,
   locale: string
 ) {
@@ -431,7 +431,7 @@ export async function suspendUserAction(
 }
 
 export async function updateAdminUserAction(
-  userId: number | string | { id?: number | string; uuid?: string | null },
+  userId: number | string | { id?: number | string; uuid?: string | null; email?: string | null },
   data: { name?: string; email?: string; password?: string; status?: string; email_verified?: boolean | number },
   locale: string
 ) {

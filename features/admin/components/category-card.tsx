@@ -5,12 +5,11 @@ import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useTranslations } from "next-intl"
 import { useRouter } from "@/i18n/navigation"
-import Image from "next/image"
 import { toast } from "sonner"
 import { PrimaryButton } from "@/components/ui/primary-button"
 import { saveCategoryAction } from "@/features/admin/actions/admin-actions"
 import type { Category } from "@/lib/api/types"
-import { resolveImageUrl } from "@/lib/utils"
+import { extractMediaUrl, resolveImageUrl } from "@/lib/utils"
 import { Tag, ChevronDown, ChevronUp, Trash2, Layers } from "lucide-react"
 import {
   LOCALES,
@@ -31,6 +30,7 @@ export function CategoryCard({
   editLocale,
   defaultExpanded,
   onDeleteRequest,
+  onSaved,
 }: {
   id?: number
   index: number
@@ -39,6 +39,7 @@ export function CategoryCard({
   editLocale: LocaleKey
   defaultExpanded?: boolean
   onDeleteRequest: () => void
+  onSaved?: () => void
 }) {
   const t = useTranslations("Admin.categories")
   const [expanded, setExpanded] = useState(!!defaultExpanded)
@@ -46,10 +47,11 @@ export function CategoryCard({
   const [error, setError] = useState<string | null>(null)
   const router = useRouter()
   const cardRef = useRef<HTMLDivElement>(null)
+  const previewUrlRef = useRef<string | null>(null)
 
   const [iconFile, setIconFile] = useState<File | null>(null)
   const [iconPreview, setIconPreview] = useState<string | null>(null)
-  const existingIcon = (initial as unknown as { icon?: string })?.icon
+  const existingIcon = extractMediaUrl((initial as unknown as { icon?: unknown })?.icon)
 
   const schema = createCategoryFormSchema({ nameRequired: t("errors.nameRequired") })
 
@@ -71,15 +73,29 @@ export function CategoryCard({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
+  useEffect(() => {
+    return () => {
+      if (previewUrlRef.current) URL.revokeObjectURL(previewUrlRef.current)
+    }
+  }, [])
+
   const watchedName = watch("name")
   const watchedSubCategories = watch("subCategories")
 
   function handleIconChange(file: File) {
+    if (previewUrlRef.current) URL.revokeObjectURL(previewUrlRef.current)
+    const preview = URL.createObjectURL(file)
+    previewUrlRef.current = preview
     setIconFile(file)
-    setIconPreview(URL.createObjectURL(file))
+    setIconPreview(preview)
+    setError(null)
   }
 
   function handleIconRemove() {
+    if (previewUrlRef.current) {
+      URL.revokeObjectURL(previewUrlRef.current)
+      previewUrlRef.current = null
+    }
     setIconFile(null)
     setIconPreview(null)
   }
@@ -98,7 +114,9 @@ export function CategoryCard({
     const slug = slugify(filledName.en || filledName.de || filledName.ar || "")
     if (slug) formData.append("slug", slug)
 
-    if (iconFile) formData.append("icon", iconFile)
+    if (iconFile) {
+      formData.append("icon", iconFile, iconFile.name || "category-icon.png")
+    }
 
     const subs = values.subCategories.filter((s) => Object.values(s.name).some((v) => v.trim()))
     subs.forEach((sub, subIndex) => {
@@ -113,25 +131,29 @@ export function CategoryCard({
       const result = await saveCategoryAction(formData, locale, id)
       if (!result.ok) {
         setError(result.message ?? t("errors.save"))
+        toast.error(result.message ?? t("errors.save"))
         return
       }
       toast.success(t("savedSuccessfully"))
+      handleIconRemove()
+      onSaved?.()
       router.refresh()
     })
   })
 
   const previewName =
     watchedName?.[editLocale] || watchedName?.ar || watchedName?.en || watchedName?.de || `${t("defaultName")} ${index + 1}`
-  const iconSrc = iconPreview || resolveImageUrl(existingIcon) || null
+  const resolvedExisting = existingIcon ? resolveImageUrl(existingIcon) : ""
+  const iconSrc = iconPreview || resolvedExisting || null
   const subCount = watchedSubCategories?.length ?? 0
 
   return (
     <div ref={cardRef} className="rounded-[12px] border border-[#E5E7EB] bg-white shadow-sm overflow-hidden">
-      {/* Header row */}
       <div className="flex items-center gap-3 px-4 py-3 border-b border-[#E5E7EB]">
-        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-[#78A3BE] bg-[#F0F4F8]">
+        <div className="flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-full border border-[#78A3BE] bg-[#F0F4F8]">
           {iconSrc ? (
-            <Image src={iconSrc} alt="" width={20} height={20} className="h-5 w-5 object-contain" unoptimized />
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={iconSrc} alt="" className="h-5 w-5 object-contain" />
           ) : (
             <Tag className="h-4 w-4 text-[#78A3BE]" />
           )}
@@ -182,7 +204,7 @@ export function CategoryCard({
 
           <CategoryIconUpload
             iconSrc={iconSrc}
-            hasNewFile={Boolean(iconPreview)}
+            hasNewFile={Boolean(iconFile)}
             labels={{
               icon: t("icon"),
               changeIcon: t("changeIcon"),
@@ -191,6 +213,10 @@ export function CategoryCard({
             }}
             onChange={handleIconChange}
             onRemove={handleIconRemove}
+            onError={(message) => {
+              setError(message)
+              toast.error(message)
+            }}
           />
 
           <CategorySubCategoriesField

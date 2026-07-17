@@ -37,7 +37,7 @@ export async function POST(request: NextRequest) {
       password_confirmation: String((body.password_confirmation as string) || (body.passwordConfirmation as string) || ""),
       type: (body.type as "user" | "company" | "admin") || "user",
       company_name: (body.company_name as string) || (body.companyName as string) || undefined,
-      country_id: body.country_id ? Number(body.country_id) : 1,
+      country_id: body.country_id ? Number(body.country_id) : 3,
       accept_terms_and_privacy: accept === false || accept === "0" || accept === "false" ? false : Boolean(accept ?? true),
     }
 
@@ -65,7 +65,7 @@ export async function POST(request: NextRequest) {
     let fullUser = user
     if (at) {
       try {
-        const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL || "https://cv.subcodeco.com/api/v1"
+        const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL || "https://dashboardtalent.talent-sc.de/api/v1"
         const controller = new AbortController()
         const timeout = setTimeout(() => controller.abort(), 1000) // 1s timeout to avoid long blocking
         try {

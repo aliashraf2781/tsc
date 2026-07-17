@@ -1,4 +1,4 @@
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || "https://cv.subcodeco.com/api/v1"
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || "https://dashboardtalent.talent-sc.de/api/v1"
 
 type Locale = "ar" | "en" | "de"
 

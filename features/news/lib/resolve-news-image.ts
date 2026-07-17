@@ -28,7 +28,7 @@ export function isImageOptimizable(src: string): boolean {
     if (url.protocol !== "https:") return false
 
     const allowedHosts = new Set<string>([
-      "cv.subcodeco.com",
+      "dashboardtalent.talent-sc.de",
       "lh3.googleusercontent.com",
       "avatars.githubusercontent.com"
     ])

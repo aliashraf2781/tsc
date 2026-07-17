@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import { getTokenFromRequest } from "@/lib/auth-token"
 
-const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL || "https://cv.subcodeco.com/api/v1"
+const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL || "https://dashboardtalent.talent-sc.de/api/v1"
 
 async function handleProxy(request: NextRequest, { params }: { params: Promise<{ path: string[] }> }) {
   const token = getTokenFromRequest(request)

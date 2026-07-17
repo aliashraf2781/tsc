@@ -295,19 +295,18 @@ export function CreateJobWizard({
         pending && "pointer-events-none opacity-80"
       )}
     >
-      <div className="w-full flex flex-col gap-2">
-        <div className="flex flex-col items-center gap-3 w-full sm:flex-row sm:justify-between px-8 sm:px-0">
-          <h1
-            className={cn(
-              "bg-clip-text text-[24px] font-bold leading-[1.3] text-transparent sm:text-[32px] py-1 text-center sm:text-start flex-1",
-              isRtl ? "bg-gradient-to-r" : "bg-gradient-to-l",
-              "from-[#032C44] to-[#41A0CA]"
-            )}
-          >
-            {isAdminMode ? tAdmin("title") : t("title")}
-          </h1>
-          {/* Language switcher — shown on all steps for consistency */}
-          <div className="flex gap-1.5 justify-center sm:justify-start shrink-0">
+      <div className="flex w-full items-start gap-3">
+        <h1
+          className={cn(
+            "min-w-0 flex-1 bg-clip-text text-[24px] font-bold leading-[1.3] text-transparent sm:text-[32px] py-1 text-center sm:text-start",
+            isRtl ? "bg-gradient-to-r" : "bg-gradient-to-l",
+            "from-[#032C44] to-[#41A0CA]"
+          )}
+        >
+          {isAdminMode ? tAdmin("title") : t("title")}
+        </h1>
+        <div className="flex shrink-0 items-center gap-2 pt-1">
+          <div className="flex gap-1.5">
             {EDIT_LOCALES.map((l) => (
               <button
                 key={l}
@@ -324,12 +323,10 @@ export function CreateJobWizard({
               </button>
             ))}
           </div>
-        </div>
-        <div className="absolute top-3 end-3">
           <Link
             locale={locale}
             href={basePath}
-            className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-[#006EA8] transition-opacity hover:opacity-70 bg-white shadow-sm"
+            className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-[#006EA8] transition-opacity hover:opacity-70 bg-white shadow-sm border border-[#E0E8EF]"
             aria-label={t("cancel")}
           >
             <X className="h-5 w-5" strokeWidth={1.5} />

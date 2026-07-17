@@ -12,6 +12,9 @@
   --card-foreground: #171717;
   --popover: #ffffff;
   --popover-foreground: #171717;
+  --destructive: #dc2626;
+  --destructive-foreground: #ffffff;
+  --destructive-soft: #fee2e2;
 }
 
 @theme inline {
@@ -21,6 +24,8 @@
   --color-card-foreground: var(--card-foreground);
   --color-popover: var(--popover);
   --color-popover-foreground: var(--popover-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
   --info-foreground: #ffffff;
   --info-soft: #e7d7fa;
   --border: #dadada;

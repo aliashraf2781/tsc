@@ -3,7 +3,8 @@
 
 "use client"
 
-import { COUNTRIES } from "@/lib/countries"
+import { useLocale } from "next-intl"
+import { COUNTRIES, getLocalizedCountries } from "@/lib/countries"
 import { cn } from "@/lib/utils"
 import {
   Select,
@@ -21,7 +22,9 @@ interface CountrySelectProps {
 }
 
 export function CountrySelect({ value, onValueChange, placeholder, disabled }: CountrySelectProps) {
-  const selectedCountry = COUNTRIES.find((c) => String(c.id) === value || c.code === value)
+  const locale = useLocale()
+  const countries = getLocalizedCountries(locale)
+  const selectedCountry = countries.find((c) => String(c.id) === value || c.code === value)
 
   return (
     <Select value={value} onValueChange={onValueChange} disabled={disabled}>
@@ -44,7 +47,7 @@ export function CountrySelect({ value, onValueChange, placeholder, disabled }: C
         sideOffset={4}
         className="max-h-56 w-[calc(100vw-2rem)] max-w-[320px] sm:max-h-80 sm:w-[320px]"
       >
-        {COUNTRIES.map((country) => (
+        {countries.map((country) => (
           <SelectItem key={country.id} value={String(country.id)}>
             <span className="flex items-center gap-2">
               <span className="text-lg">{country.flag}</span>
@@ -62,7 +65,8 @@ export function CountrySelect({ value, onValueChange, placeholder, disabled }: C
  * عرض علم الدولة بجانب الاسم (للقراءة فقط)
  */
 export function CountryBadge({ countryId, className }: { countryId?: number; className?: string }) {
-  const country = COUNTRIES.find((c) => c.id === countryId)
+  const locale = useLocale()
+  const country = getLocalizedCountries(locale).find((c) => c.id === countryId)
 
   if (!country) {
     return null
@@ -111,7 +115,9 @@ export function CountryPhoneSelect({
   className?: string
   contentClassName?: string
 }) {
-  const selectedCountry = COUNTRIES.find((c) => c.code === value)
+  const locale = useLocale()
+  const countries = getLocalizedCountries(locale)
+  const selectedCountry = countries.find((c) => c.code === value)
 
   return (
     <Select value={value} onValueChange={onValueChange}>
@@ -134,7 +140,7 @@ export function CountryPhoneSelect({
           contentClassName
         )}
       >
-        {COUNTRIES.map((country) => (
+        {countries.map((country) => (
           <SelectItem key={country.id} value={country.code} className="gap-2">
             <span className="flex w-full min-w-0 items-center gap-2">
               <span className="shrink-0">{country.flag}</span>

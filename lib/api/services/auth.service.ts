@@ -187,7 +187,7 @@ export async function register(data: RegisterPayload, locale = "ar"): Promise<{ 
   formData.append("password_confirmation", data.password_confirmation)
   const roleLabel = data.type === "company" ? "Company" : "User"
   formData.append("roles[]", roleLabel)
-  formData.append("country_id", String(data.country_id ?? 1))
+  formData.append("country_id", String(data.country_id ?? 3))
   formData.append("accept_terms_and_privacy", data.accept_terms_and_privacy === false ? "0" : "1")
   if (data.company_name) appendFormValue(formData, "company_name", normalizeCompanyName(data.company_name, locale))
 

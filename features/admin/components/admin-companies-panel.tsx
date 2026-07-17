@@ -2,7 +2,7 @@
 
 import Image from "next/image"
 import { Link } from "@/i18n/navigation"
-import { useState, useTransition } from "react"
+import { useState } from "react"
 import { useRouter } from "@/i18n/navigation"
 import { useTranslations } from "next-intl"
 import type { User } from "@/lib/api/types"
@@ -10,15 +10,32 @@ import { deleteUserAction, suspendUserAction } from "@/features/admin/actions/ad
 import { AdminTableCell, AdminTableRow, AdminTableShell } from "./admin-table-shell"
 import { cn } from "@/lib/utils"
 import { toast } from "sonner"
+import { AlertTriangle, ShieldAlert } from "lucide-react"
+import {
+  AlertDialog,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogMedia,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog"
+import { Button } from "@/components/ui/button"
+
+type ConfirmAction =
+  | { type: "delete"; company: User }
+  | { type: "suspend"; company: User; suspend: boolean }
 
 export function AdminCompaniesPanel({ companies, locale }: { companies: User[]; locale: string }) {
   const t = useTranslations("Admin.companies")
   const router = useRouter()
-  const [pending, startTransition] = useTransition()
+  const [pending, setPending] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [confirmAction, setConfirmAction] = useState<ConfirmAction | null>(null)
   const isAr = locale === "ar"
+  const isDe = locale === "de"
 
-  // Sort companies descending (latest registered first)
   const sortedCompanies = [...companies].sort((a, b) => {
     const idA = Number(a.id) || 0
     const idB = Number(b.id) || 0
@@ -28,7 +45,6 @@ export function AdminCompaniesPanel({ companies, locale }: { companies: User[]; 
     return dateB - dateA
   })
 
-  // Calculate company-specific statistics
   const totalCompanies = sortedCompanies.length
   const verifiedCompanies = sortedCompanies.filter((c) => c.emailVerified).length
   const unverifiedCompanies = totalCompanies - verifiedCompanies
@@ -43,100 +59,202 @@ export function AdminCompaniesPanel({ companies, locale }: { companies: User[]; 
     { key: "actions", label: t("columns.actions"), className: "w-[12%]" },
   ]
 
-  function handleDelete(company: User) {
-    toast(isAr ? "حذف هذه الشركة؟" : "Delete this company?", {
-      action: {
-        label: isAr ? "حذف" : "Delete",
-        onClick: () => {
-          setError(null)
-          startTransition(async () => {
-            const result = await deleteUserAction({ id: company.id, uuid: company.uuid }, locale)
-            if (!result.ok) {
-              setError(result.message ?? t("error"))
-              toast.error(result.message ?? t("error"))
-              return
-            }
-            toast.success(isAr ? "تم حذف الشركة" : "Company deleted")
-            router.refresh()
-          })
-        },
-      },
-      cancel: {
-        label: isAr ? "إلغاء" : "Cancel",
-        onClick: () => {},
-      },
-    })
+  function companyRouteSource(company: User) {
+    return { id: company.id, uuid: company.uuid, email: company.email }
   }
 
-  function handleToggleSuspend(company: User) {
-    const currentStatus = company.status || "active"
-    const isSuspended = currentStatus === "suspended"
-    const confirmMsg = isAr
-      ? (isSuspended ? "هل تريد تفعيل حساب هذه الشركة؟" : "هل تريد تعليق حساب هذه الشركة؟")
-      : (isSuspended ? "Do you want to activate this company account?" : "Do you want to suspend this company account?")
+  async function runConfirm() {
+    if (!confirmAction || pending) return
+    const action = confirmAction
+    const { company } = action
+    setError(null)
+    setPending(true)
 
-    toast(confirmMsg, {
-      action: {
-        label: isAr ? "تأكيد" : "Confirm",
-        onClick: () => {
-          setError(null)
-          startTransition(async () => {
-            const result = await suspendUserAction({ id: company.id, uuid: company.uuid }, !isSuspended, locale)
-            if (!result.ok) {
-              setError(result.message ?? (isAr ? "فشل تغيير حالة الشركة" : "Failed to change company status"))
-              toast.error(result.message ?? (isAr ? "فشل تغيير حالة الشركة" : "Failed to change company status"))
-              return
-            }
-            toast.success(isAr ? "تم تحديث حالة الشركة" : "Company status updated")
-            router.refresh()
-          })
-        },
-      },
-      cancel: {
-        label: isAr ? "إلغاء" : "Cancel",
-        onClick: () => {},
-      },
-    })
+    try {
+      if (action.type === "delete") {
+        const result = await deleteUserAction(companyRouteSource(company), locale)
+        if (!result.ok) {
+          setError(result.message ?? t("error"))
+          toast.error(result.message ?? t("error"))
+          return
+        }
+        toast.success(isAr ? "تم حذف الشركة" : isDe ? "Unternehmen gelöscht" : "Company deleted")
+        setConfirmAction(null)
+        router.refresh()
+        return
+      }
+
+      const result = await suspendUserAction(companyRouteSource(company), action.suspend, locale)
+      if (!result.ok) {
+        const msg =
+          result.message ??
+          (isAr ? "فشل تغيير حالة الشركة" : isDe ? "Status konnte nicht geändert werden" : "Failed to change company status")
+        setError(msg)
+        toast.error(msg)
+        return
+      }
+      toast.success(isAr ? "تم تحديث حالة الشركة" : isDe ? "Status aktualisiert" : "Company status updated")
+      setConfirmAction(null)
+      router.refresh()
+    } finally {
+      setPending(false)
+    }
   }
+
+  const confirmTitle =
+    confirmAction?.type === "delete"
+      ? isAr
+        ? "تأكيد الحذف"
+        : isDe
+          ? "Löschen bestätigen"
+          : "Confirm deletion"
+      : confirmAction?.suspend
+        ? isAr
+          ? "تأكيد التعليق"
+          : isDe
+            ? "Sperrung bestätigen"
+            : "Confirm suspend"
+        : isAr
+          ? "تأكيد التفعيل"
+          : isDe
+            ? "Aktivierung bestätigen"
+            : "Confirm activation"
+
+  const confirmBody =
+    confirmAction?.type === "delete"
+      ? t("deleteConfirm")
+      : confirmAction?.suspend
+        ? isAr
+          ? "هل تريد تعليق حساب هذه الشركة؟"
+          : isDe
+            ? "Möchten Sie dieses Unternehmenskonto sperren?"
+            : "Do you want to suspend this company account?"
+        : isAr
+          ? "هل تريد تفعيل حساب هذه الشركة؟"
+          : isDe
+            ? "Möchten Sie dieses Unternehmenskonto aktivieren?"
+            : "Do you want to activate this company account?"
+
+  const companyLabel =
+    confirmAction?.company.companyProfile?.companyName || confirmAction?.company.name || ""
 
   return (
     <div className="flex flex-col gap-6 text-start">
-      {/* Statistics Section */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-3 gap-4">
+      <AlertDialog
+        open={confirmAction !== null}
+        onOpenChange={(open) => {
+          if (!open && !pending) {
+            setConfirmAction(null)
+            setError(null)
+          }
+        }}
+      >
+        <AlertDialogContent className="max-w-[420px] sm:max-w-[420px]">
+          <AlertDialogHeader className="sm:place-items-start sm:text-start">
+            <AlertDialogMedia
+              className={cn(
+                confirmAction?.type === "delete"
+                  ? "bg-red-100 text-red-600"
+                  : "bg-amber-100 text-amber-700"
+              )}
+            >
+              {confirmAction?.type === "delete" ? (
+                <AlertTriangle className="h-5 w-5" />
+              ) : (
+                <ShieldAlert className="h-5 w-5" />
+              )}
+            </AlertDialogMedia>
+            <AlertDialogTitle>{confirmTitle}</AlertDialogTitle>
+            <AlertDialogDescription>
+              {companyLabel ? (
+                <>
+                  <span className="mb-1 block font-medium text-foreground">{companyLabel}</span>
+                  {confirmBody}
+                </>
+              ) : (
+                confirmBody
+              )}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          {error && (
+            <div className="rounded-lg border border-red-200 bg-red-50 p-2.5 text-xs text-red-700">
+              {error}
+            </div>
+          )}
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={pending}>{isAr ? "إلغاء" : isDe ? "Abbrechen" : "Cancel"}</AlertDialogCancel>
+            <Button
+              type="button"
+              variant={confirmAction?.type === "delete" ? "destructive" : "default"}
+              disabled={pending}
+              className={cn(
+                confirmAction?.type === "delete"
+                  ? "bg-red-600 text-white hover:bg-red-700 focus-visible:ring-red-600/30"
+                  : "bg-amber-600 text-white hover:bg-amber-700"
+              )}
+              onClick={() => {
+                void runConfirm()
+              }}
+            >
+              {confirmAction?.type === "delete"
+                ? pending
+                  ? isAr
+                    ? "جاري الحذف..."
+                    : isDe
+                      ? "Wird gelöscht..."
+                      : "Deleting..."
+                  : t("delete")
+                : pending
+                  ? isAr
+                    ? "جاري التحديث..."
+                    : isDe
+                      ? "Wird aktualisiert..."
+                      : "Updating..."
+                  : isAr
+                    ? "تأكيد"
+                    : isDe
+                      ? "Bestätigen"
+                      : "Confirm"}
+            </Button>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-3">
         <div className="rounded-lg border border-[#E5E7EB] bg-white p-4 shadow-sm">
-          <div className="text-xs font-medium text-[#6B7280] mb-2">
+          <div className="mb-2 text-xs font-medium text-[#6B7280]">
             {locale === "ar" ? "إجمالي الشركات" : "Total Companies"}
           </div>
           <div className="text-2xl font-bold text-[#111827]">{totalCompanies}</div>
         </div>
-        
+
         <div className="rounded-lg border border-[#E5E7EB] bg-white p-4 shadow-sm">
-          <div className="text-xs font-medium text-[#6B7280] mb-2">
+          <div className="mb-2 text-xs font-medium text-[#6B7280]">
             {locale === "ar" ? "الحسابات المؤكدة" : "Verified Accounts"}
           </div>
           <div className="text-2xl font-bold text-[#059669]">{verifiedCompanies}</div>
-          <div className="text-xs text-[#6B7280]">
-            {locale === "ar" ? "مؤكد" : "Verified"}
-          </div>
+          <div className="text-xs text-[#6B7280]">{locale === "ar" ? "مؤكد" : "Verified"}</div>
         </div>
-        
+
         <div className="rounded-lg border border-[#E5E7EB] bg-white p-4 shadow-sm">
-          <div className="text-xs font-medium text-[#6B7280] mb-2">
+          <div className="mb-2 text-xs font-medium text-[#6B7280]">
             {locale === "ar" ? "الحسابات غير المؤكدة" : "Unverified Accounts"}
           </div>
           <div className="text-2xl font-bold text-[#D97706]">{unverifiedCompanies}</div>
-          <div className="text-xs text-[#6B7280]">
-            {locale === "ar" ? "غير مؤكد" : "Not Verified"}
-          </div>
+          <div className="text-xs text-[#6B7280]">{locale === "ar" ? "غير مؤكد" : "Not Verified"}</div>
         </div>
       </div>
 
-      {error && (
+      {error && !confirmAction && (
         <p className="rounded-lg border border-red-200 bg-red-50 px-4 py-2 text-sm text-red-800">{error}</p>
       )}
 
-      {/* Companies Table */}
-      <AdminTableShell columns={columns} isEmpty={sortedCompanies.length === 0} emptyMessage={t("empty")} isRTL={locale === "ar"}>
+      <AdminTableShell
+        columns={columns}
+        isEmpty={sortedCompanies.length === 0}
+        emptyMessage={t("empty")}
+        isRTL={locale === "ar"}
+      >
         {sortedCompanies.map((company, index) => {
           const companyProfile = company.companyProfile || {}
           const formattedDate = (() => {
@@ -144,17 +262,19 @@ export function AdminCompaniesPanel({ companies, locale }: { companies: User[]; 
             if (!dateVal) return "—"
             try {
               return new Date(dateVal).toLocaleDateString(locale, {
-                year: 'numeric',
-                month: 'short',
-                day: 'numeric'
+                year: "numeric",
+                month: "short",
+                day: "numeric",
               })
             } catch {
               return "—"
             }
           })()
 
+          const isSuspended = company.status === "suspended" || company.status === "inactive"
+
           return (
-            <AdminTableRow key={company.id} striped={index % 2 === 1}>
+            <AdminTableRow key={company.uuid || company.id} striped={index % 2 === 1}>
               <AdminTableCell className="w-[20%]">
                 <div className="flex items-center gap-3">
                   {company.avatar ? (
@@ -167,44 +287,42 @@ export function AdminCompaniesPanel({ companies, locale }: { companies: User[]; 
                       unoptimized
                     />
                   ) : (
-                    <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-[#EBF5FB] text-sm font-bold text-[#006EA8] shrink-0">
+                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-[#EBF5FB] text-sm font-bold text-[#006EA8]">
                       {(companyProfile.companyName || company.name)?.charAt(0) ?? "C"}
                     </div>
                   )}
                   <div className="min-w-0">
                     <Link
                       locale={locale}
-                      href={`/dashboard/admin/companies/${company.id}`}
-                      className="font-medium hover:underline text-[#006EA8] block truncate"
+                      href={`/dashboard/admin/companies/${company.uuid || company.id}`}
+                      className="block truncate font-medium text-[#006EA8] hover:underline"
                     >
                       {companyProfile.companyName || company.name}
                     </Link>
                     {companyProfile.ceoName && (
-                      <div className="text-xs text-[#6B7280] truncate">{companyProfile.ceoName}</div>
+                      <div className="truncate text-xs text-[#6B7280]">{companyProfile.ceoName}</div>
                     )}
                   </div>
                 </div>
               </AdminTableCell>
-              <AdminTableCell className="w-[20%] text-xs truncate">{company.email}</AdminTableCell>
+              <AdminTableCell className="w-[20%] truncate text-xs">{company.email}</AdminTableCell>
               <AdminTableCell className="w-[12%] text-xs">{company.phone || "—"}</AdminTableCell>
-              <AdminTableCell className="w-[12%] text-xs">
-                {company.country?.name || "—"}
-              </AdminTableCell>
-              <AdminTableCell className="w-[12%] text-xs">
-                {formattedDate}
-              </AdminTableCell>
+              <AdminTableCell className="w-[12%] text-xs">{company.country?.name || "—"}</AdminTableCell>
+              <AdminTableCell className="w-[12%] text-xs">{formattedDate}</AdminTableCell>
               <AdminTableCell className="w-[12%]">
-                <span className={cn(
-                  "inline-flex rounded-full px-2.5 py-1 text-xs font-semibold capitalize",
-                  company.emailVerified ? "bg-[#DCFCE7] text-[#166534]" : "bg-[#FEE2E2] text-[#991B1B]"
-                )}>
-                  {company.emailVerified ? (isAr ? "مؤكد" : "Verified") : (isAr ? "غير مؤكد" : "Not Verified")}
+                <span
+                  className={cn(
+                    "inline-flex rounded-full px-2.5 py-1 text-xs font-semibold capitalize",
+                    company.emailVerified ? "bg-[#DCFCE7] text-[#166534]" : "bg-[#FEE2E2] text-[#991B1B]"
+                  )}
+                >
+                  {company.emailVerified ? (isAr ? "مؤكد" : "Verified") : isAr ? "غير مؤكد" : "Not Verified"}
                 </span>
               </AdminTableCell>
-              <AdminTableCell className="w-[12%] flex items-center gap-2">
+              <AdminTableCell className="flex w-[12%] items-center gap-2">
                 <Link
                   locale={locale}
-                  href={`/dashboard/admin/companies/${company.id}`}
+                  href={`/dashboard/admin/companies/${company.uuid || company.id}`}
                   className="text-xs font-semibold text-[#006EA8] hover:underline"
                 >
                   {isAr ? "تعديل" : "Edit"}
@@ -213,16 +331,22 @@ export function AdminCompaniesPanel({ companies, locale }: { companies: User[]; 
                 <button
                   type="button"
                   disabled={pending}
-                  onClick={() => handleToggleSuspend(company)}
+                  onClick={() => {
+                    setError(null)
+                    setConfirmAction({ type: "suspend", company, suspend: !isSuspended })
+                  }}
                   className="text-xs font-semibold text-amber-600 hover:underline disabled:opacity-50"
                 >
-                  {company.status === "suspended" ? (isAr ? "تفعيل" : "Activate") : (isAr ? "تعليق الحساب" : "Suspend")}
+                  {isSuspended ? (isAr ? "تفعيل" : "Activate") : isAr ? "تعليق الحساب" : "Suspend"}
                 </button>
                 <span className="text-[#E5E7EB]">|</span>
                 <button
                   type="button"
                   disabled={pending}
-                  onClick={() => handleDelete(company)}
+                  onClick={() => {
+                    setError(null)
+                    setConfirmAction({ type: "delete", company })
+                  }}
                   className="text-xs font-semibold text-red-600 hover:underline disabled:opacity-50"
                 >
                   {t("delete")}

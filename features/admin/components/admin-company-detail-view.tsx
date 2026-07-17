@@ -9,11 +9,15 @@ import { cn } from "@/lib/utils"
 import { updateAdminUserAction, suspendUserAction } from "@/features/admin/actions/admin-actions"
 import { toast } from "sonner"
 import { ShieldAlert } from "lucide-react"
+import { AdminConfirmDialog } from "./admin-confirm-dialog"
 
 export function AdminCompanyDetailView({ company, locale }: { company: User; locale: string }) {
   const t = useTranslations("Admin.companies")
   const isAr = locale === "ar"
   const [pending, startTransition] = useTransition()
+  const [statusPending, setStatusPending] = useState(false)
+  const [statusError, setStatusError] = useState<string | null>(null)
+  const [statusConfirmOpen, setStatusConfirmOpen] = useState(false)
 
   const [isEditing, setIsEditing] = useState(false)
   const [name, setName] = useState(company.name || "")
@@ -26,6 +30,31 @@ export function AdminCompanyDetailView({ company, locale }: { company: User; loc
   const country = (company as any).country
   const city = (company as any).city
   const socialMedia = companyProfile.socialMedia || companyProfile.social_media || {}
+  const isSuspended = company.status === "suspended" || company.status === "inactive"
+
+  async function runStatusToggle() {
+    if (statusPending) return
+    setStatusError(null)
+    setStatusPending(true)
+    try {
+      const res = await suspendUserAction(
+        { id: company.id, uuid: company.uuid, email: company.email },
+        !isSuspended,
+        locale
+      )
+      if (!res.ok) {
+        const msg = res.message || (isAr ? "فشل تغيير الحالة" : "Failed to update status")
+        setStatusError(msg)
+        toast.error(msg)
+        return
+      }
+      toast.success(isAr ? "تم تحديث حالة الشركة" : "Company status updated")
+      setStatusConfirmOpen(false)
+      location.reload()
+    } finally {
+      setStatusPending(false)
+    }
+  }
 
   function handleSave(e: React.FormEvent) {
     e.preventDefault()
@@ -145,59 +174,55 @@ export function AdminCompanyDetailView({ company, locale }: { company: User; loc
             <div className="flex items-center gap-3">
               <span className={cn(
                 "px-3 py-1 rounded-full text-xs font-semibold capitalize",
-                company.status === "active" ? "bg-[#DCFCE7] text-[#166534]" : "bg-[#FEF3C7] text-[#92400E]"
+                !isSuspended ? "bg-[#DCFCE7] text-[#166534]" : "bg-[#FEF3C7] text-[#92400E]"
               )}>
-                {company.status === "active" ? (isAr ? "نشط" : "Active") : (isAr ? "معلق" : "Suspended")}
+                {!isSuspended ? (isAr ? "نشط" : "Active") : (isAr ? "معلق" : "Suspended")}
               </span>
 
               <button
                 type="button"
+                disabled={statusPending}
                 onClick={() => {
-                  const isSuspended = company.status === "suspended"
-                  toast(
-                    isAr
-                      ? isSuspended
-                        ? "هل تريد تفعيل حساب هذه الشركة؟"
-                        : "هل تريد تعليق حساب هذه الشركة؟"
-                      : isSuspended
-                        ? "Activate this company account?"
-                        : "Suspend this company account?",
-                    {
-                      action: {
-                        label: isAr ? "تأكيد" : "Confirm",
-                        onClick: () => {
-                          startTransition(async () => {
-                            const res = await suspendUserAction(
-                              { id: company.id, uuid: company.uuid },
-                              !isSuspended,
-                              locale
-                            )
-                            if (!res.ok) {
-                              toast.error(res.message || (isAr ? "فشل تغيير الحالة" : "Failed to update status"))
-                              return
-                            }
-                            toast.success(isAr ? "تم تحديث حالة الشركة" : "Company status updated")
-                            location.reload()
-                          })
-                        },
-                      },
-                    }
-                  )
+                  setStatusError(null)
+                  setStatusConfirmOpen(true)
                 }}
                 className={cn(
                   "inline-flex items-center gap-1 text-xs font-semibold px-3 py-1 rounded-full border transition",
-                  company.status === "suspended"
+                  isSuspended
                     ? "bg-[#DCFCE7] border-[#10B981] text-[#166534] hover:bg-[#ECFDF5]"
                     : "bg-[#FEF3C7] border-[#F59E0B] text-[#92400E] hover:bg-[#FFFBEB]"
                 )}
               >
                 <ShieldAlert className="size-3.5" />
-                {company.status === "suspended"
+                {isSuspended
                   ? (isAr ? "تفعيل الحساب" : "Activate account")
                   : (isAr ? "تعليق الحساب" : "Suspend account")}
               </button>
             </div>
           </div>
+
+          <AdminConfirmDialog
+            open={statusConfirmOpen}
+            onOpenChange={setStatusConfirmOpen}
+            title={isSuspended ? (isAr ? "تأكيد التفعيل" : "Confirm activation") : (isAr ? "تأكيد التعليق" : "Confirm suspend")}
+            description={
+              isSuspended
+                ? isAr
+                  ? "هل تريد تفعيل حساب هذه الشركة؟"
+                  : "Do you want to activate this company account?"
+                : isAr
+                  ? "هل تريد تعليق حساب هذه الشركة؟"
+                  : "Do you want to suspend this company account?"
+            }
+            subject={companyProfile.companyName || company.name}
+            confirmLabel={isAr ? "تأكيد" : "Confirm"}
+            cancelLabel={isAr ? "إلغاء" : "Cancel"}
+            pending={statusPending}
+            pendingLabel={isAr ? "جاري التحديث..." : "Updating..."}
+            tone="warning"
+            error={statusError}
+            onConfirm={runStatusToggle}
+          />
 
           {/* Form / Details content */}
           {isEditing ? (

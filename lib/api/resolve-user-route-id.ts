@@ -9,6 +9,7 @@ type UserRouteSource =
   | {
       id?: number | string
       uuid?: string | null
+      email?: string | null
     }
 
 /** Prefer backend UUID route keys; fall back to numeric/string id. */

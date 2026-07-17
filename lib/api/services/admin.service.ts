@@ -381,27 +381,54 @@ export async function createAdminJob(
 }
 
 async function resolveUserApiRouteId(
-  userId: number | string | { id?: number | string; uuid?: string | null },
+  userId: number | string | { id?: number | string; uuid?: string | null; email?: string | null },
   token: string,
   locale: string
 ): Promise<string> {
   const direct = resolveUserRouteId(userId)
   if (isUuidRouteId(direct)) return direct
 
-  if (typeof userId === "object" && userId?.uuid) {
-    return resolveUserRouteId(userId)
+  if (typeof userId === "object" && userId?.uuid && isUuidRouteId(String(userId.uuid).trim())) {
+    return String(userId.uuid).trim()
   }
 
   const numericId = typeof userId === "object" ? userId.id : userId
+  const email =
+    typeof userId === "object" && userId.email ? String(userId.email).trim() : ""
+
+  if (email) {
+    try {
+      const response = await api.get<any>(
+        `/users?filter[email]=${encodeURIComponent(email)}&per_page=1`,
+        { token, locale }
+      )
+      const rawList = Array.isArray(response)
+        ? response
+        : Array.isArray(response?.data)
+          ? response.data
+          : []
+      const found = rawList[0] as Record<string, unknown> | undefined
+      const uuid = found ? extractUserUuid(found) : undefined
+      if (uuid && isUuidRouteId(uuid)) return uuid
+      if (found?.id != null && isUuidRouteId(String(found.id))) return String(found.id)
+    } catch {
+      // fall through to role-based lookup
+    }
+  }
+
   if (numericId == null) return direct
 
   for (const role of ["user", "company", undefined] as const) {
     try {
       const { data } = await getAdminUsers(token, role, 1, locale, 100)
       const found = data.find(
-        (entry) => String(entry.id) === String(numericId) || entry.uuid === String(numericId)
+        (entry) =>
+          String(entry.id) === String(numericId) ||
+          entry.uuid === String(numericId) ||
+          (email && entry.email?.toLowerCase() === email.toLowerCase())
       )
-      if (found?.uuid) return found.uuid
+      if (found?.uuid && isUuidRouteId(found.uuid)) return found.uuid
+      if (found?.id != null && isUuidRouteId(String(found.id))) return String(found.id)
     } catch {
       // try next role filter
     }
@@ -410,13 +437,95 @@ async function resolveUserApiRouteId(
   return direct
 }
 
+function normalizeAdminUser(item: unknown): User {
+  const row = (item && typeof item === "object" ? item : {}) as Record<string, unknown>
+  const nestedUser =
+    row.user && typeof row.user === "object" ? (row.user as Record<string, unknown>) : null
+  const source = nestedUser ?? row
+
+  const uuid =
+    extractUserUuid(source) ||
+    extractUserUuid(row) ||
+    (typeof source.id === "string" && isUuidRouteId(source.id) ? source.id : undefined)
+
+  const rawStatus = String(source.status ?? row.status ?? "active").toLowerCase()
+  const status = (
+    rawStatus === "suspended" ||
+    rawStatus === "inactive" ||
+    rawStatus === "pending" ||
+    rawStatus === "active"
+      ? rawStatus
+      : source.is_active === false || source.is_active === 0 || source.is_active === "0"
+        ? "suspended"
+        : "active"
+  ) as User["status"]
+
+  const emailVerified = (() => {
+    if (typeof source.emailVerified === "boolean") return source.emailVerified
+    if (typeof source.email_verified === "boolean") return source.email_verified
+    if (source.email_verified_at != null) return Boolean(source.email_verified_at)
+    if (source.email_verified === 1 || source.email_verified === "1") return true
+    if (source.email_verified === 0 || source.email_verified === "0") return false
+    return undefined
+  })()
+
+  const idRaw = source.id ?? row.id
+  const id =
+    typeof idRaw === "number"
+      ? idRaw
+      : typeof idRaw === "string" && /^\d+$/.test(idRaw)
+        ? Number(idRaw)
+        : Number(source.user_id ?? row.user_id) || 0
+
+  return {
+    ...(source as unknown as User),
+    id,
+    uuid,
+    email: String(source.email ?? row.email ?? ""),
+    name: String(source.name ?? row.name ?? ""),
+    phone: (source.phone ?? row.phone) as string | undefined,
+    status,
+    emailVerified,
+    createdAt: (source.createdAt ??
+      source.created_at ??
+      row.createdAt ??
+      row.created_at) as string | undefined,
+    country: (source.country ?? row.country) as User["country"],
+  }
+}
+
 export async function deleteUser(
-  userId: number | string | { id?: number | string; uuid?: string | null },
+  userId: number | string | { id?: number | string; uuid?: string | null; email?: string | null },
   token: string,
   locale = "ar"
 ): Promise<void> {
   const routeId = await resolveUserApiRouteId(userId, token, locale)
-  await api.delete(`/users/${routeId}`, { token, locale })
+  if (!routeId) throw new ApiError(400, "Missing user id")
+
+  const attempts: Array<() => Promise<unknown>> = [
+    () => api.delete(`/users/${routeId}`, { token, locale }),
+  ]
+
+  // Some Laravel setups only accept method spoofing over POST
+  attempts.push(async () => {
+    const formData = new FormData()
+    formData.append("_method", "DELETE")
+    return api.post(`/users/${routeId}`, formData, { token, locale })
+  })
+
+  let lastError: unknown
+  for (const attempt of attempts) {
+    try {
+      await attempt()
+      return
+    } catch (err) {
+      lastError = err
+      if (err instanceof ApiError && err.status !== 404 && err.status !== 405) {
+        throw err
+      }
+    }
+  }
+  throw lastError instanceof Error ? lastError : new ApiError(500, "Failed to delete user")
 }
 
 export async function getAdminUserById(
@@ -491,14 +600,7 @@ export async function getAdminUsers(
       ? response.data
       : []
 
-  const data = rawList.map((item: unknown) => {
-    const row = item as Record<string, unknown>
-    const user = row as unknown as User
-    return {
-      ...user,
-      uuid: extractUserUuid(row) ?? user.uuid,
-    }
-  }) as User[]
+  const data = rawList.map((item: unknown) => normalizeAdminUser(item))
   
   const meta: PaginationMeta = Array.isArray(response)
     ? { current_page: page, last_page: 1, per_page: perPage, total: data.length }
@@ -603,19 +705,53 @@ export async function getAdminStats(
 }
 
 export async function suspendUser(
-  userId: number | string | { id?: number | string; uuid?: string | null },
+  userId: number | string | { id?: number | string; uuid?: string | null; email?: string | null },
   suspend: boolean,
   token: string,
   locale = "ar"
 ): Promise<void> {
   const routeId = await resolveUserApiRouteId(userId, token, locale)
-  const formData = new FormData()
-  formData.append("status", suspend ? "suspended" : "active")
-  await api.post(`/users/${routeId}`, formData, { token, locale })
+  if (!routeId) throw new ApiError(400, "Missing user id")
+
+  const status = suspend ? "suspended" : "active"
+  const attempts: Array<() => Promise<unknown>> = [
+    async () => {
+      const formData = new FormData()
+      formData.append("status", status)
+      formData.append("is_active", suspend ? "0" : "1")
+      return api.post(`/users/${routeId}`, formData, { token, locale })
+    },
+    async () => {
+      const formData = new FormData()
+      formData.append("status", suspend ? "inactive" : "active")
+      return api.post(`/users/${routeId}`, formData, { token, locale })
+    },
+    async () => {
+      return api.put(
+        `/users/${routeId}`,
+        { status, is_active: suspend ? 0 : 1 },
+        { token, locale }
+      )
+    },
+  ]
+
+  let lastError: unknown
+  for (const attempt of attempts) {
+    try {
+      await attempt()
+      return
+    } catch (err) {
+      lastError = err
+      if (err instanceof ApiError && ![404, 405, 422].includes(err.status)) {
+        throw err
+      }
+    }
+  }
+  throw lastError instanceof Error ? lastError : new ApiError(500, "Failed to change user status")
 }
 
 export async function updateAdminUser(
-  userId: number | string | { id?: number | string; uuid?: string | null },
+  userId: number | string | { id?: number | string; uuid?: string | null; email?: string | null },
   data: { name?: string; email?: string; password?: string; status?: string; email_verified?: number | boolean },
   token: string,
   locale = "ar"

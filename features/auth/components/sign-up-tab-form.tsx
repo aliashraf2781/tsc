@@ -1,13 +1,13 @@
 "use client"
 
-import { useState, useEffect, useRef } from "react"
+import { useState, useEffect, useMemo, useRef } from "react"
 import Image from "next/image"
 import { useForm } from "react-hook-form"
 import { useAuth } from "@/hooks/use-auth"
 import { AuthFieldGroup } from "./auth-field-group"
 import { useLocale, useTranslations } from "next-intl"
 import { cn } from "@/lib/utils"
-import { COUNTRIES as STATIC_COUNTRIES } from "@/lib/countries"
+import { COUNTRIES as STATIC_COUNTRIES, getLocalizedCountries } from "@/lib/countries"
 import { Check, MapPin, Search } from "lucide-react"
 
 type FormValues = {
@@ -47,7 +47,19 @@ type CountryOption = {
   phone_code?: string
 }
 
+const DEFAULT_DIAL_CODE = "+49"
+const GERMANY_ISO = "DE"
+const GERMANY_NAMES = new Set(["germany", "deutschland", "ألمانيا"])
 
+function isGermanyCountry(c: CountryOption) {
+  const code = c.code?.trim().toUpperCase()
+  if (code === GERMANY_ISO || code === "+49" || code === "49") return true
+  return GERMANY_NAMES.has(c.name?.trim().toLowerCase())
+}
+
+function findGermany(countries: CountryOption[]) {
+  return countries.find(isGermanyCountry) ?? null
+}
 
 export function SignUpTabForm({
   userTabLabel,
@@ -81,6 +93,7 @@ export function SignUpTabForm({
   const locale = useLocale()
   const t = useTranslations("Auth.signUp")
   const isRTL = locale === "ar"
+  const localizedDialCountries = useMemo(() => getLocalizedCountries(locale), [locale])
 
   const {
     register,
@@ -89,9 +102,22 @@ export function SignUpTabForm({
     setValue,
     formState: { errors },
   } = useForm<FormValues>({
-    defaultValues: { accept_terms: true, phone_code: "+20", country_id: "1" },
+    defaultValues: {
+      accept_terms: true,
+      phone_code: DEFAULT_DIAL_CODE,
+      country_id: (() => {
+        const germany = findGermany(initialCountries)
+        return germany ? String(germany.id) : ""
+      })(),
+    },
     mode: "onChange",
   })
+
+  const acceptTerms = watch("accept_terms")
+  const password = watch("password")
+  const passwordConfirmation = watch("password_confirmation")
+  const selectedCountryId = watch("country_id")
+  const selectedDialCode = watch("phone_code") || DEFAULT_DIAL_CODE
 
   // Fetch countries if initialCountries is empty
   useEffect(() => {
@@ -110,11 +136,16 @@ export function SignUpTabForm({
     loadCountries()
   }, [locale, countries.length])
 
-  const acceptTerms = watch("accept_terms")
-  const password = watch("password")
-  const passwordConfirmation = watch("password_confirmation")
-  const selectedCountryId = watch("country_id")
-  const selectedDialCode = watch("phone_code") || "+20"
+  // Default to Germany once the countries list is available (works in en/ar/de)
+  useEffect(() => {
+    if (countries.length === 0) return
+    const germany = findGermany(countries)
+    if (!germany) return
+    if (!selectedCountryId || !countries.some((c) => String(c.id) === String(selectedCountryId))) {
+      setValue("country_id", String(germany.id))
+      setValue("phone_code", DEFAULT_DIAL_CODE)
+    }
+  }, [countries, selectedCountryId, setValue])
 
   // Update selected country object when country_id changes and sync phone dial code
   useEffect(() => {
@@ -145,8 +176,16 @@ export function SignUpTabForm({
     // Find matching country code from static countries
     const staticC = STATIC_COUNTRIES.find((c) => c.dialCode === newDialCode)
     if (staticC && countries.length > 0) {
-      // Find matching country in API countries list
-      const found = countries.find((c) => c.code.toLowerCase() === staticC.code.toLowerCase())
+      // API `code` may be dial (+49) or ISO (DE)
+      const found = countries.find((c) => {
+        const code = c.code?.trim().toLowerCase()
+        return (
+          code === staticC.code.toLowerCase() ||
+          code === staticC.dialCode.toLowerCase() ||
+          code === staticC.dialCode.replace("+", "").toLowerCase() ||
+          c.phone_code === staticC.dialCode
+        )
+      })
       if (found) {
         setValue("country_id", String(found.id))
       }
@@ -157,9 +196,10 @@ export function SignUpTabForm({
     if (tab === activeTab) return
     if (tab === "company") {
       previousCountryIdRef.current = selectedCountryId
-      const germany = countries.find((c) => c.name === "Germany")
+      const germany = findGermany(countries)
       if (germany) {
         setValue("country_id", String(germany.id), { shouldDirty: true })
+        setValue("phone_code", DEFAULT_DIAL_CODE, { shouldDirty: true })
       }
     } else if (previousCountryIdRef.current) {
       setValue("country_id", previousCountryIdRef.current, { shouldDirty: true })
@@ -170,9 +210,10 @@ export function SignUpTabForm({
   // If countries load after the company tab is already active, force the selection to Germany
   useEffect(() => {
     if (activeTab !== "company") return
-    const germany = countries.find((c) => c.name === "Germany")
+    const germany = findGermany(countries)
     if (germany && String(selectedCountryId) !== String(germany.id)) {
       setValue("country_id", String(germany.id), { shouldDirty: true })
+      setValue("phone_code", DEFAULT_DIAL_CODE, { shouldDirty: true })
     }
   }, [activeTab, countries, selectedCountryId, setValue])
 
@@ -208,17 +249,17 @@ export function SignUpTabForm({
 
   const countryQuery = countrySearch.trim().toLowerCase()
   const availableCountries =
-    activeTab === "company" ? countries.filter((c) => c.name === "Germany") : countries
+    activeTab === "company" ? countries.filter(isGermanyCountry) : countries
   const filteredCountries = countryQuery
     ? availableCountries.filter((c) => c.name.toLowerCase().includes(countryQuery))
     : availableCountries
 
   const phoneQuery = phoneSearch.trim().toLowerCase()
   const filteredDialCodes = phoneQuery
-    ? STATIC_COUNTRIES.filter(
-        (c) => c.name.toLowerCase().includes(phoneQuery) || c.dialCode.includes(phoneQuery)
+    ? localizedDialCountries.filter(
+        (c) => c.name.toLowerCase().includes(phoneQuery) || c.dialCode.includes(phoneQuery) || c.code.toLowerCase().includes(phoneQuery)
       )
-    : STATIC_COUNTRIES
+    : localizedDialCountries
 
   const baseTabClassName =
     "inline-flex h-[52px] min-h-[52px] flex-1 items-center justify-center gap-2 rounded-xl border px-3 py-2.5 text-sm font-medium transition-all duration-200 sm:h-[52px] sm:px-4 sm:text-base"
@@ -247,7 +288,9 @@ export function SignUpTabForm({
         password_confirmation: values.password_confirmation,
         type: activeTab,
         company_name: activeTab === "company" ? values.company_name : undefined,
-        country_id: values.country_id ? Number(values.country_id) : 1,
+        country_id: values.country_id
+          ? Number(values.country_id)
+          : findGermany(countries)?.id,
         accept_terms_and_privacy: values.accept_terms,
       })
     } catch {
@@ -466,7 +509,7 @@ export function SignUpTabForm({
                       className={cn("h-3.5 w-3.5 brightness-0 invert transition-transform me-1", phoneDropdownOpen && "rotate-180")} 
                     />
                     <span 
-                      className={`fi fi-${(STATIC_COUNTRIES.find((c) => c.dialCode === selectedDialCode)?.code || "eg").toLowerCase()} fis shrink-0`}
+                      className={`fi fi-${(STATIC_COUNTRIES.find((c) => c.dialCode === selectedDialCode)?.code || "de").toLowerCase()} fis shrink-0`}
                       style={{ fontSize: '14px', borderRadius: '2px' }}
                       aria-hidden="true" 
                     />

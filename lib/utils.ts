@@ -21,19 +21,34 @@ export function resolveImageUrl(src?: string | null): string {
     return clean
   }
   
-  const base = (process.env.NEXT_PUBLIC_STORAGE_URL || process.env.NEXT_PUBLIC_API_URL || "https://cv.subcodeco.com").replace(
+  const base = (process.env.NEXT_PUBLIC_STORAGE_URL || process.env.NEXT_PUBLIC_API_URL || "https://dashboardtalent.talent-sc.de").replace(
     /\/api\/v1\/?$/,
     ""
   ).replace(/\/$/, "")
 
-  if (clean.startsWith("/storage/")) {
-    return `${base}${clean}`
-  }
-  if (clean.startsWith("storage/")) {
-    return `${base}/${clean}`
+  // Absolute storage paths belong on the API origin, not the Next.js host
+  if (clean.startsWith("/storage/") || clean.startsWith("storage/")) {
+    return `${base}/${clean.replace(/^\//, "")}`
   }
   if (clean.startsWith("/")) {
-    return clean
+    return `${base}${clean}`
   }
   return `${base}/${clean}`
+}
+
+/** Normalize category/media icon fields that may be a string URL or nested object. */
+export function extractMediaUrl(value: unknown): string | null {
+  if (!value) return null
+  if (typeof value === "string") {
+    const trimmed = value.trim()
+    return trimmed ? trimmed : null
+  }
+  if (typeof value === "object") {
+    const obj = value as Record<string, unknown>
+    for (const key of ["url", "path", "src", "original_url", "full_url", "icon"]) {
+      const nested = obj[key]
+      if (typeof nested === "string" && nested.trim()) return nested.trim()
+    }
+  }
+  return null
 }

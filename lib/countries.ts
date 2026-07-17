@@ -111,6 +111,30 @@ export function getCountryById(id: number): CountryData | undefined {
   return COUNTRIES.find((c) => c.id === id)
 }
 
+/** Localized country name from ISO 3166-1 alpha-2 (en / ar / de). */
+export function getLocalizedCountryName(
+  isoCode: string,
+  locale: string,
+  fallback?: string
+): string {
+  const code = isoCode?.trim().toUpperCase()
+  if (!code) return fallback || isoCode
+  try {
+    const name = new Intl.DisplayNames([locale], { type: "region" }).of(code)
+    if (name) return name
+  } catch {
+    // Intl may be unavailable for some runtimes/locales
+  }
+  return fallback || getCountryByCode(code)?.name || code
+}
+
+export function getLocalizedCountries(locale: string): CountryData[] {
+  return COUNTRIES.map((c) => ({
+    ...c,
+    name: getLocalizedCountryName(c.code, locale, c.name),
+  }))
+}
+
 export function getCountriesByRegion(region: "mena" | "europe" | "americas" | "asia"): CountryData[] {
   const ranges: Record<string, [number, number]> = {
     mena: [1, 16],

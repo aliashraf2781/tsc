@@ -7,6 +7,7 @@ import { Mail, Phone, Trash2, Eye, EyeOff, Calendar, Search, Filter, Clock, Plus
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { faWhatsapp } from "@fortawesome/free-brands-svg-icons"
 import Image from "next/image"
+import { ConfirmActionDialog } from "@/components/confirm-action-dialog"
 
 function formatDate(dateStr: string) {
   try {
@@ -59,6 +60,9 @@ function MessageCard({
 }) {
   const [expanded, setExpanded] = useState(false)
   const [pending, startTransition] = useTransition()
+  const [deleteOpen, setDeleteOpen] = useState(false)
+  const [deletePending, setDeletePending] = useState(false)
+  const [deleteError, setDeleteError] = useState<string | null>(null)
   const isRTL = locale === "ar"
   const isNew = message.status === "new" || !message.status
   const [read, setRead] = useState(false)
@@ -78,12 +82,19 @@ function MessageCard({
     }
   }, [message.id])
 
-  function handleDelete() {
-    if (!confirm(isRTL ? "هل أنت متأكد من حذف هذه الرسالة؟" : "Delete this message?")) return
-    startTransition(async () => {
+  async function handleDelete() {
+    if (deletePending) return
+    setDeleteError(null)
+    setDeletePending(true)
+    try {
       await deleteContactMessageAction(message.id, locale)
+      setDeleteOpen(false)
       onDelete()
-    })
+    } catch (err) {
+      setDeleteError(err instanceof Error ? err.message : isRTL ? "فشل الحذف" : "Delete failed")
+    } finally {
+      setDeletePending(false)
+    }
   }
 
   function playClickSound() {
@@ -122,6 +133,25 @@ function MessageCard({
 
   return (
     <div className="rounded-lg border border-[#E5E7EB] bg-white shadow-sm overflow-hidden hover:shadow-md transition-shadow">
+      <ConfirmActionDialog
+        open={deleteOpen}
+        onOpenChange={(open) => {
+          if (!open && !deletePending) {
+            setDeleteOpen(false)
+            setDeleteError(null)
+          }
+        }}
+        title={isRTL ? "تأكيد الحذف" : "Confirm deletion"}
+        description={isRTL ? "هل أنت متأكد من حذف هذه الرسالة؟" : "Delete this message?"}
+        subject={message.name}
+        confirmLabel={isRTL ? "حذف" : "Delete"}
+        cancelLabel={isRTL ? "إلغاء" : "Cancel"}
+        pending={deletePending}
+        pendingLabel={isRTL ? "جاري الحذف..." : "Deleting..."}
+        tone="danger"
+        error={deleteError}
+        onConfirm={handleDelete}
+      />
       {/* Header */}
       <div className="flex items-start justify-between gap-4 p-4 border-b border-[#E5E7EB]">
         <div className="flex items-center gap-3 flex-1 min-w-0">
@@ -155,8 +185,11 @@ function MessageCard({
             </button>
 
             <button
-              onClick={handleDelete}
-              disabled={pending}
+              onClick={() => {
+                setDeleteError(null)
+                setDeleteOpen(true)
+              }}
+              disabled={pending || deletePending}
               className="p-1.5 rounded-full hover:bg-red-50 text-red-500 disabled:opacity-50"
               title={isRTL ? "حذف" : "Delete"}
             >

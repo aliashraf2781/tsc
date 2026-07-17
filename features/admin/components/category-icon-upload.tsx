@@ -1,7 +1,11 @@
 "use client"
 
-import Image from "next/image"
+import { useRef } from "react"
 import { Tag, Pencil } from "lucide-react"
+import { useTranslations } from "next-intl"
+
+const ALLOWED_TYPES = ["image/png", "image/jpeg", "image/jpg", "image/webp"]
+const MAX_SIZE_BYTES = 5 * 1024 * 1024
 
 export function CategoryIconUpload({
   iconSrc,
@@ -9,20 +13,43 @@ export function CategoryIconUpload({
   labels,
   onChange,
   onRemove,
+  onError,
 }: {
   iconSrc: string | null
   hasNewFile: boolean
   labels: { icon: string; changeIcon: string; uploadIcon: string; remove: string }
   onChange: (file: File) => void
   onRemove: () => void
+  onError?: (message: string) => void
 }) {
+  const tMedia = useTranslations("Admin.mediaUpload")
+  const inputRef = useRef<HTMLInputElement>(null)
+
+  function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0]
+    e.target.value = ""
+    if (!file) return
+
+    if (!ALLOWED_TYPES.includes(file.type)) {
+      onError?.(tMedia("errors.unsupportedFileType"))
+      return
+    }
+    if (file.size > MAX_SIZE_BYTES) {
+      onError?.(tMedia("errors.fileTooLarge"))
+      return
+    }
+
+    onChange(file)
+  }
+
   return (
     <div className="rounded-[8px] border border-[#E5E7EB] bg-[#F9FAFB] p-3 space-y-2">
       <p className="text-xs font-bold uppercase tracking-widest text-[#006EA8]">{labels.icon}</p>
       <div className="flex items-center gap-3">
-        <div className="flex h-12 w-12 items-center justify-center rounded-full border border-[#78A3BE] bg-white">
+        <div className="flex h-12 w-12 items-center justify-center overflow-hidden rounded-full border border-[#78A3BE] bg-white">
           {iconSrc ? (
-            <Image src={iconSrc} alt="" width={28} height={28} className="h-7 w-7 object-contain" unoptimized />
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={iconSrc} alt="" className="h-7 w-7 object-contain" />
           ) : (
             <Tag className="h-6 w-6 text-[#78A3BE]" />
           )}
@@ -33,13 +60,11 @@ export function CategoryIconUpload({
             {iconSrc ? labels.changeIcon : labels.uploadIcon}
           </span>
           <input
+            ref={inputRef}
             type="file"
-            accept="image/*,.svg"
+            accept="image/png,image/jpeg,image/jpg,image/webp"
             className="hidden"
-            onChange={(e) => {
-              const file = e.target.files?.[0]
-              if (file) onChange(file)
-            }}
+            onChange={handleFileChange}
           />
         </label>
         {hasNewFile && (
@@ -48,6 +73,7 @@ export function CategoryIconUpload({
           </button>
         )}
       </div>
+      <p className="text-[11px] text-[#9CA3AF]">{tMedia("hint")}</p>
     </div>
   )
 }

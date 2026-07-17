@@ -8,11 +8,15 @@ import { cn } from "@/lib/utils"
 import { updateAdminUserAction, suspendUserAction } from "@/features/admin/actions/admin-actions"
 import { User as UserIcon, ShieldAlert } from "lucide-react"
 import { toast } from "sonner"
+import { AdminConfirmDialog } from "./admin-confirm-dialog"
 
 export function AdminUserDetailView({ user, locale }: { user: User; locale: string }) {
   const t = useTranslations("Admin.users")
   const isAr = locale === "ar"
   const [pending, startTransition] = useTransition()
+  const [statusPending, setStatusPending] = useState(false)
+  const [statusError, setStatusError] = useState<string | null>(null)
+  const [statusConfirmOpen, setStatusConfirmOpen] = useState(false)
 
   const [isEditing, setIsEditing] = useState(false)
   const [name, setName] = useState(user.name || "")
@@ -24,6 +28,31 @@ export function AdminUserDetailView({ user, locale }: { user: User; locale: stri
   const userProfile = (user as any).Userprofile || (user as any).user_profile || {}
   const country = (user as any).country
   const city = (user as any).city
+  const isSuspended = user.status === "suspended" || user.status === "inactive"
+
+  async function runStatusToggle() {
+    if (statusPending) return
+    setStatusError(null)
+    setStatusPending(true)
+    try {
+      const res = await suspendUserAction(
+        { id: user.id, uuid: user.uuid, email: user.email },
+        !isSuspended,
+        locale
+      )
+      if (!res.ok) {
+        const msg = res.message || (isAr ? "فشل تغيير الحالة" : "Failed to update status")
+        setStatusError(msg)
+        toast.error(msg)
+        return
+      }
+      toast.success(isAr ? "تم تحديث الحالة" : "Status updated")
+      setStatusConfirmOpen(false)
+      location.reload()
+    } finally {
+      setStatusPending(false)
+    }
+  }
 
   function handleSave(e: React.FormEvent) {
     e.preventDefault()
@@ -115,44 +144,49 @@ export function AdminUserDetailView({ user, locale }: { user: User; locale: stri
             <div className="flex items-center gap-3 mt-1">
               <span className={cn(
                 "px-3 py-1 rounded-full text-xs font-semibold capitalize",
-                user.status === "active" ? "bg-[#DCFCE7] text-[#166534]" : "bg-[#FEF3C7] text-[#92400E]"
+                !isSuspended ? "bg-[#DCFCE7] text-[#166534]" : "bg-[#FEF3C7] text-[#92400E]"
               )}>
-                {user.status === "active" ? (isAr ? "نشط" : "Active") : (isAr ? "معلق" : "Suspended")}
+                {!isSuspended ? (isAr ? "نشط" : "Active") : (isAr ? "معلق" : "Suspended")}
               </span>
               
               <button
                 type="button"
+                disabled={statusPending}
                 onClick={() => {
-                  const isSuspended = user.status === "suspended"
-                  toast(isAr ? (isSuspended ? "تفعيل هذا الحساب؟" : "تعليق هذا الحساب؟") : (isSuspended ? "Activate this account?" : "Suspend this account?"), {
-                    action: {
-                      label: isAr ? "تأكيد" : "Confirm",
-                      onClick: () => {
-                        startTransition(async () => {
-                          const res = await suspendUserAction({ id: user.id, uuid: user.uuid }, !isSuspended, locale)
-                          if (!res.ok) {
-                            toast.error(res.message || (isAr ? "فشل تغيير الحالة" : "Failed to update status"))
-                            return
-                          }
-                          toast.success(isAr ? "تم تحديث الحالة" : "Status updated")
-                          location.reload()
-                        })
-                      },
-                    },
-                  })
+                  setStatusError(null)
+                  setStatusConfirmOpen(true)
                 }}
                 className={cn(
                   "inline-flex items-center gap-1 text-xs font-semibold px-3 py-1 rounded-full border transition",
-                  user.status === "suspended"
+                  isSuspended
                     ? "bg-[#DCFCE7] border-[#10B981] text-[#166534] hover:bg-[#ECFDF5]"
                     : "bg-[#FEF3C7] border-[#F59E0B] text-[#92400E] hover:bg-[#FFFBEB]"
                 )}
               >
                 <ShieldAlert className="size-3.5" />
-                {user.status === "suspended" ? (isAr ? "تفعيل الحساب" : "Activate account") : (isAr ? "تعليق الحساب" : "Suspend account")}
+                {isSuspended ? (isAr ? "تفعيل الحساب" : "Activate account") : (isAr ? "تعليق الحساب" : "Suspend account")}
               </button>
             </div>
           </div>
+
+          <AdminConfirmDialog
+            open={statusConfirmOpen}
+            onOpenChange={setStatusConfirmOpen}
+            title={isSuspended ? (isAr ? "تأكيد التفعيل" : "Confirm activation") : (isAr ? "تأكيد التعليق" : "Confirm suspend")}
+            description={
+              isSuspended
+                ? t("activateConfirm")
+                : t("suspendConfirm")
+            }
+            subject={user.name}
+            confirmLabel={t("confirm")}
+            cancelLabel={t("cancel")}
+            pending={statusPending}
+            pendingLabel={isAr ? "جاري التحديث..." : "Updating..."}
+            tone="warning"
+            error={statusError}
+            onConfirm={runStatusToggle}
+          />
 
           {/* Form / Details view */}
           {isEditing ? (

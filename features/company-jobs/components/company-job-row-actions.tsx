@@ -1,6 +1,6 @@
 "use client"
 
-import { useTransition } from "react"
+import { useState } from "react"
 import { useRouter } from "@/i18n/navigation"
 import { useTranslations } from "next-intl"
 import {
@@ -8,6 +8,7 @@ import {
   stopCompanyJobAction,
   activateCompanyJobAction,
 } from "@/features/company-jobs/actions/job-actions"
+import { ConfirmActionDialog } from "@/components/confirm-action-dialog"
 
 export function CompanyJobRowActions({
   jobId,
@@ -20,35 +21,49 @@ export function CompanyJobRowActions({
 }) {
   const t = useTranslations("CompanyJobs")
   const router = useRouter()
-  const [pending, startTransition] = useTransition()
+  const [pending, setPending] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  const [confirmDelete, setConfirmDelete] = useState(false)
+  const isAr = locale === "ar"
 
-  const runDelete = () => {
-    if (!confirm(t("confirmDelete"))) return
-    startTransition(async () => {
+  async function runDelete() {
+    if (pending) return
+    setError(null)
+    setPending(true)
+    try {
       const result = await deleteCompanyJobAction(jobId, locale)
-      if (result.ok) router.refresh()
-      else alert(result.message)
-    })
-  }
-
-  const runStop = () => {
-    startTransition(async () => {
-      const result = await stopCompanyJobAction(jobId, locale)
-      if (result.ok) router.refresh()
-      else alert(result.message)
-    })
-  }
-
-  const runActivate = () => {
-    startTransition(async () => {
-      const result = await activateCompanyJobAction(jobId, locale)
-      if (result.ok) router.refresh()
-      else alert(result.message)
-    })
+      if (!result.ok) {
+        setError(result.message ?? (isAr ? "فشل الحذف" : "Delete failed"))
+        return
+      }
+      setConfirmDelete(false)
+      router.refresh()
+    } finally {
+      setPending(false)
+    }
   }
 
   return (
     <div className="flex flex-wrap items-center gap-2">
+      <ConfirmActionDialog
+        open={confirmDelete}
+        onOpenChange={(open) => {
+          if (!open && !pending) {
+            setConfirmDelete(false)
+            setError(null)
+          }
+        }}
+        title={isAr ? "تأكيد الحذف" : "Confirm deletion"}
+        description={t("confirmDelete")}
+        confirmLabel={t("delete")}
+        cancelLabel={isAr ? "إلغاء" : "Cancel"}
+        pending={pending}
+        pendingLabel={isAr ? "جاري الحذف..." : "Deleting..."}
+        tone="danger"
+        error={error}
+        onConfirm={runDelete}
+      />
+
       <button
         type="button"
         disabled={pending}
@@ -61,7 +76,18 @@ export function CompanyJobRowActions({
         <button
           type="button"
           disabled={pending}
-          onClick={runStop}
+          onClick={() => {
+            void (async () => {
+              setPending(true)
+              try {
+                const result = await stopCompanyJobAction(jobId, locale)
+                if (result.ok) router.refresh()
+                else setError(result.message ?? (isAr ? "فشل الإيقاف" : "Stop failed"))
+              } finally {
+                setPending(false)
+              }
+            })()
+          }}
           className="text-sm text-amber-700 hover:underline disabled:opacity-50"
         >
           {t("stop")}
@@ -70,7 +96,18 @@ export function CompanyJobRowActions({
         <button
           type="button"
           disabled={pending}
-          onClick={runActivate}
+          onClick={() => {
+            void (async () => {
+              setPending(true)
+              try {
+                const result = await activateCompanyJobAction(jobId, locale)
+                if (result.ok) router.refresh()
+                else setError(result.message ?? (isAr ? "فشل التفعيل" : "Activate failed"))
+              } finally {
+                setPending(false)
+              }
+            })()
+          }}
           className="text-sm text-[#006EA8] hover:underline disabled:opacity-50"
         >
           {t("menu.activate")}
@@ -79,7 +116,10 @@ export function CompanyJobRowActions({
       <button
         type="button"
         disabled={pending}
-        onClick={runDelete}
+        onClick={() => {
+          setError(null)
+          setConfirmDelete(true)
+        }}
         className="text-sm text-[#FF2D55] hover:underline disabled:opacity-50"
       >
         {t("delete")}

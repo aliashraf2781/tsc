@@ -16,7 +16,7 @@ function hostnamesFromEnv(...keys: string[]): string[] {
 }
 
 const imageHosts = [
-  "cv.subcodeco.com",
+  "dashboardtalent.talent-sc.de",
   ...hostnamesFromEnv("NEXT_PUBLIC_STORAGE_URL", "NEXT_PUBLIC_API_URL"),
 ];
 

@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useTransition } from "react"
+import { useEffect, useState } from "react"
 import { useTranslations } from "next-intl"
 import { useRouter } from "@/i18n/navigation"
 import { PrimaryButton } from "@/components/ui/primary-button"
@@ -11,11 +11,16 @@ import { AdminPageLayout } from "./admin-page-layout"
 import { CategoryCard } from "./category-card"
 import { EDIT_LOCALES, type LocaleKey } from "@/features/admin/lib/category-form-schema"
 import { makeCategoryKey } from "@/features/admin/lib/category-form-utils"
+import { ConfirmActionDialog } from "@/components/confirm-action-dialog"
 
 type CategoryEntry = {
   key: string
   id?: number
   category?: Category
+}
+
+function mapCategoriesToEntries(categories: Category[]): CategoryEntry[] {
+  return categories.map((c) => ({ key: String(c.id), id: c.id, category: c }))
 }
 
 export function AdminCategoriesPanel({
@@ -26,15 +31,26 @@ export function AdminCategoriesPanel({
   locale: string
 }) {
   const t = useTranslations("Admin.categories")
-  const [entries, setEntries] = useState<CategoryEntry[]>(() =>
-    categories.map((c) => ({ key: String(c.id), id: c.id, category: c }))
-  )
+  const [entries, setEntries] = useState<CategoryEntry[]>(() => mapCategoriesToEntries(categories))
   const [editLocale, setEditLocale] = useState<LocaleKey>(EDIT_LOCALES[0])
   const [deleteTarget, setDeleteTarget] = useState<CategoryEntry | null>(null)
-  const [deletePending, startDeleteTransition] = useTransition()
+  const [deletePending, setDeletePending] = useState(false)
   const [deleteError, setDeleteError] = useState<string | null>(null)
   const [newEntryKey, setNewEntryKey] = useState<string | null>(null)
   const router = useRouter()
+
+  // Keep list in sync after create/update refresh (preserve unsaved drafts)
+  useEffect(() => {
+    setEntries((prev) => {
+      const drafts = prev.filter((e) => !e.id)
+      const serverEntries = mapCategoriesToEntries(categories)
+      const draftToKeep =
+        newEntryKey && drafts.some((d) => d.key === newEntryKey)
+          ? drafts.filter((d) => d.key === newEntryKey)
+          : []
+      return [...serverEntries, ...draftToKeep]
+    })
+  }, [categories, newEntryKey])
 
   function addCategory() {
     const key = makeCategoryKey()
@@ -45,21 +61,19 @@ export function AdminCategoriesPanel({
   function handleDeleteRequest(entry: CategoryEntry) {
     if (!entry.id) {
       setEntries((prev) => prev.filter((e) => e.key !== entry.key))
-      return
-    }
-    setDeleteTarget(entry)
-  }
-
-  function confirmDelete() {
-    if (!deleteTarget) return
-    if (!deleteTarget.id) {
-      setEntries((prev) => prev.filter((e) => e.key !== deleteTarget.key))
-      setDeleteTarget(null)
+      if (entry.key === newEntryKey) setNewEntryKey(null)
       return
     }
     setDeleteError(null)
-    startDeleteTransition(async () => {
-      const result = await deleteCategoryAction(deleteTarget.id!, locale)
+    setDeleteTarget(entry)
+  }
+
+  async function confirmDelete() {
+    if (!deleteTarget?.id || deletePending) return
+    setDeleteError(null)
+    setDeletePending(true)
+    try {
+      const result = await deleteCategoryAction(deleteTarget.id, locale)
       if (!result.ok) {
         setDeleteError(result.message ?? t("deleteFailed"))
         return
@@ -67,7 +81,15 @@ export function AdminCategoriesPanel({
       setEntries((prev) => prev.filter((e) => e.key !== deleteTarget.key))
       setDeleteTarget(null)
       router.refresh()
-    })
+    } finally {
+      setDeletePending(false)
+    }
+  }
+
+  function handleCardSaved(entryKey: string) {
+    // Drop local draft after successful create so refreshed server list takes over
+    setEntries((prev) => prev.filter((e) => e.id || e.key !== entryKey))
+    if (entryKey === newEntryKey) setNewEntryKey(null)
   }
 
   return (
@@ -86,38 +108,25 @@ export function AdminCategoriesPanel({
       }
     >
       <div className="space-y-6">
-        {/* Delete confirm modal */}
-        {deleteTarget && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
-            <div className="w-[min(95vw,420px)] rounded-[16px] bg-white p-6 shadow-2xl">
-              <h3 className="text-lg font-bold text-[#111827]">{t("confirmDeleteTitle")}</h3>
-              <p className="mt-2 text-sm text-[#6B7280]">{t("confirmDeleteBody")}</p>
-              {deleteError && <p className="mt-2 text-sm text-red-600">{deleteError}</p>}
-              <div className="mt-4 flex justify-end gap-3">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setDeleteTarget(null)
-                    setDeleteError(null)
-                  }}
-                  className="rounded-lg border border-[#E5E7EB] px-4 py-2 text-sm font-medium text-[#374151] hover:bg-[#F9FAFB]"
-                >
-                  {t("cancel")}
-                </button>
-                <button
-                  type="button"
-                  disabled={deletePending}
-                  onClick={confirmDelete}
-                  className="rounded-lg bg-red-600 px-4 py-2 text-sm font-semibold text-white hover:bg-red-700 disabled:opacity-60"
-                >
-                  {deletePending ? t("deleting") : t("delete")}
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
+        <ConfirmActionDialog
+          open={deleteTarget !== null}
+          onOpenChange={(open) => {
+            if (!open && !deletePending) {
+              setDeleteTarget(null)
+              setDeleteError(null)
+            }
+          }}
+          title={t("confirmDeleteTitle")}
+          description={t("confirmDeleteBody")}
+          confirmLabel={t("delete")}
+          cancelLabel={t("cancel")}
+          pending={deletePending}
+          pendingLabel={t("deleting")}
+          tone="danger"
+          error={deleteError}
+          onConfirm={confirmDelete}
+        />
 
-        {/* Language switcher */}
         <div className="flex items-center gap-2">
           <label className="text-xs font-medium text-[#6B7280]">{t("language")}</label>
           {EDIT_LOCALES.map((loc) => (
@@ -150,6 +159,7 @@ export function AdminCategoriesPanel({
               editLocale={editLocale}
               defaultExpanded={!entry.id && entry.key === newEntryKey}
               onDeleteRequest={() => handleDeleteRequest(entry)}
+              onSaved={() => handleCardSaved(entry.key)}
             />
           ))}
         </div>

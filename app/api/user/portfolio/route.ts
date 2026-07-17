@@ -2,7 +2,7 @@ import { NextResponse } from "next/server"
 import { getSession } from "@/lib/auth-token"
 import { getUserPortfolio, savePortfolio, convertToUserPortfolio } from "@/lib/api/services/portfolio.service"
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || "https://cv.subcodeco.com/api/v1"
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || "https://dashboardtalent.talent-sc.de/api/v1"
 
 export async function GET(request: Request) {
   try {

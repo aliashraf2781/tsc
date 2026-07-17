@@ -34,7 +34,7 @@ There is no test runner configured in this repo (no jest/vitest/playwright) — 
 ### API layer — two tiers, don't confuse them
 - `lib/api/services/*.service.ts` — the real typed data layer. Each calls the upstream API via `lib/api/client.ts`'s `api.get/post/put/patch/delete`, and normalizes/localizes the response shape (upstream fields vary: `name` may be a string or `{en, ar, de}`, dates may be unix seconds/ms/SQL strings, list payloads may be nested under `data.data`, etc. — see `jobs.service.ts` for the normalization patterns to follow).
 - `features/*/services/*.service.ts` — feature-local, UI-facing helpers (e.g. static filter option lists). These are a different, much thinner thing than `lib/api/services` despite the similar filename — check which one you're editing.
-- `lib/api/config.ts` exports `API_BASE_URL` (from `NEXT_PUBLIC_API_URL`, default `https://cv.subcodeco.com/api/v1`) — the single source of truth for the backend origin. Don't hardcode the URL elsewhere.
+- `lib/api/config.ts` exports `API_BASE_URL` (from `NEXT_PUBLIC_API_URL`, default `https://dashboardtalent.talent-sc.de/api/v1`) — the single source of truth for the backend origin. Don't hardcode the URL elsewhere.
 - `lib/api/client.ts`'s `fetchApi` refuses to call external origins directly from the browser (`ensureBrowserSafeRequest`) — browser code must go through a local `/api/...` route, not the upstream API directly.
 - `app/api/proxy/[...path]/route.ts` is a generic authenticated pass-through proxy to the upstream API for arbitrary paths (used by things like the tickets/profile-update flows in `lib/api-client.ts`). Prefer adding a dedicated `lib/api/services/*` + route handler over routing more logic through the generic proxy.
 

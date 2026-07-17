@@ -9,6 +9,7 @@ import {
   markAllNotificationsReadAction,
   markNotificationReadAction,
 } from "@/features/admin/actions/admin-actions"
+import { ConfirmActionDialog } from "@/components/confirm-action-dialog"
 
 export function AdminNotificationsPanel({
   notifications,
@@ -21,11 +22,53 @@ export function AdminNotificationsPanel({
   const router = useRouter()
   const [pending, startTransition] = useTransition()
   const [error, setError] = useState<string | null>(null)
+  const [deleteId, setDeleteId] = useState<number | null>(null)
+  const [deletePending, setDeletePending] = useState(false)
+  const [deleteError, setDeleteError] = useState<string | null>(null)
+  const isAr = locale === "ar"
 
   const hasUnread = notifications.some((n) => !n.read_at)
+  const deleteTarget = notifications.find((n) => n.id === deleteId)
+
+  async function runDelete() {
+    if (deleteId == null || deletePending) return
+    setDeleteError(null)
+    setDeletePending(true)
+    try {
+      const result = await deleteNotificationAction(deleteId, locale)
+      if (!result.ok) {
+        setDeleteError(result.message ?? (isAr ? "فشل الحذف" : "Delete failed"))
+        return
+      }
+      setDeleteId(null)
+      router.refresh()
+    } finally {
+      setDeletePending(false)
+    }
+  }
 
   return (
     <div className="flex flex-col gap-6">
+      <ConfirmActionDialog
+        open={deleteId !== null}
+        onOpenChange={(open) => {
+          if (!open && !deletePending) {
+            setDeleteId(null)
+            setDeleteError(null)
+          }
+        }}
+        title={isAr ? "تأكيد الحذف" : "Confirm deletion"}
+        description={isAr ? "هل أنت متأكد من الحذف؟" : "Are you sure you want to delete?"}
+        subject={deleteTarget?.title}
+        confirmLabel={t("delete")}
+        cancelLabel={isAr ? "إلغاء" : "Cancel"}
+        pending={deletePending}
+        pendingLabel={isAr ? "جاري الحذف..." : "Deleting..."}
+        tone="danger"
+        error={deleteError}
+        onConfirm={runDelete}
+      />
+
       <div className="flex flex-wrap items-center justify-between gap-4">
         <h2 className="text-lg font-bold text-[#111827]">
           {locale === "ar" ? "آخر الأحداث" : "System Notifications"}
@@ -89,7 +132,7 @@ export function AdminNotificationsPanel({
                   {!n.read_at && (
                     <button
                       type="button"
-                      disabled={pending}
+                      disabled={pending || deletePending}
                       onClick={() =>
                         startTransition(async () => {
                           const result = await markNotificationReadAction(n.id, locale)
@@ -107,17 +150,10 @@ export function AdminNotificationsPanel({
                   )}
                   <button
                     type="button"
-                    disabled={pending}
+                    disabled={pending || deletePending}
                     onClick={() => {
-                      if (!confirm(locale === "ar" ? "هل أنت متأكد من الحذف؟" : "Are you sure you want to delete?")) return
-                      startTransition(async () => {
-                        const result = await deleteNotificationAction(n.id, locale)
-                        if (!result.ok) {
-                          setError(result.message ?? "فشل الحذف")
-                        } else {
-                          router.refresh()
-                        }
-                      })
+                      setDeleteError(null)
+                      setDeleteId(n.id)
                     }}
                     className="text-xs font-bold text-red-600 hover:text-red-800 hover:underline"
                   >
