@@ -1,6 +1,6 @@
 "use client"
 
-import { useCallback, useEffect, useState } from "react"
+import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { useTranslations } from "next-intl"
 import { toast } from "sonner"
 import { mapPortfolioFromBackend } from "../lib/portfolio-mapper"
@@ -21,6 +21,13 @@ export function usePortfolioData(locale: string, initialPortfolio?: Record<strin
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
 
+  // Snapshot of the last loaded/saved data, used to detect unsaved changes.
+  const savedSnapshotRef = useRef<string | null>(null)
+
+  // Guards against duplicate in-flight submits (e.g. a fast double-click before
+  // `saving` re-renders the disabled button) sending stale record ids.
+  const isSavingRef = useRef(false)
+
   const applyData = useCallback((data: any) => {
     const mapped = mapPortfolioFromBackend(data)
     setCv(mapped.cv)
@@ -29,6 +36,13 @@ export function usePortfolioData(locale: string, initialPortfolio?: Record<strin
     setEducations(mapped.educations)
     setExperiences(mapped.experiences)
     setSkills(mapped.skills)
+    savedSnapshotRef.current = JSON.stringify({
+      cv: mapped.cv,
+      languages: mapped.languages,
+      educations: mapped.educations,
+      experiences: mapped.experiences,
+      skills: mapped.skills,
+    })
   }, [])
 
   const loadPortfolio = useCallback(async () => {
@@ -71,6 +85,7 @@ export function usePortfolioData(locale: string, initialPortfolio?: Record<strin
   // handler just updates local state, so validation only ever runs here, when
   // the user explicitly clicks the page-level Submit button.
   const savePortfolio = useCallback(async () => {
+    if (isSavingRef.current) return
     if (languages.length === 0) {
       toast.error(t("validation.languagesRequired"))
       return
@@ -89,6 +104,7 @@ export function usePortfolioData(locale: string, initialPortfolio?: Record<strin
     }
 
     try {
+      isSavingRef.current = true
       setSaving(true)
 
       const formData = buildPortfolioFormData({ cvFile, cvRemoved, languages, educations, experiences, skills })
@@ -117,6 +133,7 @@ export function usePortfolioData(locale: string, initialPortfolio?: Record<strin
       console.error("[Save error]", err)
       toast.error(err.message || t("saveError"))
     } finally {
+      isSavingRef.current = false
       setSaving(false)
     }
   }, [locale, cvFile, cvRemoved, languages, educations, experiences, skills, loadPortfolio, t])
@@ -136,6 +153,14 @@ export function usePortfolioData(locale: string, initialPortfolio?: Record<strin
     setCvRemoved(true)
   }, [])
 
+  const isDirty = useMemo(() => {
+    if (loading) return false
+    if (cvFile || cvRemoved) return true
+    if (savedSnapshotRef.current === null) return false
+    const current = JSON.stringify({ cv, languages, educations, experiences, skills })
+    return current !== savedSnapshotRef.current
+  }, [loading, cv, cvFile, cvRemoved, languages, educations, experiences, skills])
+
   return {
     cv,
     cvFile,
@@ -145,6 +170,7 @@ export function usePortfolioData(locale: string, initialPortfolio?: Record<strin
     skills,
     loading,
     saving,
+    isDirty,
     setLanguages,
     setEducations,
     setExperiences,

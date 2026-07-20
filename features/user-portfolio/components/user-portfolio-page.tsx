@@ -37,6 +37,7 @@ export function UserPortfolioPage({
     skills,
     loading,
     saving,
+    isDirty,
     stageCvFile,
     clearStagedCvFile,
     removeCv,
@@ -165,7 +166,7 @@ export function UserPortfolioPage({
 
       <SkillsSection locale={locale} skills={skills} onEdit={() => setSkillModalOpen(true)} />
 
-      <PortfolioSubmitBar saving={saving} onSubmit={savePortfolio} />
+      <PortfolioSubmitBar saving={saving} disabled={!isDirty} onSubmit={savePortfolio} />
 
       <LanguageModal
         locale={locale}
