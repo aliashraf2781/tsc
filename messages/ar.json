@@ -1304,6 +1304,7 @@
       "supportsPdf": "يدعم بصيغة PDF",
       "pendingSave": "بانتظار الحفظ",
       "viewFile": "عرض الملف",
+      "replace": "استبدال",
       "pdfOnlyError": "يجب رفع ملف بصيغة PDF فقط",
       "loadError": "فشل تحميل البيانات"
     },

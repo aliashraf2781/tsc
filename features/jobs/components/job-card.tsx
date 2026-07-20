@@ -50,12 +50,12 @@ export function JobCard({ job, locale, isRtl, labels }: JobCardProps) {
         CARD_HOVER_SHADOW
       )}
     >
-      <CardContent className="space-y-3 p-4 sm:p-5">
+      <CardContent className="grid gap-3 p-4 sm:p-5">
         <Badge className="w-fit rounded-full bg-[linear-gradient(180deg,#006EA8_0%,#005685_100%)] px-3 py-1 text-[12px] text-white group-hover:border group-hover:border-white/30 group-hover:bg-white/15">
           {getLocalizedName(job.category?.name, locale) || labels.department}
         </Badge>
-        <div className="flex items-start justify-between gap-3">
-          <h3 className="text-start text-[18px] font-bold leading-[1.16] text-[#262626] group-hover:text-white sm:text-[20px]">
+        <div className="grid grid-cols-[1fr_auto] items-start gap-3">
+          <h3 className="line-clamp-2 min-w-0 text-start text-[18px] font-bold leading-[1.16] text-[#262626] group-hover:text-white sm:text-[20px]">
             {title}
           </h3>
           <p className="shrink-0 text-end text-[14px] font-medium leading-[1.16] text-[#002B46] group-hover:text-white sm:text-[16px]">

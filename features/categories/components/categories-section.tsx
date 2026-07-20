@@ -111,7 +111,7 @@ export async function CategoriesSection({ override }: CategoriesSectionProps) {
                           ) : (
                             <CategoryIconFor
                               categoryKey={slug}
-                              className="h-10 w-10 text-[#40A0CA] transition-colors group-hover:text-[#2D7494]"
+                              className="h-6 w-6 text-[#40A0CA] transition-colors group-hover:text-[#2D7494]"
                             />
                           )}
                         </div>

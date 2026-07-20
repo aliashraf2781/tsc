@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, Suspense } from "react"
+import { useEffect, useState, Suspense } from "react"
 import { useSearchParams } from "next/navigation"
 import { useForm } from "react-hook-form"
 import { useAuth } from "@/hooks/use-auth"
@@ -17,6 +17,10 @@ type FormValues = {
   password: string
 }
 
+function resolveAccountType(value: string | null): "user" | "company" | "admin" {
+  return value === "company" || value === "admin" ? value : "user"
+}
+
 export default function SignInPage() {
   return (
     <Suspense fallback={null}>
@@ -31,14 +35,19 @@ function SignInContent() {
   const locale = useLocale()
   const searchParams = useSearchParams()
   const isVerified = searchParams.get("verified") === "1"
+  const accountTypeFromQuery = resolveAccountType(searchParams.get("type"))
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm<FormValues>()
   const [error, setError] = useState<string | null>(null)
-  const [accountType, setAccountType] = useState<"user" | "company" | "admin">("user")
+  const [accountType, setAccountType] = useState<"user" | "company" | "admin">(accountTypeFromQuery)
   const [showPassword, setShowPassword] = useState(false)
+
+  useEffect(() => {
+    setAccountType(accountTypeFromQuery)
+  }, [accountTypeFromQuery])
 
   async function onSubmit(values: FormValues) {
     setError(null)
@@ -79,7 +88,7 @@ function SignInContent() {
           {locale === "ar" ? "تم تأكيد بريدك الإلكتروني بنجاح! يمكنك الآن تسجيل الدخول." : "Your email has been verified! You can now sign in."}
         </div>
       )}
-      <form onSubmit={handleSubmit(onSubmit)} className="flex w-full max-w-[470px] mx-auto flex-col gap-6">
+      <form onSubmit={handleSubmit(onSubmit)} className="flex w-full max-w-117.5 mx-auto flex-col gap-6">
         <AuthFieldGroup>
           <div className="space-y-1">
             <label className="auth-field block">
@@ -117,7 +126,7 @@ function SignInContent() {
                 />
                 <button
                   type="button"
-                  className="cursor-pointer shrink-0 p-2 rounded-md hover:bg-white/6 transition focus:outline-none focus:ring-2 focus:ring-offset-0 focus:ring-[var(--ring)]"
+                  className="cursor-pointer shrink-0 rounded-md p-2 transition hover:bg-white/6 focus:outline-none focus:ring-2 focus:ring-offset-0 focus:ring-(--ring)"
                   onClick={() => setShowPassword((p) => !p)}
                   aria-label={showPassword ? (locale === "ar" ? "إخفاء كلمة المرور" : "Hide password") : (locale === "ar" ? "عرض كلمة المرور" : "Show password")}
                 >

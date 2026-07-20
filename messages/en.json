@@ -1302,6 +1302,7 @@
       "supportsPdf": "Supports PDF",
       "pendingSave": "Pending save",
       "viewFile": "View File",
+      "replace": "Replace",
       "pdfOnlyError": "Only PDF files are allowed",
       "loadError": "Failed to load data"
     },

@@ -160,7 +160,7 @@ export function JobsSectionClient({ jobs, categories, title, description }: Jobs
         >
           <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
             {visibleJobs.map((job) => (
-              <StaggerItem key={`${job.id}-${activeFilter}`}>
+              <StaggerItem key={`${job.id}-${activeFilter}`} className="flex h-full">
                 <JobCard
                   job={job}
                   locale={locale}

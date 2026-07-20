@@ -5,23 +5,27 @@ import { VerifyEmailForm } from "@/features/auth/components/verify-email-form"
 
 type Props = {
   params: Promise<{ locale: string }>
+  searchParams?: Promise<{ type?: string }>
 }
 
-export default async function VerifyEmailPage({ params }: Props) {
+export default async function VerifyEmailPage({ params, searchParams }: Props) {
   const { locale } = await params
+  const query = searchParams ? await searchParams : undefined
   setRequestLocale(locale)
   const t = await getTranslations("Auth.verifyEmail")
+  const accountType = query?.type === "company" || query?.type === "admin" ? query.type : undefined
+  const signInHref = accountType ? `/sign-in?type=${encodeURIComponent(accountType)}` : "/sign-in"
 
   return (
     <AuthCardWrapper
-      backHref="/sign-in"
+      backHref={signInHref}
       backLabel={t("back")}
       logoAlt={t("logoAlt")}
       title={t("title")}
       description={t("description")}
       footerPrefix={t("hasAccount")}
       footerActionLabel={t("signIn")}
-      footerActionHref="/sign-in"
+      footerActionHref={signInHref}
     >
       <Suspense fallback={
         <div className="flex flex-col gap-5">

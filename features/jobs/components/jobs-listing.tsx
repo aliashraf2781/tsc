@@ -262,7 +262,7 @@ export function JobsListing({
               )}
             >
               {filteredJobs.map((job) => (
-                <StaggerItem key={job.id} immediate={true} className="h-full">
+                <StaggerItem key={job.id} immediate={true} className="h-full flex">
                   <JobCard
                     job={job}
                     locale={locale}

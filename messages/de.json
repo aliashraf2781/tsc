@@ -1302,6 +1302,7 @@
       "supportsPdf": "Unterstützt PDF",
       "pendingSave": "Ausstehend",
       "viewFile": "Datei anzeigen",
+      "replace": "Ersetzen",
       "pdfOnlyError": "Es sind nur PDF-Dateien erlaubt",
       "loadError": "Fehler beim Laden der Daten"
     },

@@ -1,5 +1,6 @@
 "use client"
 
+import { useRef } from "react"
 import { useTranslations } from "next-intl"
 import { toast } from "sonner"
 import { PortfolioSectionCard } from "./portfolio-section-card"
@@ -22,6 +23,7 @@ export function CvUploadSection({
   onRemove: () => void
 }) {
   const t = useTranslations("UserPortfolio")
+  const replaceInputRef = useRef<HTMLInputElement>(null)
 
   function handleFile(file: File) {
     if (file.type !== "application/pdf") {
@@ -31,16 +33,20 @@ export function CvUploadSection({
     onFileSelected(file)
   }
 
+  const hasSavedCv = Boolean(cv) && !cvFile
+
   return (
     <PortfolioSectionCard locale={locale} title={t("cv.title")}>
-      <FileDropzoneField id="cvFile" accept=".pdf" onFileChange={handleFile} large>
-        <p className="text-[#032C44] text-[15px] font-medium">
-          {t.rich("cv.dropText", {
-            browse: (chunks) => <span className="text-[#006EA8] underline">{chunks}</span>,
-          })}
-        </p>
-        <p className="text-[#6B7280] text-[12px] mt-1">{t("cv.supportsPdf")}</p>
-      </FileDropzoneField>
+      {!hasSavedCv && (
+        <FileDropzoneField id="cvFile" accept=".pdf" onFileChange={handleFile} large>
+          <p className="text-[#032C44] text-[15px] font-medium">
+            {t.rich("cv.dropText", {
+              browse: (chunks) => <span className="text-[#006EA8] underline">{chunks}</span>,
+            })}
+          </p>
+          <p className="text-[#6B7280] text-[12px] mt-1">{t("cv.supportsPdf")}</p>
+        </FileDropzoneField>
+      )}
 
       {cvFile ? (
         <div className="mt-4 flex items-center justify-between p-3 bg-[#FFF9EB] border border-[#F5D98B] rounded-[8px]">
@@ -78,6 +84,24 @@ export function CvUploadSection({
             >
               {t("cv.viewFile")}
             </a>
+            <input
+              ref={replaceInputRef}
+              type="file"
+              accept=".pdf"
+              onChange={(e) => {
+                const file = e.target.files?.[0]
+                if (file) handleFile(file)
+                e.target.value = ""
+              }}
+              className="hidden"
+            />
+            <button
+              type="button"
+              onClick={() => replaceInputRef.current?.click()}
+              className="text-xs font-semibold text-[#006EA8] hover:underline"
+            >
+              {t("cv.replace")}
+            </button>
             <button
               type="button"
               onClick={onRemove}

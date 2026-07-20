@@ -305,7 +305,7 @@ export function useAuth() {
 
       // If server explicitly requests pending verification
       if (data.pendingVerification) {
-        router.push(`/verify-email?email=${encodeURIComponent(data.email || payload.email)}`)
+        router.push(`/verify-email?email=${encodeURIComponent(data.email || payload.email)}&type=${encodeURIComponent(payload.type)}`)
         return
       }
 
@@ -322,7 +322,7 @@ export function useAuth() {
       }
 
       if (!userIsVerified(registeredUser)) {
-        router.push(`/verify-email?email=${encodeURIComponent(payload.email)}`)
+        router.push(`/verify-email?email=${encodeURIComponent(payload.email)}&type=${encodeURIComponent(payload.type)}`)
         return
       }
 
@@ -430,7 +430,7 @@ export function useAuth() {
   }, [router])
 
   // ── Verify Email ────────────────────────────────────────────────────────────
-  const verifyEmail = useCallback(async (email: string, code: string) => {
+  const verifyEmail = useCallback(async (email: string, code: string, type?: "user" | "company" | "admin") => {
     setIsLoading(true)
     setError(null)
     const clientLocale = pathname ? (pathname.split("/")[1] || "ar") : "ar"
@@ -445,7 +445,8 @@ export function useAuth() {
       })
       const data = await res.json()
       if (!res.ok) throw new Error(data.message || "Verification failed")
-      router.push("/sign-in?verified=1")
+      const verifiedType = type ? `&type=${encodeURIComponent(type)}` : ""
+      router.push(`/sign-in?verified=1${verifiedType}`)
     } catch (err) {
       setError(err instanceof Error ? err.message : "Verification failed")
       throw err

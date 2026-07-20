@@ -17,6 +17,7 @@ const RESEND_COOLDOWN = 60 // seconds
 export function VerifyEmailForm({ codePlaceholder, submitLabel, resendLabel }: Props) {
   const searchParams = useSearchParams()
   const emailFromQuery = searchParams.get("email") || ""
+  const accountType = searchParams.get("type")
   const { verifyEmail, resendVerification, loading, error } = useAuth()
   const locale = useLocale()
   const isRTL = locale === "ar"
@@ -108,7 +109,11 @@ export function VerifyEmailForm({ codePlaceholder, submitLabel, resendLabel }: P
     e.preventDefault()
     if (!isComplete || !email) return
     try {
-      await verifyEmail(email, code)
+      await verifyEmail(
+        email,
+        code,
+        accountType === "company" || accountType === "admin" ? accountType : "user"
+      )
       setSuccess(true)
     } catch {
       // error is set by hook
