@@ -138,6 +138,8 @@
     "notificationsTitle": "Notifications ({count})",
     "markAllRead": "Mark all read",
     "loading": "Loading...",
+    "loadingMore": "Loading more...",
+    "loadMore": "Load more",
     "noNotifications": "No notifications",
     "userMenuAria": "User menu",
     "defaultUserName": "User",
@@ -961,7 +963,8 @@
       "delete": "Delete",
       "deleteConfirm": "Delete this company?",
       "empty": "No companies",
-      "error": "Delete failed"
+      "error": "Delete failed",
+      "pagination": "Page {page} of {last} · {total} companies"
     },
     "successStories": {
       "title": "Success stories",
@@ -1210,6 +1213,7 @@
       "newsColActions": "Actions",
       "newsEmpty": "No news",
       "notificationsEmpty": "No notifications",
+      "notificationsPagination": "Page {page} of {last} · {total} notifications",
       "markAllRead": "Mark all as read",
       "markRead": "Mark read",
       "unread": "New",

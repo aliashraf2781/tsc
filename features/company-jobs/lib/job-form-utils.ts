@@ -23,15 +23,20 @@ export const initialJobFormValues: JobFormValues = {
   requirements: emptyLocalizedText(),
 }
 
+function localizedContent(value: string | undefined): string {
+  return (value ?? "").replace(/<[^>]*>/g, "").replace(/&nbsp;/g, " ").trim()
+}
+
 // Backend requires title[ar]/[en]/[de] (and similar) all present; fill
 // untranslated locales with whichever locale the user actually typed —
 // only en/de are editable via the UI tabs, ar rides along as a fallback copy.
 export function fillLocaleFallback(text: LocalizedText): LocalizedText {
-  const fallback = LOCALES.map((l) => text[l]?.trim()).find(Boolean) || ""
+  const fallback =
+    LOCALES.map((l) => text[l]).find((value) => localizedContent(value).length > 0) || ""
   return {
-    ar: text.ar?.trim() || fallback,
-    en: text.en?.trim() || fallback,
-    de: text.de?.trim() || fallback,
+    ar: localizedContent(text.ar) ? text.ar : fallback,
+    en: localizedContent(text.en) ? text.en : fallback,
+    de: localizedContent(text.de) ? text.de : fallback,
   }
 }
 

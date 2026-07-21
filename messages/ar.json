@@ -104,6 +104,8 @@
     "notificationsTitle": "الإشعارات ({count})",
     "markAllRead": "تحديد الكل كمقروء",
     "loading": "جاري التحميل...",
+    "loadingMore": "جاري تحميل المزيد...",
+    "loadMore": "عرض المزيد",
     "noNotifications": "لا توجد إشعارات",
     "userMenuAria": "قائمة المستخدم",
     "defaultUserName": "مستخدم",
@@ -963,7 +965,8 @@
       "delete": "حذف",
       "deleteConfirm": "هل تريد حذف هذه الشركة؟",
       "empty": "لا توجد شركات",
-      "error": "تعذر الحذف"
+      "error": "تعذر الحذف",
+      "pagination": "الصفحة {page} من {last} · {total} شركة"
     },
     "successStories": {
       "title": "قصص النجاح",
@@ -1212,6 +1215,7 @@
       "newsColActions": "الإجراءات",
       "newsEmpty": "لا توجد أخبار",
       "notificationsEmpty": "لا توجد إشعارات",
+      "notificationsPagination": "الصفحة {page} من {last} · {total} إشعار",
       "markAllRead": "تعليم الكل كمقروءة",
       "markRead": "مقروء",
       "unread": "جديد",

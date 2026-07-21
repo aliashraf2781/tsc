@@ -1,25 +1,31 @@
 "use client"
 
 import { useState, useTransition } from "react"
-import { useRouter } from "@/i18n/navigation"
+import { usePathname, useRouter } from "@/i18n/navigation"
+import { useSearchParams } from "next/navigation"
 import { useTranslations } from "next-intl"
-import type { Notification } from "@/lib/api/types"
+import type { Notification, PaginationMeta } from "@/lib/api/types"
 import {
   deleteNotificationAction,
   markAllNotificationsReadAction,
   markNotificationReadAction,
 } from "@/features/admin/actions/admin-actions"
 import { ConfirmActionDialog } from "@/components/confirm-action-dialog"
+import { AdminPagination } from "@/features/admin/components/admin-pagination"
 
 export function AdminNotificationsPanel({
   notifications,
+  meta,
   locale,
 }: {
   notifications: Notification[]
+  meta?: PaginationMeta
   locale: string
 }) {
   const t = useTranslations("Admin.settings")
   const router = useRouter()
+  const pathname = usePathname()
+  const searchParams = useSearchParams()
   const [pending, startTransition] = useTransition()
   const [error, setError] = useState<string | null>(null)
   const [deleteId, setDeleteId] = useState<number | null>(null)
@@ -27,8 +33,19 @@ export function AdminNotificationsPanel({
   const [deleteError, setDeleteError] = useState<string | null>(null)
   const isAr = locale === "ar"
 
+  const currentPage = meta?.current_page ?? 1
+  const lastPage = Math.max(meta?.last_page ?? 1, 1)
+  const total = meta?.total ?? notifications.length
+
   const hasUnread = notifications.some((n) => !n.read_at)
   const deleteTarget = notifications.find((n) => n.id === deleteId)
+
+  function goToPage(page: number) {
+    if (page < 1 || page > lastPage || page === currentPage) return
+    const params = new URLSearchParams(searchParams.toString())
+    params.set("page", String(page))
+    router.push(`${pathname}?${params.toString()}`)
+  }
 
   async function runDelete() {
     if (deleteId == null || deletePending) return
@@ -165,6 +182,18 @@ export function AdminNotificationsPanel({
           </ul>
         </div>
       )}
+
+      <AdminPagination
+        currentPage={currentPage}
+        lastPage={lastPage}
+        onPageChange={goToPage}
+        isAr={isAr}
+        summary={t("notificationsPagination", {
+          page: currentPage,
+          last: lastPage,
+          total,
+        })}
+      />
     </div>
   )
 }

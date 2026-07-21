@@ -3,11 +3,13 @@
 import Image from "next/image"
 import { Link } from "@/i18n/navigation"
 import { useState } from "react"
-import { useRouter } from "@/i18n/navigation"
+import { useRouter, usePathname } from "@/i18n/navigation"
+import { useSearchParams } from "next/navigation"
 import { useTranslations } from "next-intl"
-import type { User } from "@/lib/api/types"
+import type { PaginationMeta, User } from "@/lib/api/types"
 import { deleteUserAction, suspendUserAction } from "@/features/admin/actions/admin-actions"
 import { AdminTableCell, AdminTableRow, AdminTableShell } from "./admin-table-shell"
+import { AdminPagination } from "./admin-pagination"
 import { cn } from "@/lib/utils"
 import { toast } from "sonner"
 import { AlertTriangle, ShieldAlert } from "lucide-react"
@@ -27,14 +29,36 @@ type ConfirmAction =
   | { type: "delete"; company: User }
   | { type: "suspend"; company: User; suspend: boolean }
 
-export function AdminCompaniesPanel({ companies, locale }: { companies: User[]; locale: string }) {
+export function AdminCompaniesPanel({
+  companies,
+  locale,
+  meta,
+  stats,
+}: {
+  companies: User[]
+  locale: string
+  meta?: PaginationMeta
+  stats?: { total: number; verified: number; unverified: number }
+}) {
   const t = useTranslations("Admin.companies")
   const router = useRouter()
+  const pathname = usePathname()
+  const searchParams = useSearchParams()
   const [pending, setPending] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [confirmAction, setConfirmAction] = useState<ConfirmAction | null>(null)
   const isAr = locale === "ar"
   const isDe = locale === "de"
+
+  const currentPage = meta?.current_page ?? 1
+  const lastPage = Math.max(meta?.last_page ?? 1, 1)
+
+  function goToPage(page: number) {
+    if (page < 1 || page > lastPage || page === currentPage) return
+    const params = new URLSearchParams(searchParams.toString())
+    params.set("page", String(page))
+    router.push(`${pathname}?${params.toString()}`)
+  }
 
   const sortedCompanies = [...companies].sort((a, b) => {
     const idA = Number(a.id) || 0
@@ -45,18 +69,18 @@ export function AdminCompaniesPanel({ companies, locale }: { companies: User[]; 
     return dateB - dateA
   })
 
-  const totalCompanies = sortedCompanies.length
-  const verifiedCompanies = sortedCompanies.filter((c) => c.emailVerified).length
-  const unverifiedCompanies = totalCompanies - verifiedCompanies
+  const totalCompanies = stats?.total ?? meta?.total ?? sortedCompanies.length
+  const verifiedCompanies = stats?.verified ?? sortedCompanies.filter((c) => c.emailVerified).length
+  const unverifiedCompanies = stats?.unverified ?? Math.max(totalCompanies - verifiedCompanies, 0)
 
   const columns = [
-    { key: "name", label: t("columns.name"), className: "w-[20%]" },
-    { key: "email", label: t("columns.email"), className: "w-[20%]" },
-    { key: "phone", label: t("columns.phone"), className: "w-[12%]" },
-    { key: "country", label: t("columns.country"), className: "w-[12%]" },
-    { key: "createdAt", label: isAr ? "تاريخ التسجيل" : "Registration Date", className: "w-[12%]" },
-    { key: "verification", label: isAr ? "التحقق" : "Verification", className: "w-[12%]" },
-    { key: "actions", label: t("columns.actions"), className: "w-[12%]" },
+    { key: "name", label: t("columns.name"), className: "w-[18%] min-w-[160px]" },
+    { key: "email", label: t("columns.email"), className: "w-[18%] min-w-[180px]" },
+    { key: "phone", label: t("columns.phone"), className: "w-[12%] min-w-[110px]" },
+    { key: "country", label: t("columns.country"), className: "w-[10%] min-w-[100px]" },
+    { key: "createdAt", label: isAr ? "تاريخ التسجيل" : "Registration Date", className: "w-[12%] min-w-[120px]" },
+    { key: "verification", label: isAr ? "التحقق" : "Verification", className: "w-[10%] min-w-[110px]" },
+    { key: "actions", label: t("columns.actions"), className: "w-[20%] min-w-[220px]" },
   ]
 
   function companyRouteSource(company: User) {
@@ -275,7 +299,7 @@ export function AdminCompaniesPanel({ companies, locale }: { companies: User[]; 
 
           return (
             <AdminTableRow key={company.uuid || company.id} striped={index % 2 === 1}>
-              <AdminTableCell className="w-[20%]">
+              <AdminTableCell className="w-[18%] min-w-[160px]">
                 <div className="flex items-center gap-3">
                   {company.avatar ? (
                     <Image
@@ -305,11 +329,11 @@ export function AdminCompaniesPanel({ companies, locale }: { companies: User[]; 
                   </div>
                 </div>
               </AdminTableCell>
-              <AdminTableCell className="w-[20%] truncate text-xs">{company.email}</AdminTableCell>
-              <AdminTableCell className="w-[12%] text-xs">{company.phone || "—"}</AdminTableCell>
-              <AdminTableCell className="w-[12%] text-xs">{company.country?.name || "—"}</AdminTableCell>
-              <AdminTableCell className="w-[12%] text-xs">{formattedDate}</AdminTableCell>
-              <AdminTableCell className="w-[12%]">
+              <AdminTableCell className="w-[18%] min-w-[180px] truncate text-xs">{company.email}</AdminTableCell>
+              <AdminTableCell className="w-[12%] min-w-[110px] text-xs">{company.phone || "—"}</AdminTableCell>
+              <AdminTableCell className="w-[10%] min-w-[100px] text-xs">{company.country?.name || "—"}</AdminTableCell>
+              <AdminTableCell className="w-[12%] min-w-[120px] text-xs">{formattedDate}</AdminTableCell>
+              <AdminTableCell className="w-[10%] min-w-[110px]">
                 <span
                   className={cn(
                     "inline-flex rounded-full px-2.5 py-1 text-xs font-semibold capitalize",
@@ -319,15 +343,15 @@ export function AdminCompaniesPanel({ companies, locale }: { companies: User[]; 
                   {company.emailVerified ? (isAr ? "مؤكد" : "Verified") : isAr ? "غير مؤكد" : "Not Verified"}
                 </span>
               </AdminTableCell>
-              <AdminTableCell className="flex w-[12%] items-center gap-2">
+              <AdminTableCell className="flex w-[20%] min-w-[220px] flex-nowrap items-center gap-2 whitespace-nowrap">
                 <Link
                   locale={locale}
                   href={`/dashboard/admin/companies/${company.uuid || company.id}`}
-                  className="text-xs font-semibold text-[#006EA8] hover:underline"
+                  className="shrink-0 text-xs font-semibold text-[#006EA8] hover:underline"
                 >
                   {isAr ? "تعديل" : "Edit"}
                 </Link>
-                <span className="text-[#E5E7EB]">|</span>
+                <span className="shrink-0 text-[#E5E7EB]">|</span>
                 <button
                   type="button"
                   disabled={pending}
@@ -335,11 +359,11 @@ export function AdminCompaniesPanel({ companies, locale }: { companies: User[]; 
                     setError(null)
                     setConfirmAction({ type: "suspend", company, suspend: !isSuspended })
                   }}
-                  className="text-xs font-semibold text-amber-600 hover:underline disabled:opacity-50"
+                  className="shrink-0 text-xs font-semibold text-amber-600 hover:underline disabled:opacity-50"
                 >
                   {isSuspended ? (isAr ? "تفعيل" : "Activate") : isAr ? "تعليق الحساب" : "Suspend"}
                 </button>
-                <span className="text-[#E5E7EB]">|</span>
+                <span className="shrink-0 text-[#E5E7EB]">|</span>
                 <button
                   type="button"
                   disabled={pending}
@@ -347,7 +371,7 @@ export function AdminCompaniesPanel({ companies, locale }: { companies: User[]; 
                     setError(null)
                     setConfirmAction({ type: "delete", company })
                   }}
-                  className="text-xs font-semibold text-red-600 hover:underline disabled:opacity-50"
+                  className="shrink-0 text-xs font-semibold text-red-600 hover:underline disabled:opacity-50"
                 >
                   {t("delete")}
                 </button>
@@ -356,6 +380,18 @@ export function AdminCompaniesPanel({ companies, locale }: { companies: User[]; 
           )
         })}
       </AdminTableShell>
+
+      <AdminPagination
+        currentPage={currentPage}
+        lastPage={lastPage}
+        onPageChange={goToPage}
+        isAr={isAr}
+        summary={t("pagination", {
+          page: currentPage,
+          last: lastPage,
+          total: totalCompanies,
+        })}
+      />
     </div>
   )
 }

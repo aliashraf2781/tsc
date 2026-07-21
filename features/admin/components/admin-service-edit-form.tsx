@@ -126,9 +126,11 @@ export function AdminServiceEditForm({
           label={t("descriptionLabel")}
           locale={editLocale}
           register={register}
+          control={control}
           fieldPath={`description.${editLocale}`}
-          multiline
+          rich
           required
+          rows={4}
         />
         {errors.description?.message && <p className="text-xs text-red-500">{errors.description.message}</p>}
       </div>

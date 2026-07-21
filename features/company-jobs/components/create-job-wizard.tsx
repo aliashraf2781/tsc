@@ -19,12 +19,12 @@ import {
   JobUnderlineInput,
   JobUnderlineSelect,
   JobUnderlineDate,
-  JobUnderlineTextarea,
 } from "@/features/company-jobs/components/job-underline-field"
 import { createAdminJobAction } from "@/features/admin/actions/admin-actions"
 import { EDIT_LOCALES, createJobFormSchema, type JobFormValues, type LocaleKey } from "@/features/company-jobs/lib/job-form-schema"
 import { STEP_FIELDS, fillLocaleFallback, initialJobFormValues } from "@/features/company-jobs/lib/job-form-utils"
 import { PrimaryButton } from "@/components/ui/primary-button"
+import { RichTextEditor } from "@/components/ui/rich-text-editor"
 import { cn } from "@/lib/utils"
 
 export type AdminCompanyOption = {
@@ -601,7 +601,13 @@ export function CreateJobWizard({
                 control={control}
                 name={`description.${editingLocale}`}
                 render={({ field }) => (
-                  <JobUnderlineTextarea value={field.value} onChange={field.onChange} rows={4} />
+                  <RichTextEditor
+                    key={`description-${editingLocale}`}
+                    value={field.value}
+                    onChange={field.onChange}
+                    dir={editingLocale === "ar" ? "rtl" : "ltr"}
+                    minHeight="120px"
+                  />
                 )}
               />
             </JobFieldGroup>
@@ -610,7 +616,13 @@ export function CreateJobWizard({
                 control={control}
                 name={`responsibilities.${editingLocale}`}
                 render={({ field }) => (
-                  <JobUnderlineTextarea value={field.value} onChange={field.onChange} rows={4} />
+                  <RichTextEditor
+                    key={`responsibilities-${editingLocale}`}
+                    value={field.value}
+                    onChange={field.onChange}
+                    dir={editingLocale === "ar" ? "rtl" : "ltr"}
+                    minHeight="120px"
+                  />
                 )}
               />
             </JobFieldGroup>
@@ -619,7 +631,13 @@ export function CreateJobWizard({
                 control={control}
                 name={`requirements.${editingLocale}`}
                 render={({ field }) => (
-                  <JobUnderlineTextarea value={field.value} onChange={field.onChange} rows={4} />
+                  <RichTextEditor
+                    key={`requirements-${editingLocale}`}
+                    value={field.value}
+                    onChange={field.onChange}
+                    dir={editingLocale === "ar" ? "rtl" : "ltr"}
+                    minHeight="120px"
+                  />
                 )}
               />
             </JobFieldGroup>

@@ -2,6 +2,7 @@
 
 import Image from "next/image"
 import { useEffect, useMemo, useState } from "react"
+import { cn } from "@/lib/utils"
 
 const HIGHLIGHT_WORDS = ["Germany", "ألمانيا", "Deutschland"]
 
@@ -51,6 +52,8 @@ export function HeroTitle({ title, className }: HeroTitleProps) {
       loopText: words.slice(-2).join(" "),
     }
   }, [title])
+
+  const fullTitle = staticText ? `${staticText} ${loopText}` : loopText
 
   const [staticTyped, setStaticTyped] = useState(0)
   const [loopTyped, setLoopTyped] = useState(0)
@@ -114,18 +117,30 @@ export function HeroTitle({ title, className }: HeroTitleProps) {
   const showCursor = !isLoopFull
 
   return (
-    <h1 className={className}>
-      {!staticDone ? (
-        staticText.slice(0, staticTyped)
-      ) : (
-        <>
-          {staticText && `${staticText} `}
-          {isLoopFull ? highlightText(loopText) : loopText.slice(0, loopTyped)}
-        </>
-      )}
-      {showCursor && (
-        <span className="ml-1 inline-block h-[0.9em] w-[2px] animate-pulse bg-current align-middle" aria-hidden />
-      )}
+    <h1 className={cn("relative", className)}>
+      {/* Invisible full title reserves stable height while typing/deleting */}
+      <span className="invisible block" aria-hidden>
+        {staticText ? (
+          <>
+            {staticText} {highlightText(loopText)}
+          </>
+        ) : (
+          highlightText(loopText)
+        )}
+      </span>
+      <span className="absolute inset-0" aria-label={fullTitle}>
+        {!staticDone ? (
+          staticText.slice(0, staticTyped)
+        ) : (
+          <>
+            {staticText && `${staticText} `}
+            {isLoopFull ? highlightText(loopText) : loopText.slice(0, loopTyped)}
+          </>
+        )}
+        {showCursor && (
+          <span className="ml-1 inline-block h-[0.9em] w-[2px] animate-pulse bg-current align-middle" aria-hidden />
+        )}
+      </span>
     </h1>
   )
 }

@@ -88,6 +88,10 @@ export function createJobFormSchema(messages: JobFormMessages, opts: { requireCo
 
 export type JobFormValues = z.infer<ReturnType<typeof createJobFormSchema>>
 
+function hasRichTextContent(value: string) {
+  return value.replace(/<[^>]*>/g, "").replace(/&nbsp;/g, " ").trim().length > 0
+}
+
 function hasAnyLocalizedValue(text: LocalizedText): boolean {
-  return Object.values(text).some((value) => value.trim().length > 0)
+  return Object.values(text).some((value) => hasRichTextContent(value))
 }

@@ -137,8 +137,26 @@ function MobileCarouselNav({ isRtl }: { isRtl: boolean }) {
 
 export function TestimonialsCarousel({ stories, labels, isRtl }: TestimonialsCarouselProps) {
   const items = Array.isArray(stories) ? stories : []
+  // Embla loop needs enough slides to fill the viewport; duplicate when sparse
+  const loopItems = useMemo(() => {
+    if (items.length === 0) return []
+    if (items.length >= 6) return items
+    const copies = Math.ceil(6 / items.length)
+    return Array.from({ length: copies }, (_, copyIndex) =>
+      items.map((story) => ({
+        ...story,
+        id: `${story.id}-loop-${copyIndex}`,
+      }))
+    ).flat()
+  }, [items])
   const autoplay = useMemo(
-    () => Autoplay({ delay: 3000, stopOnInteraction: true, stopOnMouseEnter: true }),
+    () =>
+      Autoplay({
+        delay: 3500,
+        stopOnInteraction: false,
+        stopOnMouseEnter: true,
+        playOnInit: true,
+      }),
     []
   )
   const tilt = -5
@@ -152,10 +170,10 @@ export function TestimonialsCarousel({ stories, labels, isRtl }: TestimonialsCar
             align: "center",
             direction: isRtl ? "rtl" : "ltr",
             dragFree: false,
-            containScroll: "trimSnaps",
+            skipSnaps: false,
           }}
           plugins={[autoplay]}
-          className="w-full touch-pan-y  "
+          className="w-full touch-pan-y"
           dir={isRtl ? "rtl" : "ltr"}
         >
           <StaggerInView
@@ -204,8 +222,8 @@ export function TestimonialsCarousel({ stories, labels, isRtl }: TestimonialsCar
                 isRtl ? "-me-4 pe-0 ps-0 sm:-me-6" : "-ms-4 ps-0 pe-0 sm:-ms-6"
               )}
             >
-              {items.map((story, index) => {
-                const imageSrc = resolveStoryImageUrl(story.image_url ?? story.image, index)
+              {loopItems.map((story, index) => {
+                const imageSrc = resolveStoryImageUrl(story.image_url ?? story.image, index % items.length)
                 const { role, location } = parseRoleParts(story)
                 return (
                   <CarouselItem
@@ -215,9 +233,6 @@ export function TestimonialsCarousel({ stories, labels, isRtl }: TestimonialsCar
                       isRtl ? "pe-4 sm:pe-6" : "ps-4 sm:ps-6"
                     )}
                   >
-                    {
-                      // per-slide state for portal overlay
-                    }
                     <StorySlideInner
                       story={story}
                       imageSrc={imageSrc}

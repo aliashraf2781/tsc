@@ -73,13 +73,13 @@ export function AdminUsersPanel({
   const unverifiedUsers = stats?.unverified ?? Math.max(totalUsers - verifiedUsers, 0)
 
   const columns = [
-    { key: "name", label: t("columns.name"), className: "w-[15%]" },
-    { key: "email", label: t("columns.email"), className: "w-[20%]" },
-    { key: "phone", label: t("columns.phone"), className: "w-[12%]" },
-    { key: "country", label: t("columns.country"), className: "w-[12%]" },
-    { key: "createdAt", label: t("columns.registrationDate"), className: "w-[15%]" },
-    { key: "verification", label: t("columns.verification"), className: "w-[10%]" },
-    { key: "actions", label: t("columns.actions"), className: "w-[16%]" },
+    { key: "name", label: t("columns.name"), className: "w-[15%] min-w-[140px]" },
+    { key: "email", label: t("columns.email"), className: "w-[18%] min-w-[180px]" },
+    { key: "phone", label: t("columns.phone"), className: "w-[12%] min-w-[110px]" },
+    { key: "country", label: t("columns.country"), className: "w-[10%] min-w-[100px]" },
+    { key: "createdAt", label: t("columns.registrationDate"), className: "w-[12%] min-w-[120px]" },
+    { key: "verification", label: t("columns.verification"), className: "w-[10%] min-w-[110px]" },
+    { key: "actions", label: t("columns.actions"), className: "w-[23%] min-w-[220px]" },
   ]
 
   function userRouteSource(user: User) {
@@ -271,7 +271,7 @@ export function AdminUsersPanel({
 
           return (
             <AdminTableRow key={user.uuid || user.id} striped={index % 2 === 1}>
-              <AdminTableCell className="w-[15%]">
+              <AdminTableCell className="w-[15%] min-w-[140px]">
                 <Link
                   locale={locale}
                   href={`/dashboard/admin/users/${user.uuid || user.id}`}
@@ -280,11 +280,11 @@ export function AdminUsersPanel({
                   {user.name}
                 </Link>
               </AdminTableCell>
-              <AdminTableCell className="w-[20%] truncate text-xs">{user.email}</AdminTableCell>
-              <AdminTableCell className="w-[12%] text-xs">{user.phone || "—"}</AdminTableCell>
-              <AdminTableCell className="w-[12%] text-xs">{user.country?.name || "—"}</AdminTableCell>
-              <AdminTableCell className="w-[15%] text-xs">{formattedDate}</AdminTableCell>
-              <AdminTableCell className="w-[10%]">
+              <AdminTableCell className="w-[18%] min-w-[180px] truncate text-xs">{user.email}</AdminTableCell>
+              <AdminTableCell className="w-[12%] min-w-[110px] text-xs">{user.phone || "—"}</AdminTableCell>
+              <AdminTableCell className="w-[10%] min-w-[100px] text-xs">{user.country?.name || "—"}</AdminTableCell>
+              <AdminTableCell className="w-[12%] min-w-[120px] text-xs">{formattedDate}</AdminTableCell>
+              <AdminTableCell className="w-[10%] min-w-[110px]">
                 <span
                   className={cn(
                     "inline-flex rounded-full px-2.5 py-1 text-xs font-semibold capitalize",
@@ -294,15 +294,15 @@ export function AdminUsersPanel({
                   {user.emailVerified ? t("verification.verified") : t("verification.notVerified")}
                 </span>
               </AdminTableCell>
-              <AdminTableCell className="flex w-[16%] items-center gap-2">
+              <AdminTableCell className="flex w-[23%] min-w-[220px] flex-nowrap items-center gap-2 whitespace-nowrap">
                 <Link
                   locale={locale}
                   href={`/dashboard/admin/users/${user.uuid || user.id}`}
-                  className="text-xs font-semibold text-[#006EA8] hover:underline"
+                  className="shrink-0 text-xs font-semibold text-[#006EA8] hover:underline"
                 >
                   {t("edit")}
                 </Link>
-                <span className="text-[#E5E7EB]">|</span>
+                <span className="shrink-0 text-[#E5E7EB]">|</span>
                 <button
                   type="button"
                   disabled={pending}
@@ -310,11 +310,11 @@ export function AdminUsersPanel({
                     setError(null)
                     setConfirmAction({ type: "suspend", user, suspend: !isSuspended })
                   }}
-                  className="text-xs font-semibold text-amber-600 hover:underline disabled:opacity-50"
+                  className="shrink-0 text-xs font-semibold text-amber-600 hover:underline disabled:opacity-50"
                 >
                   {isSuspended ? t("activate") : t("suspend")}
                 </button>
-                <span className="text-[#E5E7EB]">|</span>
+                <span className="shrink-0 text-[#E5E7EB]">|</span>
                 <button
                   type="button"
                   disabled={pending}
@@ -322,7 +322,7 @@ export function AdminUsersPanel({
                     setError(null)
                     setConfirmAction({ type: "delete", user })
                   }}
-                  className="text-xs font-semibold text-red-600 hover:underline disabled:opacity-50"
+                  className="shrink-0 text-xs font-semibold text-red-600 hover:underline disabled:opacity-50"
                 >
                   {t("delete")}
                 </button>

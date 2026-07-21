@@ -38,19 +38,49 @@ export function buildSuccessStoryFormData(values: SuccessStoryFormValues, id?: n
 }
 
 /**
- * Builds RHF default values from a success story record fetched for
- * editing.
+ * Builds RHF default values from a success story record fetched for editing.
  *
- * Unlike FAQs/News, the admin API only exposes a single-locale normalized
- * story (see `getAdminSuccessStory`), so only the requested locale's tab can
- * be pre-filled — the other language tabs start empty rather than
- * duplicating the same text across all three.
+ * The edit page fetches the ar/en/de story separately and stitches them under
+ * `story.__allLocales` so every language tab can be pre-filled.
  */
 export function mapStoryToFormDefaults(story: any, locale: string): SuccessStoryFormValues {
   const name = emptyLocalizedText()
   const role = emptyLocalizedText()
   const location = emptyLocalizedText()
   const quote = emptyLocalizedText()
+
+  const allLocales = story?.__allLocales as Record<string, any> | undefined
+
+  if (allLocales) {
+    for (const loc of LOCALES) {
+      const item = allLocales[loc] ?? {}
+      name[loc] = item.name ?? ""
+      role[loc] = item.role ?? ""
+      location[loc] = item.location ?? ""
+      quote[loc] = item.quote ?? ""
+    }
+
+    const existingImage =
+      allLocales[locale as LocaleKey]?.image_url ??
+      allLocales[locale as LocaleKey]?.image ??
+      allLocales.ar?.image_url ??
+      allLocales.ar?.image ??
+      allLocales.en?.image_url ??
+      allLocales.en?.image ??
+      allLocales.de?.image_url ??
+      allLocales.de?.image ??
+      ""
+
+    return {
+      name,
+      role,
+      location,
+      quote,
+      imageFile: null,
+      imagePreview: null,
+      existingImage,
+    }
+  }
 
   const loc = (locale as LocaleKey) in name ? (locale as LocaleKey) : "ar"
   name[loc] = story?.name ?? ""

@@ -3,15 +3,19 @@ import { setRequestLocale } from "next-intl/server"
 import { getSession } from "@/lib/auth-token"
 import { normalizeRole } from "@/lib/auth-token"
 import { getNotifications } from "@/lib/api/services/notifications.service"
+import type { Notification, PaginationMeta } from "@/lib/api/types"
 import { AdminNotificationsPanel } from "@/features/admin/components/admin-notifications-panel"
 import { AdminPageLayout } from "@/features/admin/components/admin-page-layout"
 
 export default async function AdminNotificationsPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ locale: string }>
+  searchParams: Promise<{ page?: string }>
 }) {
   const { locale } = await params
+  const { page: pageParam } = await searchParams
   setRequestLocale(locale)
   const session = await getSession()
   if (!session.user || normalizeRole(session.user) !== "admin") {
@@ -21,15 +25,16 @@ export default async function AdminNotificationsPage({
   const needsClientPersist = Boolean((session as unknown as { __needsClientPersist?: boolean }).__needsClientPersist)
 
   const token = session.accessToken
+  const page = Math.max(1, Number(pageParam) || 1)
 
-  let notificationsResult: { data: any[] } = { data: [] }
+  let notificationsResult: { data: Notification[]; meta?: PaginationMeta } = {
+    data: [],
+    meta: { current_page: 1, last_page: 1, per_page: 10, total: 0 },
+  }
   try {
-    // token may be undefined; pass empty string to satisfy API signature —
-    // the called function will throw an ApiError for unauthenticated requests.
-    notificationsResult = await getNotifications(token ?? "", 1, locale)
+    notificationsResult = await getNotifications(token ?? "", page, locale)
   } catch (err) {
     console.error("[AdminNotificationsPage] getNotifications error:", err)
-    notificationsResult = { data: [] }
   }
 
   return (
@@ -42,7 +47,11 @@ export default async function AdminNotificationsPage({
       }
       needsClientPersist={needsClientPersist}
     >
-      <AdminNotificationsPanel notifications={notificationsResult.data} locale={locale} />
+      <AdminNotificationsPanel
+        notifications={notificationsResult.data}
+        meta={notificationsResult.meta}
+        locale={locale}
+      />
     </AdminPageLayout>
   )
 }

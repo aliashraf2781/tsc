@@ -3,6 +3,7 @@
 import { useState, useTransition } from "react"
 import { useRouter } from "@/i18n/navigation"
 import Image from "next/image"
+import parse from "html-react-parser"
 import { Link } from "@/i18n/navigation"
 import { deleteServiceAction } from "@/features/admin/actions/admin-actions"
 import type { Service } from "@/lib/api/services/services.service"
@@ -160,11 +161,9 @@ export function AdminServicesPanel({
                     <p className="truncate font-semibold text-[#111827] text-sm">
                       {service.title || (isRTL ? "بدون عنوان" : (isDe ? "Unbenannt" : "Untitled"))}
                     </p>
-                    <p className="truncate text-xs text-[#6B7280] mt-0.5 max-w-[280px]">
-                      {service.description
-                        ? service.description.slice(0, 80) + (service.description.length > 80 ? "..." : "")
-                        : "—"}
-                    </p>
+                    <div className="mt-0.5 max-w-[280px] truncate text-xs text-[#6B7280] [&_br]:hidden [&_p]:m-0 [&_p]:inline [&_p+p]:before:content-['_|_']">
+                      {service.description ? parse(service.description) : "—"}
+                    </div>
                   </div>
                 </div>
               </AdminTableCell>

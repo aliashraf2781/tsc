@@ -90,6 +90,22 @@ function normalizeNotification(item: unknown, index: number, locale?: string): N
   }
 }
 
+function extractPaginationMeta(raw: unknown): PaginationMeta | undefined {
+  if (!raw || typeof raw !== "object" || Array.isArray(raw)) return undefined
+
+  const obj = raw as Record<string, unknown>
+  const current = Number(obj.current_page ?? obj.currentPage)
+  const last = Number(obj.last_page ?? obj.lastPage)
+  if (!Number.isFinite(current) || !Number.isFinite(last) || last < 1) return undefined
+
+  return {
+    current_page: Math.max(1, current),
+    last_page: Math.max(1, last),
+    per_page: Math.max(1, Number(obj.per_page ?? obj.perPage ?? 10) || 10),
+    total: Math.max(0, Number(obj.total ?? 0) || 0),
+  }
+}
+
 function parseNotificationsResponse(response: unknown, locale?: string): {
   data: Notification[]
   meta?: PaginationMeta
@@ -99,7 +115,10 @@ function parseNotificationsResponse(response: unknown, locale?: string): {
   }
 
   const root = response as Record<string, unknown>
-  const meta = root.meta as PaginationMeta | undefined
+  const meta =
+    extractPaginationMeta(root.meta) ||
+    extractPaginationMeta(root.pagination) ||
+    extractPaginationMeta(root.data)
 
   const candidates = [root.data, root, extractNotificationsList(root.data)]
 

@@ -27,12 +27,16 @@ export type ServiceFormMessages = {
   descriptionRequired: string
 }
 
+function hasRichTextContent(value: string) {
+  return value.replace(/<[^>]*>/g, "").replace(/&nbsp;/g, " ").trim().length > 0
+}
+
 export function createServiceFormSchema(messages: ServiceFormMessages) {
   return z.object({
     title: localizedTextSchema.refine((value) => Boolean(value.ar.trim()), {
       message: messages.titleRequired,
     }),
-    description: localizedTextSchema.refine((value) => Boolean(value.ar.trim()), {
+    description: localizedTextSchema.refine((value) => hasRichTextContent(value.ar), {
       message: messages.descriptionRequired,
     }),
     imageFile: z.custom<File | null | undefined>().optional(),

@@ -7,6 +7,7 @@ import { PrimaryButton } from "@/components/ui/primary-button"
 import type { AboutPageContent, AboutFeature } from "@/lib/api/services/about.service"
 import { saveAboutAction } from "@/features/admin/actions/admin-actions"
 import { Upload, X, Plus, Trash2, ChevronDown, ChevronUp } from "lucide-react"
+import { RichTextEditor } from "@/components/ui/rich-text-editor"
 
 const LOCALES = ["ar", "en", "de"] as const
 type LocaleKey = (typeof LOCALES)[number]
@@ -63,8 +64,10 @@ function LocaleCard({
   lang: string; label: string; value: string
   onChange: (v: string) => void; multiline?: boolean; rows?: number
 }) {
+  const dir = lang === "ar" ? "rtl" : "ltr"
+
   return (
-    <label className="block text-sm text-[#374151]">
+    <div className="block text-sm text-[#374151]">
       <span className="mb-1 block font-medium">
         <span className="me-1.5 rounded bg-[#EAF4FB] px-1.5 py-0.5 text-xs font-bold text-[#006EA8]">
           {lang.toUpperCase()}
@@ -72,21 +75,23 @@ function LocaleCard({
         {label}
       </span>
       {multiline ? (
-        <textarea
-          rows={rows}
+        <RichTextEditor
+          key={`${lang}-${label}`}
           value={value}
-          onChange={(e) => onChange(e.target.value)}
-          className="mt-1 w-full rounded-lg border border-[#E5E7EB] px-3 py-2 text-sm focus:border-[#006EA8] focus:outline-none focus:ring-1 focus:ring-[#006EA8]"
+          onChange={onChange}
+          dir={dir}
+          minHeight={rows >= 4 ? "120px" : "96px"}
         />
       ) : (
         <input
           type="text"
           value={value}
           onChange={(e) => onChange(e.target.value)}
+          dir={dir}
           className="mt-1 w-full rounded-lg border border-[#E5E7EB] px-3 py-2 text-sm focus:border-[#006EA8] focus:outline-none focus:ring-1 focus:ring-[#006EA8]"
         />
       )}
-    </label>
+    </div>
   )
 }
 
@@ -581,14 +586,17 @@ function FeatureCard({
               placeholder={isRTL ? "العنوان" : "Title"}
               value={feature.title[editLocale]}
               onChange={(e) => onUpdate("title", e.target.value)}
+              dir={editLocale === "ar" ? "rtl" : "ltr"}
               className="mt-1 w-full rounded border border-[#E5E7EB] px-2 py-1.5 text-sm focus:border-[#006EA8] focus:outline-none"
             />
-            <textarea
-              rows={2}
-              placeholder={isRTL ? "الوصف" : "Description"}
+            <RichTextEditor
+              key={`feature-${feature.id ?? idx}-${editLocale}`}
               value={feature.description[editLocale]}
-              onChange={(e) => onUpdate("description", e.target.value)}
-              className="w-full rounded border border-[#E5E7EB] px-2 py-1.5 text-sm focus:border-[#006EA8] focus:outline-none"
+              onChange={(v) => onUpdate("description", v)}
+              placeholder={isRTL ? "الوصف" : "Description"}
+              dir={editLocale === "ar" ? "rtl" : "ltr"}
+              minHeight="72px"
+              className="mt-0 rounded border"
             />
           </div>
         </div>

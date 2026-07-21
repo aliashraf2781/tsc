@@ -18,7 +18,10 @@ import type { User } from "@/lib/api/types"
 import { SharedSidebar } from "./shared-sidebar"
 import { getDashboardPath, normalizeRole } from "@/lib/auth-token"
 import { fetchUnreadCountClient, invalidateUnreadCountCache } from "@/lib/notifications/unread-count-client"
-import { resolveNotificationUrl } from "@/lib/notifications/resolve-notification-url"
+import {
+  fetchNotificationsPageClient,
+  type HeaderNotification,
+} from "@/lib/notifications/map-notification"
 
 type NavItemKey = "home" | "about" | "services" | "jobs" | "news" | "contact"
 
@@ -100,15 +103,7 @@ const LOCALE_OPTIONS = [
   { locale: "ar", label: "العربية", flag: <SAFlag /> },
 ] as const
 
-interface Notification {
-  id: number
-  title: string
-  description: string
-  time: string
-  read: boolean
-  /** URL or path to navigate to when clicked, extracted from notification.data */
-  actionUrl?: string
-}
+interface Notification extends HeaderNotification {}
 
 export function SiteHeader({ 
   activeItem, 
@@ -175,6 +170,9 @@ export function SiteHeader({
 
   const [notifications, setNotifications] = React.useState<Notification[]>([])
   const [notificationsLoading, setNotificationsLoading] = React.useState(false)
+  const [notificationsLoadingMore, setNotificationsLoadingMore] = React.useState(false)
+  const [notificationsPage, setNotificationsPage] = React.useState(1)
+  const [notificationsHasMore, setNotificationsHasMore] = React.useState(false)
   const [unreadCount, setUnreadCount] = React.useState<number>(0)
 
   const activeNav = React.useMemo(() => {
@@ -275,61 +273,24 @@ export function SiteHeader({
     return () => { mounted = false }
   }, [isLoggedIn])
 
-  // Fetch notifications list when panel opens
+  // Fetch notifications list when panel opens (page 1)
   React.useEffect(() => {
     if (!isLoggedIn || !showNotifications) return
     let mounted = true
 
     async function fetchNotifications() {
       setNotificationsLoading(true)
+      setNotificationsHasMore(false)
       try {
-        const res = await fetch(`/api/notifications?page=1`, {
-          credentials: "include",
-          cache: "no-store",
-          headers: {
-            "Accept-Language": currentLocale,
-            "x-locale": currentLocale,
-          },
+        const result = await fetchNotificationsPageClient({
+          page: 1,
+          locale: currentLocale,
+          role: displayUserRole,
         })
-        if (!res.ok) return
-        const data = await res.json()
         if (!mounted) return
-        const list = Array.isArray(data.data) ? data.data : []
-        setNotifications(
-          list.map((n: {
-            id: number
-            title: string
-            body?: string
-            message?: string
-            created_at?: string
-            createdAt?: string
-            read_at?: string | null
-            isRead?: boolean
-            is_read?: boolean
-            data?: Record<string, unknown>
-          }) => {
-            const nData = n.data ?? {}
-            const actionUrl =
-              resolveNotificationUrl(nData, displayUserRole) ||
-              (nData.url as string) ||
-              (nData.link as string) ||
-              (nData.action_url as string) ||
-              (nData.path as string) ||
-              undefined
-
-            const rawTime = n.created_at || n.createdAt
-            return {
-              id: n.id,
-              title: n.title,
-              description: n.body || n.message || "",
-              time: rawTime
-                ? new Date(rawTime).toLocaleString(currentLocale === "ar" ? "ar-EG" : currentLocale)
-                : "",
-              read: Boolean(n.read_at) || Boolean(n.isRead) || Boolean(n.is_read),
-              actionUrl,
-            }
-          })
-        )
+        setNotifications(result.items)
+        setNotificationsPage(result.currentPage)
+        setNotificationsHasMore(result.hasMore)
       } catch {
         // Silently handle notification fetch errors
       } finally {
@@ -340,6 +301,37 @@ export function SiteHeader({
     fetchNotifications()
     return () => { mounted = false }
   }, [isLoggedIn, showNotifications, currentLocale, displayUserRole])
+
+  const loadMoreNotifications = React.useCallback(async () => {
+    if (!isLoggedIn || notificationsLoadingMore || !notificationsHasMore) return
+    const nextPage = notificationsPage + 1
+    setNotificationsLoadingMore(true)
+    try {
+      const result = await fetchNotificationsPageClient({
+        page: nextPage,
+        locale: currentLocale,
+        role: displayUserRole,
+      })
+      setNotifications((prev) => {
+        const seen = new Set(prev.map((n) => n.id))
+        const appended = result.items.filter((n) => !seen.has(n.id))
+        return [...prev, ...appended]
+      })
+      setNotificationsPage(result.currentPage)
+      setNotificationsHasMore(result.hasMore && result.items.length > 0)
+    } catch {
+      // Silently handle load-more errors
+    } finally {
+      setNotificationsLoadingMore(false)
+    }
+  }, [
+    isLoggedIn,
+    notificationsLoadingMore,
+    notificationsHasMore,
+    notificationsPage,
+    currentLocale,
+    displayUserRole,
+  ])
 
   const handleNotificationClick = async (notification: Notification) => {
     // Optimistically mark as read in UI
@@ -528,6 +520,18 @@ export function SiteHeader({
                         </div>
                       </div>
                     ))}
+                    {!notificationsLoading && notificationsHasMore && (
+                      <div className="p-3">
+                        <button
+                          type="button"
+                          disabled={notificationsLoadingMore}
+                          onClick={loadMoreNotifications}
+                          className="w-full rounded-lg py-2 text-sm font-semibold text-[#006EA8] hover:bg-[#F2F8FC] disabled:opacity-50"
+                        >
+                          {notificationsLoadingMore ? th("loadingMore") : th("loadMore")}
+                        </button>
+                      </div>
+                    )}
                   </div>
                 </div>
             )}

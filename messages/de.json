@@ -138,6 +138,8 @@
     "notificationsTitle": "Benachrichtigungen ({count})",
     "markAllRead": "Alle als gelesen markieren",
     "loading": "Wird geladen...",
+    "loadingMore": "Weitere werden geladen...",
+    "loadMore": "Mehr laden",
     "noNotifications": "Keine Benachrichtigungen",
     "userMenuAria": "Benutzermenü",
     "defaultUserName": "Benutzer",
@@ -961,7 +963,8 @@
       "delete": "Löschen",
       "deleteConfirm": "Dieses Unternehmen löschen?",
       "empty": "Keine Unternehmen",
-      "error": "Löschen fehlgeschlagen"
+      "error": "Löschen fehlgeschlagen",
+      "pagination": "Seite {page} von {last} · {total} Unternehmen"
     },
     "successStories": {
       "title": "Erfolgsgeschichten",
@@ -1210,6 +1213,7 @@
       "newsColActions": "Aktionen",
       "newsEmpty": "Keine News",
       "notificationsEmpty": "Keine Benachrichtigungen",
+      "notificationsPagination": "Seite {page} von {last} · {total} Benachrichtigungen",
       "markAllRead": "Alle als gelesen markieren",
       "markRead": "Gelesen",
       "unread": "Neu",

@@ -516,6 +516,57 @@ export async function getAdminJobApplicationStats(
   }
 }
 
+function extractAdminUsersPayload(response: unknown): {
+  rawList: unknown[]
+  meta?: Partial<PaginationMeta>
+} {
+  if (Array.isArray(response)) {
+    return { rawList: response }
+  }
+
+  if (!response || typeof response !== "object") {
+    return { rawList: [] }
+  }
+
+  const root = response as Record<string, unknown>
+  const data = root.data
+
+  // Shape: { data: User[], meta }
+  if (Array.isArray(data)) {
+    return {
+      rawList: data,
+      meta: (root.meta && typeof root.meta === "object" ? root.meta : undefined) as
+        | Partial<PaginationMeta>
+        | undefined,
+    }
+  }
+
+  // Shape: { success, data: { data: User[], meta, links } }
+  if (data && typeof data === "object" && !Array.isArray(data)) {
+    const nested = data as Record<string, unknown>
+    const nestedList = Array.isArray(nested.data)
+      ? nested.data
+      : Array.isArray(nested.users)
+        ? nested.users
+        : []
+    const nestedMeta =
+      nested.meta && typeof nested.meta === "object"
+        ? (nested.meta as Partial<PaginationMeta>)
+        : root.meta && typeof root.meta === "object"
+          ? (root.meta as Partial<PaginationMeta>)
+          : undefined
+    return { rawList: nestedList, meta: nestedMeta }
+  }
+
+  return {
+    rawList: [],
+    meta:
+      root.meta && typeof root.meta === "object"
+        ? (root.meta as Partial<PaginationMeta>)
+        : undefined,
+  }
+}
+
 export async function getAdminUsers(
   token: string,
   role?: string,
@@ -530,18 +581,15 @@ export async function getAdminUsers(
   }
 
   const response = await api.get<any>(`/users?${query}`, { token, locale })
-  
-  const rawList = Array.isArray(response)
-    ? response
-    : Array.isArray(response?.data)
-      ? response.data
-      : []
-
+  const { rawList, meta: rawMeta } = extractAdminUsersPayload(response)
   const data = rawList.map((item: unknown) => normalizeAdminUser(item))
-  
-  const meta: PaginationMeta = Array.isArray(response)
-    ? { current_page: page, last_page: 1, per_page: perPage, total: data.length }
-    : response?.meta || { current_page: page, last_page: 1, per_page: perPage, total: data.length }
+
+  const meta: PaginationMeta = {
+    current_page: Number(rawMeta?.current_page) || page,
+    last_page: Math.max(Number(rawMeta?.last_page) || 1, 1),
+    per_page: Number(rawMeta?.per_page) || perPage,
+    total: Number(rawMeta?.total) || data.length,
+  }
 
   return { data, meta }
 }
@@ -569,7 +617,7 @@ export async function getAdminUserStats(
   const verified = allUsers.filter((u) => u.emailVerified).length
   const total = first.meta?.total ?? allUsers.length
 
-  return { total, verified, unverified: allUsers.length - verified }
+  return { total, verified, unverified: Math.max(total - verified, 0) }
 }
 
 export async function getAdminStats(
