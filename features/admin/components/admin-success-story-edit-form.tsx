@@ -90,7 +90,7 @@ export function AdminSuccessStoryEditForm({ story, locale }: { story: any; local
       )}
 
       {/* Profile Details */}
-      <div className="rounded-[12px] border border-[#E5E7EB] bg-white p-5 sm:p-6 shadow-sm space-y-5">
+      <div className="rounded-xl border border-[#E5E7EB] bg-white p-5 sm:p-6 shadow-sm space-y-5">
         <div className="flex items-center gap-2 border-b border-[#E5E7EB] pb-3">
           <Quote className="h-4 w-4 text-[#006EA8]" />
           <p className="text-sm font-bold uppercase tracking-widest text-[#006EA8]">{t("sections.storyAndPerson")}</p>
