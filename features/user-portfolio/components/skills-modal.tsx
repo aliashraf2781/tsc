@@ -1,12 +1,12 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { useForm, useFieldArray } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useTranslations } from "next-intl"
 import { toast } from "sonner"
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog"
-import { gradientTitleClasses, labelClass } from "../lib/style-constants"
+import { gradientTitleClasses, inputClass, labelClass } from "../lib/style-constants"
 import { createSkillsFormSchema, type SkillsFormValues } from "../lib/skills-form-schema"
 import { SUGGESTED_SKILLS } from "../lib/suggested-skills"
 import type { SkillItem } from "../types/portfolio.types"
@@ -29,8 +29,12 @@ export function SkillsModal({
   const t = useTranslations("UserPortfolio")
   const isAr = locale === "ar"
 
-  const [newSkillInput, setNewSkillInput] = useState("")
-  const [showSkillDropdown, setShowSkillDropdown] = useState(false)
+  const [searchInput, setSearchInput] = useState("")
+  const [showDropdown, setShowDropdown] = useState(false)
+  const [isOtherMode, setIsOtherMode] = useState(false)
+  const [customSkill, setCustomSkill] = useState("")
+  const customInputRef = useRef<HTMLInputElement>(null)
+  const searchInputRef = useRef<HTMLInputElement>(null)
 
   const schema = createSkillsFormSchema({
     atLeastOne: t("skills.modal.atLeastOneError"),
@@ -47,10 +51,18 @@ export function SkillsModal({
   useEffect(() => {
     if (open) {
       reset({ skills: skills.map((s) => ({ id: s.id, skillName: s.skillName })) })
-      setNewSkillInput("")
-      setShowSkillDropdown(false)
+      setSearchInput("")
+      setShowDropdown(false)
+      setIsOtherMode(false)
+      setCustomSkill("")
     }
   }, [open, skills, reset])
+
+  useEffect(() => {
+    if (isOtherMode) {
+      customInputRef.current?.focus()
+    }
+  }, [isOtherMode])
 
   function isDuplicate(name: string) {
     return currentSkills.some((s) => s.skillName.toLowerCase() === name.toLowerCase())
@@ -64,12 +76,27 @@ export function SkillsModal({
       return
     }
     append({ tempId: `skill-${Date.now()}`, skillName: text })
-    setNewSkillInput("")
+    setSearchInput("")
+    setCustomSkill("")
+    setIsOtherMode(false)
+    setShowDropdown(false)
   }
 
-  function addSuggestedSkill(name: string) {
+  function selectSuggested(name: string) {
     addSkill(name)
-    setShowSkillDropdown(false)
+  }
+
+  function selectOther(initial?: string) {
+    setShowDropdown(false)
+    setSearchInput("")
+    setIsOtherMode(true)
+    setCustomSkill(typeof initial === "string" ? initial : "")
+  }
+
+  function exitOtherMode() {
+    setIsOtherMode(false)
+    setCustomSkill("")
+    setTimeout(() => searchInputRef.current?.focus(), 0)
   }
 
   const onSubmit = handleSubmit((values) => {
@@ -78,8 +105,12 @@ export function SkillsModal({
   })
 
   const suggestions = SUGGESTED_SKILLS.filter(
-    (s) => s.toLowerCase().includes(newSkillInput.toLowerCase()) && !isDuplicate(s)
+    (s) => s.toLowerCase().includes(searchInput.toLowerCase()) && !isDuplicate(s)
   )
+
+  const otherMatchesSearch =
+    !searchInput.trim() ||
+    t("skills.modal.otherOption").toLowerCase().includes(searchInput.toLowerCase())
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -100,8 +131,8 @@ export function SkillsModal({
           <div className="space-y-1">
             <label className={labelClass}>{t("skills.modal.label")}</label>
 
-            <div className="relative w-full">
-              <div className="w-full border-b border-[#D4D4D4] focus-within:border-[#40A0CA] py-2 flex flex-wrap gap-2 items-center min-h-[42px] pe-8 relative">
+            {fields.length > 0 && (
+              <div className="flex flex-wrap gap-2 mb-3">
                 {fields.map((field, idx) => (
                   <div
                     key={field.id}
@@ -118,57 +149,126 @@ export function SkillsModal({
                     </button>
                   </div>
                 ))}
-                <input
-                  type="text"
-                  value={newSkillInput}
-                  onChange={(e) => {
-                    setNewSkillInput(e.target.value)
-                    setShowSkillDropdown(true)
-                  }}
-                  onFocus={() => setShowSkillDropdown(true)}
-                  onBlur={() => setTimeout(() => setShowSkillDropdown(false), 200)}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter") {
-                      e.preventDefault()
-                      addSkill(newSkillInput)
-                    }
-                  }}
-                  placeholder={fields.length === 0 ? t("skills.modal.placeholder") : ""}
-                  className="flex-1 min-w-[120px] bg-transparent outline-none text-sm text-[#525252] border-0 p-0 focus:ring-0 focus:border-0 shadow-none rounded-none"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowSkillDropdown(!showSkillDropdown)}
-                  className="absolute end-0 top-1/2 -translate-y-1/2 p-1 focus:outline-none"
-                >
-                  <img src="/portfolio/arrow-down.svg" alt="Select" className="w-4 h-4 opacity-70" />
-                </button>
               </div>
+            )}
 
-              {showSkillDropdown && (
-                <div className="absolute z-50 left-0 right-0 mt-1 bg-white border border-[#E5E7EB] rounded-[8px] shadow-lg max-h-[180px] overflow-y-auto">
-                  {suggestions.map((item, idx) => (
-                    <button
-                      key={idx}
-                      type="button"
-                      onClick={() => addSuggestedSkill(item)}
-                      className="w-full text-start px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition"
-                    >
-                      {item}
-                    </button>
-                  ))}
-                  {suggestions.length === 0 && newSkillInput.trim() !== "" && (
-                    <button
-                      type="button"
-                      onClick={() => addSkill(newSkillInput)}
-                      className="w-full text-start px-4 py-2 text-sm text-[#006EA8] hover:bg-gray-50 transition font-bold"
-                    >
-                      {t("skills.modal.addOption", { skill: newSkillInput })}
-                    </button>
-                  )}
+            {isOtherMode ? (
+              <div className="rounded-[12px] border border-[#40A0CA]/40 bg-[#F0F9FF] p-3 space-y-2">
+                <div className="flex items-center justify-between gap-2">
+                  <p className="text-xs font-semibold text-[#006EA8]">{t("skills.modal.otherHint")}</p>
+                  <button
+                    type="button"
+                    onClick={exitOtherMode}
+                    className="text-xs text-[#737373] hover:text-[#006EA8] transition underline-offset-2 hover:underline shrink-0"
+                  >
+                    {t("skills.modal.backToList")}
+                  </button>
                 </div>
-              )}
-            </div>
+                <div className="flex items-center gap-2">
+                  <input
+                    ref={customInputRef}
+                    type="text"
+                    value={customSkill}
+                    onChange={(e) => setCustomSkill(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") {
+                        e.preventDefault()
+                        addSkill(customSkill)
+                      }
+                      if (e.key === "Escape") {
+                        e.preventDefault()
+                        exitOtherMode()
+                      }
+                    }}
+                    placeholder={t("skills.modal.otherPlaceholder")}
+                    className={`${inputClass} flex-1 !py-2`}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => addSkill(customSkill)}
+                    disabled={!customSkill.trim()}
+                    className="shrink-0 h-[36px] px-4 rounded-[10px] text-sm font-bold text-white bg-[#006EA8] hover:bg-[#005685] disabled:opacity-40 disabled:cursor-not-allowed transition"
+                  >
+                    {t("skills.modal.add")}
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <div className="relative w-full">
+                <div className="w-full border-b border-[#D4D4D4] focus-within:border-[#40A0CA] py-2 flex items-center min-h-[42px] pe-8 relative">
+                  <input
+                    ref={searchInputRef}
+                    type="text"
+                    value={searchInput}
+                    onChange={(e) => {
+                      setSearchInput(e.target.value)
+                      setShowDropdown(true)
+                    }}
+                    onFocus={() => setShowDropdown(true)}
+                    onBlur={() => setTimeout(() => setShowDropdown(false), 200)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") {
+                        e.preventDefault()
+                        if (suggestions.length === 1) {
+                          selectSuggested(suggestions[0])
+                        } else if (searchInput.trim()) {
+                          selectOther(searchInput.trim())
+                        }
+                      }
+                    }}
+                    placeholder={t("skills.modal.placeholder")}
+                    className="flex-1 min-w-[120px] bg-transparent outline-none text-sm text-[#525252] border-0 p-0 focus:ring-0 focus:border-0 shadow-none rounded-none"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowDropdown(!showDropdown)}
+                    className="absolute end-0 top-1/2 -translate-y-1/2 p-1 focus:outline-none"
+                  >
+                    <img src="/portfolio/arrow-down.svg" alt="Select" className="w-4 h-4 opacity-70" />
+                  </button>
+                </div>
+
+                {showDropdown && (
+                  <div className="absolute z-50 left-0 right-0 mt-1 bg-white border border-[#E5E7EB] rounded-[8px] shadow-lg max-h-[220px] overflow-y-auto">
+                    {otherMatchesSearch && (
+                      <>
+                        <button
+                          type="button"
+                          onClick={() => selectOther()}
+                          className="w-full text-start px-4 py-2.5 text-sm text-[#006EA8] hover:bg-[#F0F9FF] transition font-semibold flex items-center gap-2"
+                        >
+                          <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-[#006EA8]/10 text-[#006EA8] text-xs font-bold">
+                            +
+                          </span>
+                          {t("skills.modal.otherOption")}
+                          <span className="text-xs font-normal text-[#737373] ms-auto">
+                            {t("skills.modal.otherCaption")}
+                          </span>
+                        </button>
+                        {(suggestions.length > 0 || searchInput.trim() !== "") && (
+                          <div className="border-t border-[#E5E7EB]" />
+                        )}
+                      </>
+                    )}
+
+                    {suggestions.map((item) => (
+                      <button
+                        key={item}
+                        type="button"
+                        onClick={() => selectSuggested(item)}
+                        className="w-full text-start px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition"
+                      >
+                        {item}
+                      </button>
+                    ))}
+
+                    {suggestions.length === 0 && searchInput.trim() !== "" && (
+                      <p className="px-4 py-2.5 text-sm text-[#A3A3A3]">{t("skills.modal.noMatch")}</p>
+                    )}
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         </div>
 

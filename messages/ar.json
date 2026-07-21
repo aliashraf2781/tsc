@@ -1399,10 +1399,17 @@
       "modal": {
         "description": "إضافة وتعديل المهارات في سيرتك الذاتية",
         "label": "المهارة *",
-        "placeholder": "أدخل اسم المهارة واضغط Enter",
+        "placeholder": "ابحث أو اختر مهارة",
         "duplicateError": "المهارة مضافة بالفعل",
         "atLeastOneError": "يجب إضافة مهارة واحدة على الأقل",
-        "addOption": "إضافة \"{skill}\""
+        "addOption": "إضافة \"{skill}\"",
+        "otherOption": "أخرى",
+        "otherCaption": "اكتب مهارتك",
+        "otherHint": "اكتب مهارة غير موجودة في القائمة",
+        "otherPlaceholder": "مثال: Kubernetes، Salesforce…",
+        "backToList": "العودة للقائمة",
+        "noMatch": "لا توجد مهارات مطابقة",
+        "add": "إضافة"
       }
     },
     "submit": {

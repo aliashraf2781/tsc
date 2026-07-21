@@ -1397,10 +1397,17 @@
       "modal": {
         "description": "Fähigkeiten in Ihrem Portfolio hinzufügen und bearbeiten",
         "label": "Fähigkeit *",
-        "placeholder": "Fähigkeit eingeben und Enter drücken",
+        "placeholder": "Fähigkeit suchen oder auswählen",
         "duplicateError": "Fähigkeit bereits hinzugefügt",
         "atLeastOneError": "Es ist mindestens eine Fähigkeit erforderlich",
-        "addOption": "\"{skill}\" hinzufügen"
+        "addOption": "\"{skill}\" hinzufügen",
+        "otherOption": "Sonstiges",
+        "otherCaption": "Selbst eingeben",
+        "otherHint": "Geben Sie eine Fähigkeit ein, die nicht in der Liste steht",
+        "otherPlaceholder": "z. B. Kubernetes, Salesforce…",
+        "backToList": "Zurück zur Liste",
+        "noMatch": "Keine passenden Fähigkeiten",
+        "add": "Hinzufügen"
       }
     },
     "submit": {

@@ -1397,10 +1397,17 @@
       "modal": {
         "description": "Add and manage skills in your portfolio",
         "label": "Skill *",
-        "placeholder": "Type a skill and press Enter",
+        "placeholder": "Search or select a skill",
         "duplicateError": "Skill already added",
         "atLeastOneError": "At least one skill is required",
-        "addOption": "Add \"{skill}\""
+        "addOption": "Add \"{skill}\"",
+        "otherOption": "Other",
+        "otherCaption": "Write your own",
+        "otherHint": "Type a skill that isn’t in the list",
+        "otherPlaceholder": "e.g. Kubernetes, Salesforce…",
+        "backToList": "Back to list",
+        "noMatch": "No matching skills",
+        "add": "Add"
       }
     },
     "submit": {
