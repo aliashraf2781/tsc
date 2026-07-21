@@ -2,7 +2,7 @@ import { notFound, redirect } from "next/navigation"
 import { setRequestLocale } from "next-intl/server"
 import { getSession } from "@/lib/auth-token"
 import { normalizeRole } from "@/lib/auth-token"
-import { getCompanyApplication, getCompanyJob } from "@/lib/api/services/company.service"
+import { getCompanyApplication } from "@/lib/api/services/company.service"
 import { CompanyApplicationDetailView } from "@/features/company-jobs/components/company-application-detail-view"
 import { getJobTitle } from "@/features/company-jobs/lib/job-title"
 
@@ -62,18 +62,14 @@ export default async function CompanyApplicationDetailPage({ params }: PageProps
 
   const token = session.accessToken as string | undefined
   if (!token) redirect(`/${locale}/sign-in`)
-  const [job, application] = await Promise.all([
-    getCompanyJob(jobId, token, locale),
-    getCompanyApplication(jobId, appId, token, locale),
-  ])
-  if (!job) notFound()
+  const application = await getCompanyApplication(appId, token, locale)
   if (!application) notFound()
 
   return (
     <CompanyApplicationDetailView
       application={application}
       jobId={jobId}
-      jobTitle={getJobTitle(job, locale)}
+      jobTitle={getJobTitle(application.job, locale)}
       locale={locale}
     />
   )

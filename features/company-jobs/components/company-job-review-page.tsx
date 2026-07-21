@@ -161,6 +161,7 @@ export async function CompanyJobReviewPage({
                 age: jobsT("detail.age"),
                 applicationDeadline: jobsT("detail.applicationDeadline"),
                 applyForJob: t("review.viewApplications"),
+                applications: t("review.applicationsLabel"),
                 relatedJobs: jobsT("detail.relatedJobs"),
                 postedAgo: jobsT("postedAgo"),
                 companySubLabel: jobsT("companySubLabel"),

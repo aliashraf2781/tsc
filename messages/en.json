@@ -677,6 +677,7 @@
       "title": "Job preview",
       "backToJobs": "Back to all jobs",
       "viewApplications": "View applications",
+      "applicationsLabel": "Applications",
       "companyFallback": "Your company",
       "industryFallback": "Industry",
       "notFound": "This job was not found or is no longer available."

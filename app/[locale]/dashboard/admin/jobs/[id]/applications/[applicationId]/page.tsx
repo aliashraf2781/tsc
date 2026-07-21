@@ -3,7 +3,7 @@ import { setRequestLocale } from "next-intl/server"
 import { getTranslations } from "next-intl/server"
 import { getSession } from "@/lib/auth-token"
 import { normalizeRole } from "@/lib/auth-token"
-import { getAdminJobById, getAdminJobApplicationById } from "@/lib/api/services/admin.service"
+import { getAdminJobApplicationById } from "@/lib/api/services/admin.service"
 import { AdminPageLayout } from "@/features/admin/components/admin-page-layout"
 import { getJobTitle } from "@/features/company-jobs/lib/job-title"
 import { CompanyApplicationDetailView } from "@/features/company-jobs/components/company-application-detail-view"
@@ -26,14 +26,13 @@ export default async function AdminJobApplicationDetailPage({
   }
 
   const token = session.accessToken as string
-  const job = await getAdminJobById(Number(id), token, locale)
-  const application = await getAdminJobApplicationById(Number(id), Number(applicationId), token, locale)
+  const application = await getAdminJobApplicationById(Number(applicationId), token, locale)
 
-  if (!job || !application) {
+  if (!application) {
     notFound()
   }
 
-  const title = getJobTitle(job, locale)
+  const title = getJobTitle(application.job, locale)
   const userId = application.user_id || application.user?.id
 
   return (

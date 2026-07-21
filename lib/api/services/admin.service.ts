@@ -3,7 +3,6 @@ import { api, ApiError } from "../client"
 import type { ApiResponse, Job, JobApplication, User, PaginationMeta } from "../types"
 import {
   normalizeCompanyApplication,
-  hasValidApplicantName,
   type CompanyApplication,
 } from "@/features/company-jobs/lib/application-utils"
 import {
@@ -12,36 +11,6 @@ import {
   resolveUserRouteId,
 } from "@/lib/api/resolve-user-route-id"
 import { enrichMissingApplicantNames } from "@/lib/api/services/application-enrichment.service"
-
-async function enrichAdminApplication(
-  application: JobApplication,
-  token: string,
-  locale: string
-): Promise<JobApplication> {
-  const userId = application.user_id || application.user?.id
-  if (!userId) return application
-
-  const needsUser =
-    !hasValidApplicantName(application as CompanyApplication) ||
-    !application.user?.email
-  const portfolioRecord = (application as CompanyApplication).userPortfolio
-  const needsPortfolio = !portfolioRecord || Object.keys(portfolioRecord).length === 0
-
-  if (!needsUser && !needsPortfolio) return application
-
-  const [user, portfolio] = await Promise.all([
-    needsUser ? getAdminUserById(userId, token, locale) : Promise.resolve(null),
-    needsPortfolio ? getAdminUserPortfolio(userId, token, locale) : Promise.resolve(null),
-  ])
-
-  return normalizeCompanyApplication({
-    ...application,
-    user_id: userId,
-    user: user ? { ...(application.user || {}), ...user } : application.user,
-    userPortfolio: portfolio || portfolioRecord,
-    portfolio: portfolio || application.portfolio,
-  }) as JobApplication
-}
 
 const ADMIN_JOB_STATUSES = ["pending", "approved", "active", "rejected"] as const
 
@@ -71,7 +40,11 @@ export async function getAdminJobs(
       const row = item as Record<string, any>
       const id = Number(row.id)
       if (!Number.isFinite(id) || id <= 0) return null
-      return { ...(row as Record<string, any>), id } as Job
+      return {
+        ...(row as Record<string, any>),
+        id,
+        applications_count: row.applications_count ?? row.applicationsCount,
+      } as Job
     })
     .filter((item): item is Job => item !== null)
 
@@ -100,40 +73,7 @@ export async function getAdminUserPortfolio(
   }
 }
 
-async function findAdminApplicationInList(
-  jobId: number,
-  applicationId: number,
-  token: string,
-  locale: string
-): Promise<JobApplication | null> {
-  let page = 1
-  while (true) {
-    const { data, meta } = await getAdminJobApplications(jobId, token, page, locale)
-    const found = data.find((a) => Number(a.id) === Number(applicationId))
-    if (found) {
-      if (found.user_id && !found.user) {
-        const user = await getAdminUserById(found.user_id, token, locale)
-        if (user) {
-          found.user = user
-        }
-      }
-      if (!found.portfolio && (found.user_id || found.user?.id)) {
-        const portfolio = await getAdminUserPortfolio(found.user_id || found.user?.id, token, locale)
-        if (portfolio) {
-          found.portfolio = portfolio
-        }
-      }
-      return found
-    }
-    const last = Number(meta?.last_page ?? 1)
-    if (page >= last) break
-    page += 1
-  }
-  return null
-}
-
 export async function getAdminJobApplicationById(
-  jobId: number,
   applicationId: number,
   token: string,
   locale = "ar"
@@ -141,33 +81,30 @@ export async function getAdminJobApplicationById(
   try {
     const response = await api.get<unknown>(`/admin/job-applications/${applicationId}`, { token, locale })
     const raw = ((response as { data?: unknown })?.data ?? response) as Record<string, unknown> | undefined
-    if (!raw) return null
-
-    // The single-application endpoint returns `applicationId`/`appliedAt`/`jobDetails`
-    // (no `job`/`user` keys) — normalizeCompanyApplication maps `jobDetails` onto the
-    // shared `Job` shape automatically.
+    if (!raw) {
+      // eslint-disable-next-line no-console
+      console.error(
+        `[getAdminJobApplicationById] GET /admin/job-applications/${applicationId} returned empty payload:`,
+        response
+      )
+      return null
+    }
     const normalized = normalizeCompanyApplication(raw) as JobApplication
-    const enriched = await enrichAdminApplication(normalized, token, locale)
-
-    // This endpoint never returns applicant identity (no user/user_id), so
-    // recover it from the paginated applications list, which does.
-    if (!enriched.user_id && !enriched.user?.id) {
-      const fromList = await findAdminApplicationInList(jobId, applicationId, token, locale).catch(() => null)
-      if (fromList) {
-        return {
-          ...enriched,
-          user_id: fromList.user_id ?? enriched.user_id,
-          user: fromList.user ?? enriched.user,
-          portfolio: fromList.portfolio ?? enriched.portfolio,
-        }
-      }
+    if (normalized.id <= 0) {
+      // eslint-disable-next-line no-console
+      console.error(
+        `[getAdminJobApplicationById] GET /admin/job-applications/${applicationId} normalized to invalid id:`,
+        raw
+      )
+      return null
     }
-
-    return enriched
+    return normalized
   } catch (err) {
-    if (err instanceof ApiError && (err.status === 403 || err.status === 401 || err.status === 404)) {
-      return findAdminApplicationInList(jobId, applicationId, token, locale).catch(() => null)
-    }
+    // eslint-disable-next-line no-console
+    console.error(
+      `[getAdminJobApplicationById] GET /admin/job-applications/${applicationId} failed:`,
+      err instanceof ApiError ? `status=${err.status} message=${err.message}` : err
+    )
     return null
   }
 }

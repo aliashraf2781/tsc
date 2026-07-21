@@ -2,6 +2,7 @@
 
 import Image from "next/image"
 import { useState } from "react"
+import parse from "html-react-parser"
 import { SectionShell, StaggerInView, StaggerItem } from "@/features/shared-home"
 import type { AboutFeature } from "@/lib/api/services/about.service"
 
@@ -61,7 +62,7 @@ export function AboutStorySection({
               <span>{eyebrow}</span>
             </div>
             <h2 className="max-w-[540px] text-balance text-[40px] leading-[1.12] font-bold text-[#171717] lg:text-[44px]">
-              {title}
+              {parse(title)}
             </h2>
 
             {/* Tabs List */}
@@ -90,14 +91,14 @@ export function AboutStorySection({
 
             {/* Tab Panel Content */}
             <div className="min-h-[120px] transition-opacity duration-300 mt-4">
-              <p className="max-w-[620px] text-[16px] leading-relaxed text-[#525252] whitespace-pre-line">
-                {activeTab?.description || descriptionOne}
-              </p>
+              <div className="max-w-[620px] text-[16px] leading-relaxed text-[#525252] whitespace-pre-line">
+                {parse(activeTab?.description || descriptionOne)}
+              </div>
               {/* Optional secondary description if in default state */}
               {!features && activeTabKey === "mission" && descriptionTwo && (
-                <p className="mt-4 max-w-[620px] text-[16px] leading-relaxed text-[#525252]">
-                  {descriptionTwo}
-                </p>
+                <div className="mt-4 max-w-[620px] text-[16px] leading-relaxed text-[#525252]">
+                  {parse(descriptionTwo)}
+                </div>
               )}
             </div>
           </div>

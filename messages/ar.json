@@ -679,6 +679,7 @@
       "title": "معاينة الوظيفة",
       "backToJobs": "العودة لكل الوظائف",
       "viewApplications": "عرض الطلبات",
+      "applicationsLabel": "عدد الطلبات",
       "companyFallback": "شركتك",
       "industryFallback": "المجال",
       "notFound": "لم يتم العثور على هذه الوظيفة أو لم تعد متاحة."

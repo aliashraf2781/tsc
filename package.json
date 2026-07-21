@@ -22,6 +22,7 @@
     "embla-carousel-autoplay": "^8.6.0",
     "embla-carousel-react": "^8.6.0",
     "flag-icons": "^7.5.0",
+    "html-react-parser": "^6.1.5",
     "input-otp": "^1.4.2",
     "laravel-echo": "^2.4.0",
     "lucide-react": "^1.8.0",

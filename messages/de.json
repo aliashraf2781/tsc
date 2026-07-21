@@ -677,6 +677,7 @@
       "title": "Stellenvorschau",
       "backToJobs": "Zurück zu allen Stellen",
       "viewApplications": "Bewerbungen anzeigen",
+      "applicationsLabel": "Bewerbungen",
       "companyFallback": "Ihr Unternehmen",
       "industryFallback": "Branche",
       "notFound": "Diese Stelle wurde nicht gefunden oder ist nicht mehr verfügbar."

@@ -320,7 +320,7 @@ export function normalizeCompanyApplication(item: unknown): CompanyApplication {
       Userprofile: normalizedProfile,
     },
     status: String(row.status ?? "pending") as JobApplication["status"],
-    applied_at: String(row.applied_at ?? row.appliedAt ?? row.created_at ?? row.createdAt ?? ""),
+    applied_at: String(row.applied_at ?? row.appliedAt ?? ""),
     cv_url: cvUrl,
     userPortfolio: portfolioRecord,
   }

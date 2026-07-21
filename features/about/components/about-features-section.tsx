@@ -1,5 +1,6 @@
 "use client"
 
+import parse from "html-react-parser"
 import { SectionShell, StaggerInView, StaggerItem } from "@/features/shared-home"
 import type { AboutFeature } from "@/lib/api/services/about.service"
 
@@ -62,7 +63,7 @@ export function AboutFeaturesSection({ features }: Props) {
         <StaggerItem>
           <div className="flex flex-col items-center gap-3 text-center">
             <span className="inline-flex items-center gap-2 rounded-full bg-[#EAF4FB] px-4 py-1.5 text-sm font-semibold text-[#0f7abd]">
-              ✦ {features[0]?.title || ""}
+              ✦ {parse(features[0]?.title || "")}
             </span>
           </div>
         </StaggerItem>
@@ -90,13 +91,13 @@ export function AboutFeaturesSection({ features }: Props) {
                   <span
                     className={`inline-flex w-fit items-center rounded-full px-3 py-1 text-xs font-bold uppercase tracking-wide ${colors.bg} ${colors.text} ring-1 ring-current/20`}
                   >
-                    {feature.title}
+                    {parse(feature.title)}
                   </span>
 
                   {/* Description */}
-                  <p className="text-[15px] leading-relaxed text-[#374151]">
-                    {feature.description}
-                  </p>
+                  <div className="text-[15px] leading-relaxed text-[#374151]">
+                    {parse(feature.description)}
+                  </div>
 
                   {/* Decorative corner dot */}
                   <span

@@ -2,6 +2,7 @@
 
 import Image from "next/image"
 import { useState } from "react"
+import parse from "html-react-parser"
 import { SectionShell, StaggerInView, StaggerItem } from "@/features/shared-home"
 
 type AboutIntroSectionProps = {
@@ -41,13 +42,13 @@ export function AboutIntroSection({
                 <span>{eyebrow}</span>
               </div>
               <h1 className="max-w-[560px] text-balance text-[44px] leading-[1.08] font-bold text-[#001222] lg:text-[56px]">
-                {title}
+                {parse(title)}
               </h1>
             </div>
 
-            <p className="max-w-[520px] text-[17px] leading-relaxed text-[#385066] lg:col-span-3 lg:pt-[72px]">{descriptionOne}</p>
+            <div className="max-w-[520px] text-[17px] leading-relaxed text-[#385066] lg:col-span-3 lg:pt-[72px]">{parse(descriptionOne)}</div>
 
-            <p className="max-w-[520px] text-[17px] leading-relaxed text-[#385066] lg:col-span-4 lg:pt-[72px]">{descriptionTwo}</p>
+            <div className="max-w-[520px] text-[17px] leading-relaxed text-[#385066] lg:col-span-4 lg:pt-[72px]">{parse(descriptionTwo)}</div>
           </div>
         </StaggerItem>
 

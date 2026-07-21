@@ -112,6 +112,8 @@ export interface Job {
   created_at_human?: string
   createdAt?: string
   createdAtHuman?: string
+  // Admin/company job endpoints send this as `applicationsCount` (camelCase) on the wire;
+  // the admin/company services normalize it onto this field. Not present on public job endpoints.
   applications_count?: number
 }
 

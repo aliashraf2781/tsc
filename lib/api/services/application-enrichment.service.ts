@@ -28,28 +28,6 @@ async function fetchApplicantUser(
   return null
 }
 
-async function fetchApplicantPortfolio(
-  userId: number | string,
-  token: string,
-  locale: string
-): Promise<Record<string, unknown> | null> {
-  const endpoints = [`/users/${userId}/portfolio`, `/portfolio/${userId}`]
-
-  for (const path of endpoints) {
-    try {
-      const response = await api.get<unknown>(path, { token, locale })
-      if (!response || typeof response !== "object") continue
-      const root = response as Record<string, unknown>
-      const item = (root.data ?? response) as Record<string, unknown> | null
-      if (item && typeof item === "object") return item
-    } catch {
-      // try next endpoint
-    }
-  }
-
-  return null
-}
-
 /** Lightweight list enrichment: fetch missing applicant names only (deduped by user id). */
 export async function enrichMissingApplicantNames(
   applications: CompanyApplication[],
@@ -87,41 +65,6 @@ export async function enrichMissingApplicantNames(
       user: { ...(application.user || {}), ...user },
     }) as CompanyApplication
   })
-}
-
-export async function enrichApplicationRecord(
-  application: CompanyApplication,
-  token: string,
-  locale = "ar"
-): Promise<CompanyApplication> {
-  const userId = application.user_id || application.user?.id
-  if (!userId) return application
-
-  const needsUser =
-    !hasValidApplicantName(application) ||
-    !application.user?.email ||
-    !application.user?.Userprofile?.dateOfBirth
-  const portfolioRecord = application.userPortfolio as Record<string, unknown> | undefined
-  const needsPortfolio =
-    !portfolioRecord ||
-    Object.keys(portfolioRecord).length === 0 ||
-    !Array.isArray(portfolioRecord.skills)
-
-  if (!needsUser && !needsPortfolio) return application
-
-  const [user, portfolio] = await Promise.all([
-    needsUser ? fetchApplicantUser(userId, token, locale) : Promise.resolve(null),
-    needsPortfolio ? fetchApplicantPortfolio(userId, token, locale) : Promise.resolve(null),
-  ])
-
-  return normalizeCompanyApplication({
-    ...application,
-    user_id: userId,
-    user: user ? { ...(application.user || {}), ...user } : application.user,
-    userPortfolio: portfolio || application.userPortfolio,
-    portfolio: portfolio || application.portfolio,
-    user_portfolio: portfolio || application.userPortfolio,
-  }) as CompanyApplication
 }
 
 export async function enrichApplicationsList(

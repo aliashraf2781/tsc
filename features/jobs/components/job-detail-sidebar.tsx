@@ -32,6 +32,7 @@ type JobDetailSidebarProps = {
     relatedJobs: string
     postedAgo: string
     companySubLabel: string
+    applications?: string
   }
   applyHref?: string
   initialIsFavorite?: boolean
@@ -73,6 +74,7 @@ export function JobDetailSidebar({
   const showGender = Boolean(genderLabel)
   const showAge = ageRange !== "—"
   const showDeadline = Boolean(rawDeadline && String(rawDeadline).trim())
+  const showApplications = isCompanyView && job.applications_count != null && Boolean(labels.applications)
 
   const hasDetails =
     showIndustry ||
@@ -80,7 +82,8 @@ export function JobDetailSidebar({
     showVacancy ||
     showGender ||
     showAge ||
-    showDeadline
+    showDeadline ||
+    showApplications
 
   return (
     <aside className="space-y-8 lg:sticky lg:top-24 lg:self-start">
@@ -121,6 +124,20 @@ export function JobDetailSidebar({
               {showGender ? <DetailRow label={labels.gender} value={genderLabel!} /> : null}
               {showAge ? <DetailRow label={labels.age} value={ageRange} /> : null}
               {showDeadline ? <DetailRow label={labels.applicationDeadline} value={deadline} /> : null}
+              {showApplications ? (
+                <Link
+                  locale={locale}
+                  href={applyHref}
+                  className="flex items-center justify-between gap-8 px-2 py-0"
+                >
+                  <span className="text-[16px] leading-[1.16] text-[#A3A3A3]">
+                    {labels.applications}
+                  </span>
+                  <span className="text-end text-[16px] font-semibold leading-[1.16] text-[#006EA8] hover:underline">
+                    {job.applications_count}
+                  </span>
+                </Link>
+              ) : null}
             </div>
           </>
         ) : null}

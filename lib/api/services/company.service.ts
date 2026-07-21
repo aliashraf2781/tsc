@@ -14,7 +14,7 @@ import {
   unwrapCompanyStats,
   type CompanyApplication,
 } from "@/features/company-jobs/lib/application-utils"
-import { enrichApplicationRecord, enrichMissingApplicantNames } from "@/lib/api/services/application-enrichment.service"
+import { enrichMissingApplicantNames } from "@/lib/api/services/application-enrichment.service"
 import { isJobDeadlinePassed, isJobLiveStatus } from "@/features/company-jobs/lib/job-deadline"
 
 export type LocalizedText = { ar: string; en: string; de: string }
@@ -82,8 +82,13 @@ export async function getCompanyJob(
       return null
     }
 
-    // Return server-provided job payload 그대로 (no normalization/enrichment)
-    return rawJob as Job
+    // Return server-provided job payload 그대로 (no normalization/enrichment),
+    // aside from aliasing the wire-format `applicationsCount` onto `applications_count`.
+    const job = rawJob as Job
+    if (job.applications_count == null && (rawJob as Record<string, any>).applicationsCount != null) {
+      job.applications_count = (rawJob as Record<string, any>).applicationsCount
+    }
+    return job
   } catch {
     return null
   }
@@ -112,7 +117,13 @@ export async function getCompanyJobs(
           : []
 
       const data: Job[] = (rawData as unknown[])
-        .map((item) => item as Job)
+        .map((item) => {
+          const job = item as Job
+          if (job?.applications_count == null && (item as Record<string, any>)?.applicationsCount != null) {
+            job.applications_count = (item as Record<string, any>).applicationsCount
+          }
+          return job
+        })
         .filter((j): j is Job => j != null)
 
       const meta = Array.isArray(typedResponse)
@@ -319,50 +330,19 @@ export async function getJobApplications(
 }
 
 export async function getCompanyApplication(
-  jobId: number,
   applicationId: number,
   token: string,
   locale = "ar"
 ): Promise<CompanyApplication | null> {
-  // Optimize: try fetching with high per_page count first to minimize sequential loops during SSR
-  try {
-    const response = await api.get<unknown>(
-      `/company/applications?job_id=${jobId}&per_page=100&page=1`,
-      { token, locale }
-    )
-    const data = extractApplications(response)
-    const found = data.find((application) => application.id === applicationId)
-    if (found) return enrichApplicationRecord(found, token, locale)
-  } catch (err) {
-    // eslint-disable-next-line no-console
-    console.warn("[getCompanyApplication] Direct large-page fetch failed, falling back to standard paging loop:", err)
-  }
-
-  let page = 1
-  let lastPage = 1
-
-  do {
-    const { data, meta } = await getJobApplications(jobId, token, page, locale)
-    const found = data.find((application) => application.id === applicationId)
-    if (found) return enrichApplicationRecord(found, token, locale)
-    lastPage = meta.last_page ?? 1
-    page += 1
-  } while (page <= lastPage)
-
-  // Last resort: the list endpoints occasionally miss a record (pagination edge
-  // cases, eventual consistency) — try the direct single-application endpoint.
   try {
     const response = await api.get<unknown>(`/company/applications/${applicationId}`, { token, locale })
     const raw = ((response as { data?: unknown })?.data ?? response) as Record<string, unknown> | undefined
-    if (raw) {
-      const normalized = normalizeCompanyApplication(raw)
-      if (normalized.id > 0) return enrichApplicationRecord(normalized, token, locale)
-    }
+    if (!raw) return null
+    const normalized = normalizeCompanyApplication(raw)
+    return normalized.id > 0 ? normalized : null
   } catch {
-    // endpoint may not exist, or the application genuinely doesn't exist
+    return null
   }
-
-  return null
 }
 
 export async function getAllCompanyApplications(
