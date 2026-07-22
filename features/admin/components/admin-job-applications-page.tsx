@@ -91,7 +91,7 @@ export async function AdminJobApplicationsPage({
           <p className="mt-2 text-[24px] font-bold">{meta?.total ?? applications.length}</p>
         </div>
 
-        <div className="overflow-x-auto">
+        <div className="table-scrollbar overflow-x-auto">
           <div className="min-w-[900px]">
             <div className="flex items-center bg-[#F8FAFC] px-4 py-3 text-sm font-semibold text-[#374151]">
               <div className="w-[25%]">{safeT("applicationsPage.candidate", "Candidate")}</div>

@@ -94,7 +94,7 @@ export function AdminDashboardOverview({
             {t("viewAll")}
           </Link>
         </div>
-        <div className="overflow-x-auto">
+        <div className="table-scrollbar overflow-x-auto">
           <table className="w-full min-w-[640px]">
             <thead>
               <tr className="border-b border-[#E5E7EB] bg-[#EBF5FB]">

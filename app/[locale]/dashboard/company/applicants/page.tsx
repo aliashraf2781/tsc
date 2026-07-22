@@ -46,7 +46,7 @@ export default async function CompanyApplicantsPage({
       isRTL={isAr}
     >
       <div className="overflow-hidden rounded-[8px] bg-white p-4 shadow-[0_32px_64px_-12px_rgba(16,24,40,0.14)] sm:p-6">
-        <div className="overflow-x-auto rounded-[8px]">
+        <div className="table-scrollbar overflow-x-auto rounded-[8px]">
           <div
             className={cn(
               "flex min-w-[900px] items-center rounded-t-[8px] px-2 py-2 text-base font-normal text-white",

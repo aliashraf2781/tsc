@@ -110,6 +110,8 @@ async function fetchApi<T>(endpoint: string, options: FetchOptions = {}): Promis
       "Accept-Language": locale || "ar",
       // Some backends expect a custom locale header — include it for robustness
       "X-Requested-Locale": locale || "ar",
+      // Laravel-style APIs in this project localize via the `lang` header
+      lang: locale || "ar",
       ...((fetchOptions.headers as Record<string, string>) || {}),
     }
 

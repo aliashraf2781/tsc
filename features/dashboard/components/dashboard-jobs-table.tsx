@@ -55,7 +55,7 @@ export function DashboardJobsTable({
         {title}
       </h2>
 
-      <div className="w-full overflow-x-auto rounded-[8px]">
+      <div className="table-scrollbar w-full overflow-x-auto rounded-[8px]">
         {/* Table header */}
         <div
           className={cn(

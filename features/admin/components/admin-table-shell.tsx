@@ -21,7 +21,7 @@ export function AdminTableShell({
 
   return (
     <div className="rounded-[8px] bg-white shadow-[0_32px_64px_-12px_rgba(16,24,40,0.14)]">
-      <div className="overflow-x-auto overscroll-x-contain">
+      <div className="table-scrollbar overflow-x-auto overscroll-x-contain">
         <div className="min-w-[1100px]">
           <div className={cn(
             "flex items-center rounded-t-[8px] text-white",

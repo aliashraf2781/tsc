@@ -25,9 +25,14 @@ export function AdminUserDetailView({ user, locale }: { user: User; locale: stri
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState<string | null>(null)
 
-  const userProfile = (user as any).Userprofile || (user as any).user_profile || {}
-  const country = (user as any).country
-  const city = (user as any).city
+  const userProfile =
+    user.Userprofile ||
+    (user as { user_profile?: User["Userprofile"] }).user_profile ||
+    null
+  const countryName = user.country?.name || ""
+  const cityName = user.city?.name || ""
+  const categoryName = user.category?.name || userProfile?.categoryName || ""
+  const subcategoryName = user.sub_category?.name || userProfile?.subcategoryName || ""
   const isSuspended = user.status === "suspended" || user.status === "inactive"
 
   async function runStatusToggle() {
@@ -277,7 +282,15 @@ export function AdminUserDetailView({ user, locale }: { user: User; locale: stri
                       {isAr ? "البلد" : "Country"}
                     </span>
                     <div className="w-full border-b border-[#E5E7EB] py-2 text-sm text-[#525252]">
-                      {country ? country.name : "—"}
+                      {countryName || "—"}
+                    </div>
+                  </div>
+                  <div className="flex flex-col gap-1.5">
+                    <span className="text-sm font-medium text-[#262626]">
+                      {isAr ? "المدينة" : "City"}
+                    </span>
+                    <div className="w-full border-b border-[#E5E7EB] py-2 text-sm text-[#525252]">
+                      {cityName || "—"}
                     </div>
                   </div>
                 </div>
@@ -295,8 +308,8 @@ export function AdminUserDetailView({ user, locale }: { user: User; locale: stri
                     </span>
                     <div className="w-full border-b border-[#E5E7EB] py-2 text-sm text-[#525252] capitalize">
                       {isAr 
-                        ? (userProfile.gender === "male" ? "ذكر" : userProfile.gender === "female" ? "أنثى" : userProfile.gender || "—") 
-                        : (userProfile.gender || "—")}
+                        ? (userProfile?.gender === "male" ? "ذكر" : userProfile?.gender === "female" ? "أنثى" : userProfile?.gender || "—") 
+                        : (userProfile?.gender || "—")}
                     </div>
                   </div>
                   <div className="flex flex-col gap-1.5">
@@ -304,7 +317,7 @@ export function AdminUserDetailView({ user, locale }: { user: User; locale: stri
                       {isAr ? "تاريخ الميلاد" : "Date of Birth"}
                     </span>
                     <div className="w-full border-b border-[#E5E7EB] py-2 text-sm text-[#525252]">
-                      {userProfile.dateOfBirth || "—"}
+                      {userProfile?.dateOfBirth || "—"}
                     </div>
                   </div>
                   <div className="flex flex-col gap-1.5">
@@ -312,7 +325,7 @@ export function AdminUserDetailView({ user, locale }: { user: User; locale: stri
                       {isAr ? "التخصص" : "Category"}
                     </span>
                     <div className="w-full border-b border-[#E5E7EB] py-2 text-sm text-[#525252]">
-                      {(user as any).category?.name || "—"}
+                      {categoryName || "—"}
                     </div>
                   </div>
                   <div className="flex flex-col gap-1.5">
@@ -320,20 +333,20 @@ export function AdminUserDetailView({ user, locale }: { user: User; locale: stri
                       {isAr ? "التخصص الفرعي" : "Subcategory"}
                     </span>
                     <div className="w-full border-b border-[#E5E7EB] py-2 text-sm text-[#525252]">
-                      {(user as any).sub_category?.name || "—"}
+                      {subcategoryName || "—"}
                     </div>
                   </div>
                 </div>
               </div>
 
               {/* Social Platforms Links */}
-              {(userProfile.facebook || userProfile.linkedin || userProfile.twitterX || userProfile.pinterest) && (
+              {(userProfile?.facebook || userProfile?.linkedin || userProfile?.twitterX || userProfile?.pinterest) && (
                 <div>
                   <h4 className="text-base font-bold text-[#006EA8] mb-6 pb-2 border-b border-[#E5E7EB]">
                     {isAr ? "الحسابات المرتبطة" : "Linked accounts"}
                   </h4>
                   <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
-                    {userProfile.facebook && (
+                    {userProfile?.facebook && (
                       <a
                         href={userProfile.facebook}
                         target="_blank"
@@ -344,7 +357,7 @@ export function AdminUserDetailView({ user, locale }: { user: User; locale: stri
                         <span className="text-xs font-semibold text-[#525252]">Facebook</span>
                       </a>
                     )}
-                    {userProfile.linkedin && (
+                    {userProfile?.linkedin && (
                       <a
                         href={userProfile.linkedin}
                         target="_blank"
@@ -355,7 +368,7 @@ export function AdminUserDetailView({ user, locale }: { user: User; locale: stri
                         <span className="text-xs font-semibold text-[#525252]">LinkedIn</span>
                       </a>
                     )}
-                    {userProfile.twitterX && (
+                    {userProfile?.twitterX && (
                       <a
                         href={userProfile.twitterX}
                         target="_blank"
@@ -366,7 +379,7 @@ export function AdminUserDetailView({ user, locale }: { user: User; locale: stri
                         <span className="text-xs font-semibold text-[#525252]">X (Twitter)</span>
                       </a>
                     )}
-                    {userProfile.pinterest && (
+                    {userProfile?.pinterest && (
                       <a
                         href={userProfile.pinterest}
                         target="_blank"

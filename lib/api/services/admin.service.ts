@@ -1,6 +1,17 @@
 // lib/api/services/admin.service.ts
 import { api, ApiError } from "../client"
-import type { ApiResponse, Job, JobApplication, User, PaginationMeta } from "../types"
+import type {
+  ApiResponse,
+  Job,
+  JobApplication,
+  User,
+  UserProfile,
+  Country,
+  City,
+  Category,
+  SubCategory,
+  PaginationMeta,
+} from "../types"
 import {
   normalizeCompanyApplication,
   type CompanyApplication,
@@ -374,7 +385,96 @@ async function resolveUserApiRouteId(
   return direct
 }
 
-function normalizeAdminUser(item: unknown): User {
+function pickLocalizedString(value: unknown, locale = "ar"): string {
+  if (typeof value === "string") return value.trim()
+  if (!value || typeof value !== "object") return ""
+
+  const map = value as Record<string, unknown>
+  for (const key of [locale, "en", "ar", "de"]) {
+    const candidate = map[key]
+    if (typeof candidate === "string" && candidate.trim()) return candidate.trim()
+  }
+
+  for (const candidate of Object.values(map)) {
+    if (typeof candidate === "string" && candidate.trim()) return candidate.trim()
+  }
+
+  return ""
+}
+
+function cleanOptString(value: unknown): string | null {
+  if (typeof value !== "string") return null
+  const trimmed = value.trim()
+  return trimmed ? trimmed : null
+}
+
+function normalizeNamedRelation<T extends { id?: number; name?: string }>(
+  raw: unknown,
+  locale: string
+): T | null {
+  if (!raw || typeof raw !== "object") return null
+  const row = raw as Record<string, unknown>
+  const name = pickLocalizedString(row.name, locale)
+  const id = row.id != null ? Number(row.id) : undefined
+  if (!name && (id == null || !Number.isFinite(id))) return null
+  return {
+    ...(row as unknown as T),
+    ...(id != null && Number.isFinite(id) ? { id } : {}),
+    name: name || "",
+  }
+}
+
+function resolveRawUserProfile(source: Record<string, unknown>): Record<string, unknown> | null {
+  const candidates = [source.Userprofile, source.user_profile, source.userprofile, source.profile]
+  for (const candidate of candidates) {
+    if (candidate && typeof candidate === "object" && !Array.isArray(candidate)) {
+      return candidate as Record<string, unknown>
+    }
+  }
+  return null
+}
+
+function normalizeUserProfile(source: Record<string, unknown>): UserProfile | null {
+  const raw = resolveRawUserProfile(source)
+  if (!raw) return null
+
+  return {
+    firstName: cleanOptString(raw.firstName ?? raw.first_name),
+    lastName: cleanOptString(raw.lastName ?? raw.last_name),
+    gender: cleanOptString(raw.gender),
+    dateOfBirth: cleanOptString(raw.dateOfBirth ?? raw.date_of_birth ?? raw.birth_date),
+    maritalStatus: cleanOptString(raw.maritalStatus ?? raw.marital_status),
+    categoryId: Number(raw.categoryId ?? raw.category_id) || null,
+    subcategoryId: Number(raw.subcategoryId ?? raw.subcategory_id) || null,
+    categoryName: cleanOptString(raw.categoryName ?? raw.category_name),
+    subcategoryName: cleanOptString(raw.subcategoryName ?? raw.subcategory_name),
+    facebook: cleanOptString(raw.facebook),
+    linkedin: cleanOptString(raw.linkedin),
+    twitterX: cleanOptString(raw.twitterX ?? raw.twitter_x),
+    pinterest: cleanOptString(raw.pinterest),
+  }
+}
+
+function extractAdminUserDetailPayload(response: unknown): Record<string, unknown> | null {
+  if (!response || typeof response !== "object") return null
+  const root = response as Record<string, unknown>
+
+  const candidates: unknown[] = [root.data, root]
+  for (const candidate of candidates) {
+    if (!candidate || typeof candidate !== "object" || Array.isArray(candidate)) continue
+    const row = candidate as Record<string, unknown>
+    if (row.user && typeof row.user === "object" && !Array.isArray(row.user)) {
+      return row.user as Record<string, unknown>
+    }
+    if (row.id != null || row.uuid != null || row.email != null) {
+      return row
+    }
+  }
+
+  return null
+}
+
+function normalizeAdminUser(item: unknown, locale = "ar"): User {
   const row = (item && typeof item === "object" ? item : {}) as Record<string, unknown>
   const nestedUser =
     row.user && typeof row.user === "object" ? (row.user as Record<string, unknown>) : null
@@ -414,20 +514,46 @@ function normalizeAdminUser(item: unknown): User {
         ? Number(idRaw)
         : Number(source.user_id ?? row.user_id) || 0
 
+  const Userprofile = normalizeUserProfile(source) ?? normalizeUserProfile(row)
+  const country =
+    normalizeNamedRelation<Country>(source.country ?? row.country, locale) ?? null
+  const city = normalizeNamedRelation<City>(source.city ?? row.city, locale) ?? null
+  const category =
+    normalizeNamedRelation<Category>(source.category ?? row.category, locale) ??
+    (Userprofile?.categoryName
+      ? ({ id: Userprofile.categoryId ?? 0, name: Userprofile.categoryName, slug: "" } as Category)
+      : null)
+  const sub_category =
+    normalizeNamedRelation<SubCategory>(
+      source.sub_category ?? source.subCategory ?? row.sub_category ?? row.subCategory,
+      locale
+    ) ??
+    (Userprofile?.subcategoryName
+      ? ({ id: Userprofile.subcategoryId ?? 0, name: Userprofile.subcategoryName } as SubCategory)
+      : null)
+
+  const phone =
+    cleanOptString(source.phone ?? row.phone ?? source.mobile ?? row.mobile) ?? undefined
+
   return {
     ...(source as unknown as User),
     id,
     uuid,
     email: String(source.email ?? row.email ?? ""),
     name: String(source.name ?? row.name ?? ""),
-    phone: (source.phone ?? row.phone) as string | undefined,
+    phone,
+    avatar: cleanOptString(source.avatar ?? row.avatar) ?? undefined,
     status,
     emailVerified,
     createdAt: (source.createdAt ??
       source.created_at ??
       row.createdAt ??
       row.created_at) as string | undefined,
-    country: (source.country ?? row.country) as User["country"],
+    Userprofile,
+    country,
+    city,
+    category,
+    sub_category,
   }
 }
 
@@ -471,26 +597,15 @@ export async function getAdminUserById(
   locale = "ar"
 ): Promise<User | null> {
   try {
-    const tryEndpoints = [
-      { method: "get", path: `/admin/users/${userId}` },
-      { method: "get", path: `/users/${userId}` },
-      { method: "post", path: `/users/${userId}` },
-    ] as const
+    // Prefer admin detail, then public/admin-shared users show endpoint.
+    const endpoints = [`/admin/users/${userId}`, `/users/${userId}`]
 
-    for (const e of tryEndpoints) {
+    for (const path of endpoints) {
       try {
-        let response: unknown = null
-        if (e.method === "get") {
-          response = await api.get<unknown>(e.path, { token, locale })
-        } else {
-          response = await api.post<unknown>(e.path, {}, { token, locale })
-        }
-
-        if (!response || typeof response !== "object") continue
-        const root = response as Record<string, unknown>
-        const item = (root.data ?? response) as any
-        if (item) return item as User
-      } catch (innerErr) {
+        const response = await api.get<unknown>(path, { token, locale })
+        const item = extractAdminUserDetailPayload(response)
+        if (item) return normalizeAdminUser(item, locale)
+      } catch {
         continue
       }
     }
@@ -582,7 +697,7 @@ export async function getAdminUsers(
 
   const response = await api.get<any>(`/users?${query}`, { token, locale })
   const { rawList, meta: rawMeta } = extractAdminUsersPayload(response)
-  const data = rawList.map((item: unknown) => normalizeAdminUser(item))
+  const data = rawList.map((item: unknown) => normalizeAdminUser(item, locale))
 
   const meta: PaginationMeta = {
     current_page: Number(rawMeta?.current_page) || page,

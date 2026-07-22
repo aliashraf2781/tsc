@@ -63,8 +63,10 @@ export interface User {
   acceptTermsAndPrivacy?: boolean
   companyProfile?: CompanyProfileData | null
   Userprofile?: UserProfile | null
-  country?: Country
+  country?: Country | null
   city?: City | null
+  category?: Category | null
+  sub_category?: SubCategory | null
   roles?: string[]
   createdAt?: string
   updatedAt?: string
@@ -168,7 +170,7 @@ export interface Country {
 export interface City {
   id: number
   name: string
-  country: Country
+  country?: Country
 }
 
 export interface CompanyProfile {

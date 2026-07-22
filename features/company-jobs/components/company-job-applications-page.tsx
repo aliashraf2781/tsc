@@ -70,7 +70,7 @@ export async function CompanyJobApplicationsPage({
           </div>
         </div>
 
-        <div className="overflow-x-auto rounded-[8px]">
+        <div className="table-scrollbar overflow-x-auto rounded-[8px]">
           <div className={cn(
             "flex min-w-[720px] items-center rounded-t-[8px] px-2 py-2 text-base font-normal text-white",
             isRtl ? "bg-gradient-to-r" : "bg-gradient-to-l",

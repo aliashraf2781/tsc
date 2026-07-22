@@ -131,7 +131,7 @@ export default async function CompanyJobsPage({
             <p className="text-gray-400 text-sm mt-1">{isRtl ? "أضف وظيفتك الأولى من الزر أعلاه" : "Add your first job using the button above"}</p>
           </div>
         ) : (
-          <div className="overflow-x-auto rounded-[8px]">
+          <div className="table-scrollbar overflow-x-auto rounded-[8px]">
             {/* Table header - تدرج معكوس في RTL */}
             <div
               className={cn(

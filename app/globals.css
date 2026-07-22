@@ -270,6 +270,61 @@
     scrollbar-width: none !important;
     -ms-overflow-style: none !important;
   }
+
+  /*
+   * Custom horizontal scrollbar for all tables / overflow-x-auto areas.
+   * Thumb + track only (no arrow buttons). Same @layer base as the global
+   * hide so !important overrides win by specificity.
+   */
+  .table-scrollbar,
+  .overflow-x-auto,
+  [data-slot="table-container"] {
+    scrollbar-width: thin !important;
+    scrollbar-color: #40a0ca #e8f2ff !important;
+    -ms-overflow-style: auto !important;
+  }
+
+  .table-scrollbar::-webkit-scrollbar,
+  .overflow-x-auto::-webkit-scrollbar,
+  [data-slot="table-container"]::-webkit-scrollbar {
+    display: block !important;
+    width: 6px !important;
+    height: 6px !important;
+  }
+
+  .table-scrollbar::-webkit-scrollbar-button,
+  .overflow-x-auto::-webkit-scrollbar-button,
+  [data-slot="table-container"]::-webkit-scrollbar-button {
+    display: none !important;
+    width: 0 !important;
+    height: 0 !important;
+  }
+
+  .table-scrollbar::-webkit-scrollbar-track,
+  .overflow-x-auto::-webkit-scrollbar-track,
+  [data-slot="table-container"]::-webkit-scrollbar-track {
+    background: #e8f2ff;
+    border-radius: 999px;
+  }
+
+  .table-scrollbar::-webkit-scrollbar-thumb,
+  .overflow-x-auto::-webkit-scrollbar-thumb,
+  [data-slot="table-container"]::-webkit-scrollbar-thumb {
+    background: #40a0ca;
+    border-radius: 999px;
+  }
+
+  .table-scrollbar::-webkit-scrollbar-thumb:hover,
+  .overflow-x-auto::-webkit-scrollbar-thumb:hover,
+  [data-slot="table-container"]::-webkit-scrollbar-thumb:hover {
+    background: #006ea8;
+  }
+
+  .table-scrollbar::-webkit-scrollbar-corner,
+  .overflow-x-auto::-webkit-scrollbar-corner,
+  [data-slot="table-container"]::-webkit-scrollbar-corner {
+    background: transparent;
+  }
 }
 
 @layer components {
