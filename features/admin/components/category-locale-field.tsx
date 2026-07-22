@@ -23,6 +23,7 @@ export function CategoryLocaleField({
         {label}
       </span>
       <input
+        key={fieldPath}
         type="text"
         {...register(fieldPath)}
         className="mt-1 w-full rounded-lg border border-[#E5E7EB] px-3 py-2 text-sm focus:border-[#006EA8] focus:outline-none focus:ring-1 focus:ring-[#006EA8]"
