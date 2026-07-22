@@ -144,9 +144,9 @@ export function AdminServicesPanel({
                 <div className="flex items-center gap-3">
                   {/* Icon / Image */}
                   <div className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-full border border-[#78A3BE] bg-[#F0F4F8]">
-                    {service.image ? (
+                    {service.icon ? (
                       <Image
-                        src={service.image}
+                        src={service.icon}
                         alt=""
                         width={24}
                         height={24}

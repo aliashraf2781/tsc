@@ -10,10 +10,6 @@ export function emptyLocalizedText(): LocalizedText {
   return { ar: "", en: "", de: "" }
 }
 
-export function emptyServiceFeature(): ServiceFeatureFormValues {
-  return { title: emptyLocalizedText(), description: emptyLocalizedText(), icon: "" }
-}
-
 function toPositiveId(value: unknown): number | undefined {
   if (typeof value === "number" && Number.isFinite(value) && value > 0) return value
   if (typeof value === "string" && value.trim() && !Number.isNaN(Number(value))) {
@@ -41,6 +37,7 @@ export function buildServiceFormData(values: ServiceFormValues): FormData {
   }
 
   if (values.imageFile) formData.append("image", values.imageFile)
+  if (values.iconFile) formData.append("icon", values.iconFile)
 
   values.features.forEach((feature, index) => {
     // Existing feature DB ids MUST be sent on update so Laravel updates
@@ -69,7 +66,10 @@ export function initialServiceFormValues(): ServiceFormValues {
     imageFile: null,
     imagePreview: null,
     existingImage: "",
-    features: [emptyServiceFeature()],
+    iconFile: null,
+    iconPreview: null,
+    existingIcon: "",
+    features: [],
   }
 }
 
@@ -156,6 +156,8 @@ export function mapServiceToFormDefaults(service: any, locale: string): ServiceF
 
     const existingImage =
       allLocales[locale as LocaleKey]?.image ?? allLocales.ar?.image ?? allLocales.en?.image ?? allLocales.de?.image ?? ""
+    const existingIcon =
+      allLocales[locale as LocaleKey]?.icon ?? allLocales.ar?.icon ?? allLocales.en?.icon ?? allLocales.de?.icon ?? ""
 
     return {
       title,
@@ -163,6 +165,9 @@ export function mapServiceToFormDefaults(service: any, locale: string): ServiceF
       imageFile: null,
       imagePreview: null,
       existingImage,
+      iconFile: null,
+      iconPreview: null,
+      existingIcon,
       features,
     }
   }
@@ -186,6 +191,9 @@ export function mapServiceToFormDefaults(service: any, locale: string): ServiceF
     imageFile: null,
     imagePreview: null,
     existingImage: service?.image ?? "",
+    iconFile: null,
+    iconPreview: null,
+    existingIcon: service?.icon ?? "",
     features,
   }
 }

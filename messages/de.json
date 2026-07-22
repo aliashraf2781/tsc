@@ -1141,6 +1141,7 @@
       "iconUrlPlaceholder": "/icons/my-icon.svg oder https://...",
       "orUploadIconFile": "Oder Symboldatei hochladen",
       "serviceImage": "Dienstleistungsbild",
+      "serviceIcon": "Dienstleistungssymbol",
       "errors": {
         "titleRequired": "Titel der Dienstleistung ist erforderlich",
         "descriptionRequired": "Beschreibung der Dienstleistung ist erforderlich"

@@ -1141,6 +1141,7 @@
       "iconUrlPlaceholder": "/icons/my-icon.svg or https://...",
       "orUploadIconFile": "Or upload icon file",
       "serviceImage": "Service Image",
+      "serviceIcon": "Service Icon",
       "errors": {
         "titleRequired": "Service title is required",
         "descriptionRequired": "Service description is required"

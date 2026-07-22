@@ -13,7 +13,6 @@ import { createServiceFormSchema, type LocaleKey, type ServiceFormValues } from 
 import { buildServiceFormData, initialServiceFormValues } from "@/features/admin/lib/service-form-utils"
 import { AdminLocaleTextField } from "./admin-locale-text-field"
 import { AdminImageUploadField } from "./admin-image-upload-field"
-import { ServiceFeaturesField } from "./service-features-field"
 
 export function AdminServiceCreateForm({ locale }: { locale: string }) {
   const t = useTranslations("Admin.services")
@@ -42,6 +41,7 @@ export function AdminServiceCreateForm({ locale }: { locale: string }) {
   })
 
   const imagePreview = watch("imagePreview")
+  const iconPreview = watch("iconPreview")
 
   const onSubmit = handleSubmit((values) => {
     setSubmitError(null)
@@ -136,7 +136,21 @@ export function AdminServiceCreateForm({ locale }: { locale: string }) {
         onError={setSubmitError}
       />
 
-      <ServiceFeaturesField control={control} register={register} setValue={setValue} editLocale={editLocale} />
+      <AdminImageUploadField
+        title={t("serviceIcon")}
+        imageSrc={iconPreview ?? null}
+        hasNewFile={Boolean(iconPreview)}
+        shape="circle"
+        onSelect={(file) => {
+          setValue("iconFile", file, { shouldDirty: true })
+          setValue("iconPreview", URL.createObjectURL(file), { shouldDirty: true })
+        }}
+        onRemove={() => {
+          setValue("iconFile", null)
+          setValue("iconPreview", null)
+        }}
+        onError={setSubmitError}
+      />
 
       {/* Submit / Cancel */}
       <div className="flex items-center gap-4 pt-2">

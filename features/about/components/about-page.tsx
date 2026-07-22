@@ -17,7 +17,6 @@ export async function AboutPage() {
     getHomePageContent(locale),
   ])
 
-  const introEyebrow = aboutT("intro.eyebrow")
   const introTitle = aboutContent?.title || aboutT("intro.title")
   const introDescriptionOne =
     aboutContent?.descriptionLeft || aboutT("intro.descriptionOne")
@@ -38,7 +37,6 @@ export async function AboutPage() {
   return (
     <main className="flex-1 bg-[#f8fbff]">
       <AboutIntroSection
-        eyebrow={introEyebrow}
         title={introTitle}
         descriptionOne={introDescriptionOne}
         descriptionTwo={introDescriptionTwo}

@@ -23,48 +23,21 @@ export default async function ServiceDetailsPage({ params }: PageProps) {
       title: t("defaults.one.title"),
       description: t("defaults.one.description"),
       image: "",
-      features: [
-        {
-          id: 1,
-          title: t("defaults.one.features.one.title"),
-          description: t("defaults.one.features.one.description"),
-          icon: "",
-        },
-        {
-          id: 2,
-          title: t("defaults.one.features.two.title"),
-          description: t("defaults.one.features.two.description"),
-          icon: "",
-        },
-      ],
+      features: [],
     },
     {
       id: 2,
       title: t("defaults.two.title"),
       description: t("defaults.two.description"),
       image: "",
-      features: [
-        {
-          id: 3,
-          title: t("defaults.two.features.one.title"),
-          description: t("defaults.two.features.one.description"),
-          icon: "",
-        },
-      ],
+      features: [],
     },
     {
       id: 3,
       title: t("defaults.three.title"),
       description: t("defaults.three.description"),
       image: "",
-      features: [
-        {
-          id: 4,
-          title: t("defaults.three.features.one.title"),
-          description: t("defaults.three.features.one.description"),
-          icon: "",
-        },
-      ],
+      features: [],
     },
   ]
 

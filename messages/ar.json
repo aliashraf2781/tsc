@@ -1143,6 +1143,7 @@
       "iconUrlPlaceholder": "/icons/my-icon.svg أو https://...",
       "orUploadIconFile": "أو رفع ملف أيقونة",
       "serviceImage": "صورة الخدمة",
+      "serviceIcon": "أيقونة الخدمة",
       "errors": {
         "titleRequired": "عنوان الخدمة مطلوب",
         "descriptionRequired": "وصف الخدمة مطلوب"

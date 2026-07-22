@@ -3,13 +3,9 @@
 import Image from "next/image"
 import parse from "html-react-parser"
 import { useTranslations } from "next-intl"
-import { cn } from "@/lib/utils"
-import { Globe, ArrowLeft } from "lucide-react"
+import { ArrowLeft } from "lucide-react"
 import { Link } from "@/i18n/navigation"
 import { SectionShell, StaggerInView, StaggerItem } from "@/features/shared-home"
-
-const CARD_HOVER_SHADOW =
-  "hover:border-[#4BB7E7] hover:bg-[url('/contact/button-noise.png'),linear-gradient(180deg,#006EA8_0%,#005685_100%)] hover:bg-[length:150px_150px,auto] hover:bg-blend-[plus-lighter,normal] hover:text-white hover:shadow-[0_0_0_5px_#FFFFFF,0_0_0_4px_#C2E3FA,0_4px_5px_rgba(75,183,231,0.15),0_10px_13px_rgba(75,183,231,0.22),0_24px_32px_rgba(75,183,231,0.19)]"
 
 export function ServiceDetailsClient({
   service,
@@ -78,72 +74,6 @@ export function ServiceDetailsClient({
               </StaggerItem>
             )}
           </StaggerInView>
-
-          {/* Features Grid */}
-          <div className="space-y-8">
-            <div>
-              <h2 className="text-[24px] font-bold text-[#171717] sm:text-[28px] lg:text-[32px]">
-                {t("advantagesTitle")}
-              </h2>
-              <p className="text-[14px] text-[#525252] sm:text-[16px] mt-2">
-                {t("advantagesDescription")}
-              </p>
-            </div>
-
-            {service.features && service.features.length > 0 ? (
-              <StaggerInView className="mt-6">
-                <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
-                  {service.features.map((feature: any, fIndex: number) => {
-                    const hasCustomIcon =
-                      feature.icon &&
-                      (feature.icon.startsWith("http") || feature.icon.startsWith("/"))
-                    return (
-                      <StaggerItem key={feature.id || fIndex} className="h-full">
-                        <div
-                          className={cn(
-                            "group relative flex flex-col h-full justify-between rounded-[20px] border border-[#78A3BE] bg-white p-6 sm:p-8 transition-all duration-300 min-h-[260px] text-start shadow-sm",
-                            CARD_HOVER_SHADOW
-                          )}
-                        >
-                          <div className="space-y-6">
-                            <div className="flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-full border border-[#40A0CA] bg-white transition-colors group-hover:border-white group-hover:bg-white">
-                              {hasCustomIcon ? (
-                                <Image
-                                  src={feature.icon}
-                                  alt=""
-                                  width={24}
-                                  height={24}
-                                  className="h-6 w-6 object-contain"
-                                  unoptimized
-                                />
-                              ) : (
-                                <Globe className="h-6 w-6 text-[#40A0CA] transition-colors group-hover:text-[#006EA8]" />
-                              )}
-                            </div>
-                            <div className="space-y-3">
-                              <h3 className="text-[20px] font-bold leading-[1.2] text-[#262626] group-hover:text-white">
-                                {feature.title}
-                              </h3>
-                              <div className="text-[14px] font-normal leading-[1.6] text-[#525252] group-hover:text-[#FAFAFA] [&_p+p]:mt-2">
-                                {parse(feature.description || "")}
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </StaggerItem>
-                    )
-                  })}
-                </div>
-              </StaggerInView>
-            ) : (
-              <div className="text-center py-12 border border-dashed rounded-2xl bg-gray-50 border-[#78A3BE]/40">
-                <Globe className="mx-auto h-8 w-8 text-[#78A3BE]" />
-                <p className="mt-2 text-sm text-[#9CA3AF]">
-                  {t("noAdvantages")}
-                </p>
-              </div>
-            )}
-          </div>
         </div>
       </SectionShell>
     </main>

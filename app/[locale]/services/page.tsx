@@ -18,21 +18,21 @@ export default async function ServicesPage() {
       id: 1,
       title: t("defaults.one.title"),
       description: t("defaults.one.description"),
-      image: undefined as string | undefined,
+      icon: undefined as string | undefined,
       features: [] as import("@/lib/api/services/services.service").ServiceFeature[],
     },
     {
       id: 2,
       title: t("defaults.two.title"),
       description: t("defaults.two.description"),
-      image: undefined as string | undefined,
+      icon: undefined as string | undefined,
       features: [] as import("@/lib/api/services/services.service").ServiceFeature[],
     },
     {
       id: 3,
       title: t("defaults.three.title"),
       description: t("defaults.three.description"),
-      image: undefined as string | undefined,
+      icon: undefined as string | undefined,
       features: [] as import("@/lib/api/services/services.service").ServiceFeature[],
     }
   ]
@@ -96,9 +96,9 @@ export default async function ServicesPage() {
                           <div className="space-y-6">
                             {/* Icon / Image circle */}
                             <div className="flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-full border border-[#40A0CA] bg-white transition-colors group-hover:border-white group-hover:bg-white">
-                              {service.image ? (
+                              {service.icon ? (
                                 <Image
-                                  src={service.image}
+                                  src={service.icon}
                                   alt=""
                                   width={24}
                                   height={24}

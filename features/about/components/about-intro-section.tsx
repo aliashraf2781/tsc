@@ -6,7 +6,6 @@ import parse from "html-react-parser"
 import { SectionShell, StaggerInView, StaggerItem } from "@/features/shared-home"
 
 type AboutIntroSectionProps = {
-  eyebrow: string
   title: string
   descriptionOne: string
   descriptionTwo: string
@@ -18,7 +17,6 @@ type AboutIntroSectionProps = {
 }
 
 export function AboutIntroSection({
-  eyebrow,
   title,
   descriptionOne,
   descriptionTwo,
@@ -34,24 +32,6 @@ export function AboutIntroSection({
   return (
     <SectionShell stagger={false} className="bg-white py-[72px] lg:py-[84px]">
       <StaggerInView className="space-y-10 lg:space-y-12">
-        <StaggerItem>
-          <div className="grid gap-6 lg:grid-cols-12 lg:items-start">
-            <div className="space-y-5 lg:col-span-5">
-              <div className="inline-flex w-fit items-center gap-2 rounded-full bg-[#EAF4FB] px-4 py-2 text-[13px] font-semibold tracking-[0.02em] text-[#0f7abd]">
-                <Image src="/footer/icon-link.svg" alt="" width={16} height={16} aria-hidden />
-                <span>{eyebrow}</span>
-              </div>
-              <h1 className="max-w-[560px] text-balance text-[44px] leading-[1.08] font-bold text-[#001222] lg:text-[56px]">
-                {parse(title)}
-              </h1>
-            </div>
-
-            <div className="max-w-[520px] text-[17px] leading-relaxed text-[#385066] lg:col-span-3 lg:pt-[72px]">{parse(descriptionOne)}</div>
-
-            <div className="max-w-[520px] text-[17px] leading-relaxed text-[#385066] lg:col-span-4 lg:pt-[72px]">{parse(descriptionTwo)}</div>
-          </div>
-        </StaggerItem>
-
         <StaggerItem>
           <div className="relative min-h-[400px] lg:min-h-[500px]">
             <div className="absolute bottom-0 h-[300px] w-[70%] overflow-hidden rounded-[16px] border border-[#dce9f4] shadow-[0_20px_42px_rgba(0,25,45,0.16)] ltr:left-0 rtl:right-0 lg:h-[400px]">
@@ -109,6 +89,19 @@ export function AboutIntroSection({
                 </div>
               )}
             </div>
+          </div>
+        </StaggerItem>
+
+        <StaggerItem>
+          <h1 className="max-w-[820px] text-balance text-[44px] leading-[1.08] font-bold text-[#001222] lg:text-[56px]">
+            {parse(title)}
+          </h1>
+        </StaggerItem>
+
+        <StaggerItem>
+          <div className="max-w-[720px] space-y-4 text-[17px] leading-relaxed text-[#385066]">
+            <div>{parse(descriptionOne)}</div>
+            <div>{parse(descriptionTwo)}</div>
           </div>
         </StaggerItem>
       </StaggerInView>

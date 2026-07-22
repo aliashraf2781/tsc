@@ -42,6 +42,9 @@ export function createServiceFormSchema(messages: ServiceFormMessages) {
     imageFile: z.custom<File | null | undefined>().optional(),
     imagePreview: z.string().nullable().optional(),
     existingImage: z.string().optional(),
+    iconFile: z.custom<File | null | undefined>().optional(),
+    iconPreview: z.string().nullable().optional(),
+    existingIcon: z.string().optional(),
     features: z.array(serviceFeatureSchema),
   })
 }
