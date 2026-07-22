@@ -18,7 +18,8 @@ type FormValues = {
 }
 
 function resolveAccountType(value: string | null): "user" | "company" | "admin" {
-  return value === "company" || value === "admin" ? value : "user"
+  if (value === "user" || value === "admin") return value
+  return "company"
 }
 
 export default function SignInPage() {

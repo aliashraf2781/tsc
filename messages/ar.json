@@ -1050,6 +1050,32 @@
         "save": "فشل الحفظ"
       }
     },
+    "countries": {
+      "manageCountries": "إدارة الدول",
+      "manageCountriesDesc": "أضف وعدّل الدول ورموز الاتصال المستخدمة في التسجيل والملفات الشخصية",
+      "language": "اللغة:",
+      "noCountries": "لا توجد دول. اضغط \"إضافة دولة\" للبدء.",
+      "defaultName": "دولة",
+      "countryName": "اسم الدولة",
+      "code": "رمز الاتصال",
+      "codeHint": "استخدم رمز اتصال مع + (مثل +49) كما في التسجيل. الرموز الحرفية (مثل US) مقبولة أيضاً.",
+      "saving": "جاري الحفظ...",
+      "saveCountry": "حفظ الدولة",
+      "savedSuccessfully": "تم الحفظ بنجاح",
+      "addCountry": "إضافة دولة",
+      "deleteCountryTitle": "حذف الدولة",
+      "confirmDeleteTitle": "تأكيد الحذف",
+      "confirmDeleteBody": "هل أنت متأكد من حذف هذه الدولة؟ لا يمكن التراجع عن هذا الإجراء.",
+      "cancel": "إلغاء",
+      "deleting": "جاري الحذف...",
+      "delete": "حذف",
+      "deleteFailed": "فشل الحذف",
+      "errors": {
+        "nameRequired": "اسم الدولة مطلوب",
+        "codeRequired": "رمز الاتصال مطلوب",
+        "save": "فشل الحفظ"
+      }
+    },
     "services": {
       "language": "اللغة:",
       "feature": "ميزة",

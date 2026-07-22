@@ -27,7 +27,7 @@ export function AuthUserCompanyTabs({
   activeTab: activeTabProp,
   onTabChange,
 }: TabsProps) {
-  const [internalTab, setInternalTab] = useState<"user" | "company" | "admin">("user")
+  const [internalTab, setInternalTab] = useState<"user" | "company" | "admin">("company")
   const activeTab = activeTabProp ?? internalTab
 
   const handleChange = (value: "user" | "company" | "admin") => {

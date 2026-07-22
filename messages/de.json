@@ -1048,6 +1048,32 @@
         "save": "Speichern fehlgeschlagen"
       }
     },
+    "countries": {
+      "manageCountries": "Länder verwalten",
+      "manageCountriesDesc": "Länder und Vorwahlen für Registrierung und Profile hinzufügen und bearbeiten",
+      "language": "Sprache:",
+      "noCountries": "Keine Länder. Klicken Sie auf \"Land hinzufügen\", um zu beginnen.",
+      "defaultName": "Land",
+      "countryName": "Ländername",
+      "code": "Vorwahl",
+      "codeHint": "Telefonvorwahl mit + verwenden (z. B. +49), wie bei der Registrierung. ISO-Buchstaben (z. B. US) sind ebenfalls erlaubt.",
+      "saving": "Wird gespeichert...",
+      "saveCountry": "Land speichern",
+      "savedSuccessfully": "Erfolgreich gespeichert",
+      "addCountry": "Land hinzufügen",
+      "deleteCountryTitle": "Land löschen",
+      "confirmDeleteTitle": "Löschen bestätigen",
+      "confirmDeleteBody": "Möchten Sie dieses Land wirklich löschen? Diese Aktion kann nicht rückgängig gemacht werden.",
+      "cancel": "Abbrechen",
+      "deleting": "Wird gelöscht...",
+      "delete": "Löschen",
+      "deleteFailed": "Löschen fehlgeschlagen",
+      "errors": {
+        "nameRequired": "Ländername ist erforderlich",
+        "codeRequired": "Vorwahl ist erforderlich",
+        "save": "Speichern fehlgeschlagen"
+      }
+    },
     "services": {
       "language": "Sprache:",
       "feature": "Merkmal",

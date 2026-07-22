@@ -77,7 +77,7 @@ export function SignUpTabForm({
   submitLabel,
   initialCountries = [],
 }: Props) {
-  const [activeTab, setActiveTab] = useState<"user" | "company">("user")
+  const [activeTab, setActiveTab] = useState<"user" | "company">("company")
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const [countries, setCountries] = useState<CountryOption[]>(initialCountries)
@@ -255,11 +255,20 @@ export function SignUpTabForm({
     : availableCountries
 
   const phoneQuery = phoneSearch.trim().toLowerCase()
+  const availableDialCountries =
+    activeTab === "company"
+      ? localizedDialCountries.filter(
+          (c) =>
+            c.code.toUpperCase() === GERMANY_ISO ||
+            c.dialCode === DEFAULT_DIAL_CODE ||
+            GERMANY_NAMES.has(c.name.trim().toLowerCase())
+        )
+      : localizedDialCountries
   const filteredDialCodes = phoneQuery
-    ? localizedDialCountries.filter(
+    ? availableDialCountries.filter(
         (c) => c.name.toLowerCase().includes(phoneQuery) || c.dialCode.includes(phoneQuery) || c.code.toLowerCase().includes(phoneQuery)
       )
-    : localizedDialCountries
+    : availableDialCountries
 
   const baseTabClassName =
     "inline-flex h-[52px] min-h-[52px] flex-1 items-center justify-center gap-2 rounded-xl border px-3 py-2.5 text-sm font-medium transition-all duration-200 sm:h-[52px] sm:px-4 sm:text-base"

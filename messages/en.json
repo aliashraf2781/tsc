@@ -1048,6 +1048,32 @@
         "save": "Failed to save"
       }
     },
+    "countries": {
+      "manageCountries": "Manage Countries",
+      "manageCountriesDesc": "Add and edit countries and dial codes used for registration and profiles",
+      "language": "Language:",
+      "noCountries": "No countries. Click \"Add Country\" to start.",
+      "defaultName": "Country",
+      "countryName": "Country Name",
+      "code": "Dial code",
+      "codeHint": "Use a phone dial code with + (e.g. +49), same as sign-up. ISO letters (e.g. US) are also accepted.",
+      "saving": "Saving...",
+      "saveCountry": "Save Country",
+      "savedSuccessfully": "Saved successfully",
+      "addCountry": "Add Country",
+      "deleteCountryTitle": "Delete Country",
+      "confirmDeleteTitle": "Confirm Delete",
+      "confirmDeleteBody": "Are you sure you want to delete this country? This action cannot be undone.",
+      "cancel": "Cancel",
+      "deleting": "Deleting...",
+      "delete": "Delete",
+      "deleteFailed": "Failed to delete",
+      "errors": {
+        "nameRequired": "Country name is required",
+        "codeRequired": "Dial code is required",
+        "save": "Failed to save"
+      }
+    },
     "services": {
       "language": "Language:",
       "feature": "Feature",

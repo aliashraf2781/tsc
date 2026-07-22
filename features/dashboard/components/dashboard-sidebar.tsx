@@ -193,6 +193,11 @@ function getAdminGroups(locale: string): SidebarGroup[] {
           label: getLabel(locale, "الفئات", "Categories", "Kategorien"),
           href: "/dashboard/admin/categories",
         },
+        {
+          icon: "/dashboard/profile.svg",
+          label: getLabel(locale, "الدول", "Countries", "Länder"),
+          href: "/dashboard/admin/countries",
+        },
       ],
     },
     {

@@ -36,6 +36,11 @@ import {
   updateCategoryAdmin,
   deleteCategoryAdmin,
 } from "@/lib/api/services/categories.service"
+import {
+  createCountryAdmin,
+  updateCountryAdmin,
+  deleteCountryAdmin,
+} from "@/lib/api/services/countries.service"
 import { ApiError } from "@/lib/api/client"
 import { getSession } from "@/lib/auth-token"
 import { deleteContactMessage } from "@/lib/api/services/contact-messages.service"
@@ -395,6 +400,42 @@ export async function deleteCategoryAction(id: number, locale: string) {
     return { ok: true as const }
   } catch (err) {
     const message = err instanceof ApiError ? err.message : "Failed to delete category"
+    return { ok: false as const, message }
+  }
+}
+
+// ─── Countries ────────────────────────────────────────────────────────────
+
+export async function saveCountryAction(
+  formData: FormData,
+  locale: string,
+  countryId?: number
+) {
+  try {
+    const { token } = await requireAdmin(locale)
+    if (countryId) {
+      await updateCountryAdmin(countryId, formData, token, locale)
+    } else {
+      await createCountryAdmin(formData, token, locale)
+    }
+    revalidatePath(`/${locale}/dashboard/admin/countries`)
+    revalidatePath(`/${locale}`)
+    return { ok: true as const }
+  } catch (err) {
+    const message = formatApiValidationMessage(err, "Failed to save country")
+    return { ok: false as const, message }
+  }
+}
+
+export async function deleteCountryAction(id: number, locale: string) {
+  try {
+    const { token } = await requireAdmin(locale)
+    await deleteCountryAdmin(id, token, locale)
+    revalidatePath(`/${locale}/dashboard/admin/countries`)
+    revalidatePath(`/${locale}`)
+    return { ok: true as const }
+  } catch (err) {
+    const message = err instanceof ApiError ? err.message : "Failed to delete country"
     return { ok: false as const, message }
   }
 }
