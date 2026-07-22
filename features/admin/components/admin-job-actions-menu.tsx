@@ -144,6 +144,14 @@ export function AdminJobActionsMenu({
           </button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="min-w-[170px]">
+          <DropdownMenuItem
+            onClick={(event) => {
+              event.stopPropagation()
+              router.push(`/dashboard/admin/jobs/${jobId}/edit`)
+            }}
+          >
+            {t("edit")}
+          </DropdownMenuItem>
           {(badgeStatus === "approved" || badgeStatus === "stopped") && (
             <DropdownMenuItem
               onClick={(event) => {

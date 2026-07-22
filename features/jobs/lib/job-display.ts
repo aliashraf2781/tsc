@@ -57,12 +57,14 @@ function isGenderOnlyValue(value: string): boolean {
   return GENDER_ONLY_VALUES.has(value.trim().toLowerCase())
 }
 
-export function formatJobSalary(
-  job: Job | UnknownJob | undefined,
-  periodLabel: string,
-  isRTL = false
-): string {
-  // Support multiple API shapes: nested `salary.from/to` or top-level `salary_from`/`salary_to`
+/**
+ * Resolve a job's salary range as numbers, supporting the multiple shapes the
+ * API sends across endpoints: nested `salary.from/to` (public jobs endpoint),
+ * or flat `salary_from`/`salary_to`/`from`/`to`/`salaryFrom`/`salaryTo`.
+ */
+export function resolveJobSalaryRange(
+  job: Job | UnknownJob | undefined
+): { from?: number; to?: number } {
   const j = job as UnknownJob | undefined
   const salaryObj = j && typeof j === "object" ? (j["salary"] as UnknownJob | undefined) : undefined
   const fromRaw = salaryObj && typeof salaryObj === "object"
@@ -71,6 +73,15 @@ export function formatJobSalary(
     ? (salaryObj["to"] ?? salaryObj["max"]) : (j ? (j["salary_to"] ?? j["to"] ?? j["salaryTo"]) : undefined)
   const from = fromRaw != null ? Number(String(fromRaw)) : undefined
   const to = toRaw != null ? Number(String(toRaw)) : undefined
+  return { from, to }
+}
+
+export function formatJobSalary(
+  job: Job | UnknownJob | undefined,
+  periodLabel: string,
+  isRTL = false
+): string {
+  const { from, to } = resolveJobSalaryRange(job)
   if (from != null && to != null) {
     const min = Math.min(from, to)
     const max = Math.max(from, to)
@@ -84,15 +95,7 @@ export function formatJobSalary(
 
 /** Sidebar / hero salary block — e.g. "$1000 - $1200" */
 export function formatJobSalaryRange(job: Job | UnknownJob | undefined, isRTL = false): string {
-  // Support nested `salary` object or flat fields
-  const j = job as UnknownJob | undefined
-  const salaryObj = j && typeof j === "object" ? (j["salary"] as UnknownJob | undefined) : undefined
-  const fromRaw = salaryObj && typeof salaryObj === "object"
-    ? (salaryObj["from"] ?? salaryObj["min"]) : (j ? (j["salary_from"] ?? j["from"] ?? j["salaryFrom"]) : undefined)
-  const toRaw = salaryObj && typeof salaryObj === "object"
-    ? (salaryObj["to"] ?? salaryObj["max"]) : (j ? (j["salary_to"] ?? j["to"] ?? j["salaryTo"]) : undefined)
-  const from = fromRaw != null ? Number(String(fromRaw)) : undefined
-  const to = toRaw != null ? Number(String(toRaw)) : undefined
+  const { from, to } = resolveJobSalaryRange(job)
   if (from != null && to != null) {
     const min = Math.min(from, to)
     const max = Math.max(from, to)
@@ -260,6 +263,30 @@ export function resolveJobAge(job: unknown): { from: number | null; to: number |
   return { from, to }
 }
 
+/**
+ * Resolve a job's sub-category id, supporting the shapes seen across
+ * endpoints: nested `sub_category.id`/`subCategory.id`, or flat
+ * `sub_category_id`/`subCategoryId`.
+ */
+export function resolveJobSubCategoryId(job: Job | UnknownJob | undefined): number | undefined {
+  if (!job || typeof job !== "object") return undefined
+  const row = job as UnknownJob
+
+  const nested = (row["sub_category"] ?? row["subCategory"]) as UnknownJob | undefined
+  if (nested && typeof nested === "object" && nested["id"] != null) {
+    const id = Number(nested["id"])
+    if (Number.isFinite(id)) return id
+  }
+
+  const flat = row["sub_category_id"] ?? row["subCategoryId"]
+  if (flat != null && flat !== "") {
+    const id = Number(flat)
+    if (Number.isFinite(id)) return id
+  }
+
+  return undefined
+}
+
 export function formatAgeRange(job: unknown, locale = "ar"): string {
   const { from, to } = resolveJobAge(job)
   const suffix = locale === "ar" ? " سنة" : locale === "de" ? " Jahre" : " years"
@@ -344,8 +371,10 @@ export function formatPostedAgo(
   )
 }
 
-export function salaryFromSliderPercent(percent: number): number {
-  return Math.round((percent / 100) * 10000)
+export const DEFAULT_SALARY_SLIDER_MAX = 10000
+
+export function salaryFromSliderPercent(percent: number, maxSalary: number = DEFAULT_SALARY_SLIDER_MAX): number {
+  return Math.round((percent / 100) * maxSalary)
 }
 
 /** Latin digits only — avoids SSR/client hydration mismatch on Arabic pages. */

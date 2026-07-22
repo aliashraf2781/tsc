@@ -513,6 +513,53 @@
         "descriptionTwo": "By aligning goals, skills, and market needs, we help both sides move forward with confidence and build lasting outcomes."
       }
     },
+    "servicesPage": {
+      "eyebrow": "Comprehensive Solutions",
+      "title": "We Manage The Complexity, You Manage The Success",
+      "description": "From sourcing elite talents to securing professional visas our services are designed to bridge the gap between global skills and German industry.",
+      "exploreDetails": "Explore Details",
+      "notFoundTitle": "Service Not Found",
+      "backToServices": "Back to Services",
+      "advantagesTitle": "Included Advantages",
+      "advantagesDescription": "What you receive when registering for this service",
+      "noAdvantages": "No custom advantages currently assigned to this service.",
+      "defaults": {
+        "one": {
+          "title": "International Talent Sourcing",
+          "description": "Sourcing elite global professionals specialized in healthcare, IT, and engineering sectors.",
+          "features": {
+            "one": {
+              "title": "Personalized Job Matching",
+              "description": "We match your profile with top German employers, specializing in healthcare and technical sectors to find your ideal role."
+            },
+            "two": {
+              "title": "Qualification Recognition",
+              "description": "Expert guidance through the entire \"Anerkennung\" process, ensuring your credentials meet German professional standards."
+            }
+          }
+        },
+        "two": {
+          "title": "Credential Recognition Support",
+          "description": "Comprehensive guidance through the Anerkennung process to match German standards.",
+          "features": {
+            "one": {
+              "title": "Credential Assessment",
+              "description": "Detailed review of academic and professional credentials to evaluate German equivalence."
+            }
+          }
+        },
+        "three": {
+          "title": "Visa & Immigration Assistance",
+          "description": "Full documentation support and fast-track processing for work visas and residence permits.",
+          "features": {
+            "one": {
+              "title": "End-to-End Documentation Support",
+              "description": "Complete assistance with preparing, translating, and submitting all necessary documents and official correspondence."
+            }
+          }
+        }
+      }
+    },
     "footer": {
       "brand": "Talent Seeker",
       "description": "Your trusted partner for talent relocation and hiring success in Germany.",
@@ -836,6 +883,7 @@
       "viewDetails": "View details",
       "viewApplications": "View applications",
       "more": "More",
+      "edit": "Edit",
       "stop": "Stop",
       "activate": "Activate",
       "delete": "Delete",
@@ -891,6 +939,11 @@
           "companiesUnavailable": "Could not load companies from the server."
         },
         "loadError": "Failed to create job"
+      },
+      "editJob": {
+        "title": "Edit Job",
+        "submit": "Save changes",
+        "loadError": "Failed to update job"
       },
       "empty": "No jobs",
       "error": "Action failed"

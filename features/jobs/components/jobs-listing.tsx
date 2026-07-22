@@ -8,7 +8,14 @@ import { JobsFilterTrigger } from "@/features/jobs/components/jobs-filter-trigge
 import { JobCard } from "@/features/jobs/components/job-card"
 import { StaggerInView, StaggerItem } from "@/features/shared-home"
 import type { Category, Job } from "@/lib/api/types"
-import { getJobTitle, salaryFromSliderPercent, getLocalizedName, getLocalizedStateName } from "@/features/jobs/lib/job-display"
+import {
+  getJobTitle,
+  salaryFromSliderPercent,
+  getLocalizedName,
+  getLocalizedStateName,
+  resolveJobSalaryRange,
+  DEFAULT_SALARY_SLIDER_MAX,
+} from "@/features/jobs/lib/job-display"
 import { cn } from "@/lib/utils"
 
 type JobsListingProps = {
@@ -74,6 +81,18 @@ export function JobsListing({
   const [activeCategories, setActiveCategories] = useState<number[]>([])
   const [salaryValue, setSalaryValue] = useState<[number, number]>([0, 100])
   const [initialCategoryApplied, setInitialCategoryApplied] = useState(false)
+
+  // Derive the slider's upper bound from the actual loaded jobs so the
+  // filter's dollar thresholds line up with real salary data instead of an
+  // arbitrary guess.
+  const maxSalaryBound = useMemo(() => {
+    const highest = jobs.reduce((max, job) => {
+      const { from, to } = resolveJobSalaryRange(job)
+      return Math.max(max, to ?? from ?? 0)
+    }, 0)
+    if (highest <= 0) return DEFAULT_SALARY_SLIDER_MAX
+    return Math.max(DEFAULT_SALARY_SLIDER_MAX, Math.ceil(highest / 10000) * 10000)
+  }, [jobs])
 
   // Auto-select category from URL query param (?category=ID)
   useEffect(() => {
@@ -144,11 +163,12 @@ export function JobsListing({
     }
 
     if (salaryValue[0] > 0 || salaryValue[1] < 100) {
-      const minSalary = salaryFromSliderPercent(salaryValue[0])
-      const maxSalary = salaryFromSliderPercent(salaryValue[1])
+      const minSalary = salaryFromSliderPercent(salaryValue[0], maxSalaryBound)
+      const maxSalary = salaryFromSliderPercent(salaryValue[1], maxSalaryBound)
       list = list.filter((job) => {
-        const from = job.salary_from ?? 0
-        const to = job.salary_to ?? from
+        const { from: fromRaw, to: toRaw } = resolveJobSalaryRange(job)
+        const from = fromRaw ?? 0
+        const to = toRaw ?? from
         return to >= minSalary && from <= maxSalary
       })
     }
@@ -164,6 +184,7 @@ export function JobsListing({
     searchQuery,
     salaryValue,
     stateOptions,
+    maxSalaryBound,
   ])
 
   const activeFilterCount =
@@ -194,6 +215,7 @@ export function JobsListing({
     activeStates,
     activeCategories,
     salaryValue,
+    maxSalaryBound,
     locale,
     onClearAll: () => {
       setActiveStates([])

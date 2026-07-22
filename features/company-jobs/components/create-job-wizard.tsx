@@ -6,10 +6,10 @@ import { useForm, Controller } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Link, useRouter } from "@/i18n/navigation"
 import { X } from "lucide-react"
-import type { Category } from "@/lib/api/types"
+import type { Category, Job } from "@/lib/api/types"
 import type { CreateJobPayload } from "@/lib/api/services/company.service"
 import { GERMAN_STATES, JOB_GENDERS, JOB_TYPES } from "@/features/company-jobs/lib/constants"
-import { buildJobFormData } from "@/features/company-jobs/lib/build-job-form-data"
+import { buildJobFormData, buildJobFormDataForUpdate } from "@/features/company-jobs/lib/build-job-form-data"
 import { CreateJobStepper } from "@/features/company-jobs/components/create-job-stepper"
 import { JobImageUpload } from "@/features/company-jobs/components/job-image-upload"
 import { useAuth } from "@/hooks/use-auth"
@@ -20,9 +20,9 @@ import {
   JobUnderlineSelect,
   JobUnderlineDate,
 } from "@/features/company-jobs/components/job-underline-field"
-import { createAdminJobAction } from "@/features/admin/actions/admin-actions"
+import { createAdminJobAction, updateAdminJobAction } from "@/features/admin/actions/admin-actions"
 import { EDIT_LOCALES, createJobFormSchema, type JobFormValues, type LocaleKey } from "@/features/company-jobs/lib/job-form-schema"
-import { STEP_FIELDS, fillLocaleFallback, initialJobFormValues } from "@/features/company-jobs/lib/job-form-utils"
+import { STEP_FIELDS, fillLocaleFallback, initialJobFormValues, jobToFormValues } from "@/features/company-jobs/lib/job-form-utils"
 import { PrimaryButton } from "@/components/ui/primary-button"
 import { RichTextEditor } from "@/components/ui/rich-text-editor"
 import { cn } from "@/lib/utils"
@@ -62,21 +62,26 @@ export function CreateJobWizard({
   categories,
   locale,
   companies,
+  job,
 }: {
   categories: Category[]
   locale: string
   /** Presence of this prop switches the wizard into admin mode (company picker + admin submit action). */
   companies?: AdminCompanyOption[]
+  /** Presence of this prop switches the wizard into edit mode (prefilled form + update action). */
+  job?: Job
 }) {
   const isAdminMode = companies !== undefined
+  const isEditMode = job !== undefined
   const t = useTranslations("CompanyJobs")
   const tAdmin = useTranslations("Admin.jobs.createJob")
+  const tEdit = useTranslations("Admin.jobs.editJob")
   const router = useRouter()
   const { user } = useAuth()
 
   const [step, setStep] = useState(1)
   const [imageFile, setImageFile] = useState<File | null>(null)
-  const [imagePreview, setImagePreview] = useState<string | null>(null)
+  const [imagePreview, setImagePreview] = useState<string | null>(job?.image ?? null)
   const [imageError, setImageError] = useState<string | null>(null)
   const [submitError, setSubmitError] = useState<string | null>(null)
   const [pending, startTransition] = useTransition()
@@ -139,18 +144,18 @@ export function CreateJobWizard({
   const {
     control,
     handleSubmit,
-    getValues,
     setValue,
-    setError: setFieldError,
     clearErrors,
     trigger,
     formState: { errors },
   } = useForm<JobFormValues>({
     resolver: zodResolver(schema),
-    defaultValues: initialJobFormValues,
+    defaultValues: job ? jobToFormValues(job) : initialJobFormValues,
   })
 
-  const [watchedCategoryId, setWatchedCategoryId] = useState(initialJobFormValues.category_id)
+  const [watchedCategoryId, setWatchedCategoryId] = useState(
+    job?.category?.id != null ? String(job.category.id) : initialJobFormValues.category_id
+  )
 
   const selectedCategory = useMemo(
     () => allCategories.find((c) => String(c.id) === watchedCategoryId),
@@ -183,7 +188,7 @@ export function CreateJobWizard({
     label: getLocalizedStateName(s, editingLocale),
   }))
 
-  const buildPayload = (values: JobFormValues): CreateJobPayload => {
+  const buildCommonPayload = (values: JobFormValues): Omit<CreateJobPayload, "image"> => {
     let company: CreateJobPayload["company"]
     if (isAdminMode) {
       const found = companies?.find((c) => String(c.id) === values.companyId)
@@ -216,18 +221,13 @@ export function CreateJobWizard({
       description: fillLocaleFallback(values.description),
       responsibilities: fillLocaleFallback(values.responsibilities),
       requirements: fillLocaleFallback(values.requirements),
-      image: imageFile!,
       company,
     }
   }
 
   const validateExtrasForStep1 = (): boolean => {
     let ok = true
-    if (!getValues("sub_category_id") && subCategories.length > 0) {
-      setFieldError("sub_category_id", { message: t("errors.subCategory") })
-      ok = false
-    }
-    if (!imageFile) {
+    if (!imageFile && !imagePreview) {
       setImageError(t("errors.image"))
       ok = false
     }
@@ -243,7 +243,8 @@ export function CreateJobWizard({
     if (step < 3) setStep(step + 1)
   }
 
-  const basePath = isAdminMode ? "/dashboard/admin/jobs" : "/dashboard/company/jobs"
+  const listPath = isAdminMode ? "/dashboard/admin/jobs" : "/dashboard/company/jobs"
+  const basePath = isEditMode ? `/dashboard/admin/jobs/${job!.id}` : listPath
 
   const onSubmit = handleSubmit((values) => {
     setSubmitError(null)
@@ -253,14 +254,25 @@ export function CreateJobWizard({
     }
     startTransition(async () => {
       try {
-        const formData = buildJobFormData(buildPayload(values))
-        if (isAdminMode) {
+        if (isEditMode) {
+          const formData = buildJobFormDataForUpdate({
+            ...buildCommonPayload(values),
+            image: imageFile,
+          })
+          const result = await updateAdminJobAction(job!.id, formData, locale)
+          if (!result.ok) {
+            setSubmitError(result.message ?? tEdit("loadError"))
+            return
+          }
+        } else if (isAdminMode) {
+          const formData = buildJobFormData({ ...buildCommonPayload(values), image: imageFile! })
           const result = await createAdminJobAction(formData, locale)
           if (!result.ok) {
             setSubmitError(result.message ?? tAdmin("loadError"))
             return
           }
         } else {
+          const formData = buildJobFormData({ ...buildCommonPayload(values), image: imageFile! })
           const res = await fetch("/api/company/jobs", {
             method: "POST",
             body: formData,
@@ -278,7 +290,7 @@ export function CreateJobWizard({
         router.push(basePath)
       } catch (err) {
         console.error(err)
-        setSubmitError(isAdminMode ? tAdmin("loadError") : t("loadError"))
+        setSubmitError(isEditMode ? tEdit("loadError") : isAdminMode ? tAdmin("loadError") : t("loadError"))
       }
     })
   })
@@ -303,7 +315,7 @@ export function CreateJobWizard({
             "from-[#032C44] to-[#41A0CA]"
           )}
         >
-          {isAdminMode ? tAdmin("title") : t("title")}
+          {isEditMode ? tEdit("title") : isAdminMode ? tAdmin("title") : t("title")}
         </h1>
         <div className="flex shrink-0 items-center gap-2 pt-1">
           <div className="flex gap-1.5">
@@ -403,7 +415,7 @@ export function CreateJobWizard({
                 />
               </JobFieldGroup>
 
-              <JobFieldGroup label={t("fields.subCategory")} required error={errors.sub_category_id?.message}>
+              <JobFieldGroup label={t("fields.subCategory")} error={errors.sub_category_id?.message}>
                 <Controller
                   control={control}
                   name="sub_category_id"
@@ -686,7 +698,7 @@ export function CreateJobWizard({
             disabled={pending || !canSubmitStep}
             className="h-9 min-w-[120px] w-auto rounded-lg px-4 text-base font-normal"
           >
-            {pending ? t("submitting") : t("submit")}
+            {pending ? t("submitting") : isEditMode ? tEdit("submit") : t("submit")}
           </PrimaryButton>
         )}
       </div>

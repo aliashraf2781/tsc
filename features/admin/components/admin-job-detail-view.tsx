@@ -1,4 +1,4 @@
-import { ArrowLeft, Building2, CalendarDays, CircleDollarSign, MapPin, Users } from "lucide-react"
+import { ArrowLeft, Building2, CalendarDays, CircleDollarSign, MapPin, Pencil, Users } from "lucide-react"
 import parse from "html-react-parser"
 import { getTranslations } from "next-intl/server"
 import { Link } from "@/i18n/navigation"
@@ -96,6 +96,14 @@ export async function AdminJobDetailView({
 
         <div className="flex flex-wrap items-center justify-end gap-3">
           <DashboardStatusBadge status={status} label={adminJobsT(`status.${status}`)} />
+          <Link
+            locale={locale}
+            href={`/dashboard/admin/jobs/${job.id}/edit`}
+            className="inline-flex h-9 items-center gap-2 rounded-lg border border-[#E8F2FF] bg-white px-4 text-sm font-semibold text-[#006EA8] shadow-none transition hover:bg-[#F5F9FC]"
+          >
+            <Pencil className="size-4" />
+            {adminJobsT("edit")}
+          </Link>
           <AdminJobQuickActions jobId={job.id} locale={locale} status={job.status} showReject={false} />
         </div>
       </div>

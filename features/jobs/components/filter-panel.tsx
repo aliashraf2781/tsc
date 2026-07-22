@@ -22,6 +22,7 @@ export type FilterPanelProps = {
   activeStates: number[]
   activeCategories: number[]
   salaryValue: [number, number]
+  maxSalaryBound?: number
   locale?: string
   onClearAll: () => void
   onToggleState: (index: number) => void
@@ -45,6 +46,7 @@ export function FilterPanel({
   activeStates,
   activeCategories,
   salaryValue,
+  maxSalaryBound,
   locale,
   onClearAll,
   onToggleState,
@@ -151,14 +153,14 @@ export function FilterPanel({
               <div className="flex flex-col gap-0.5">
                 <span className="text-[11px] font-medium uppercase tracking-wider text-[#9CA3AF]">{salaryFromLabel}</span>
                 <span className="text-[15px] font-semibold text-[#111827]">
-                  ${formatFilterSalaryAmount(salaryFromSliderPercent(salaryValue[0]))}
+                  ${formatFilterSalaryAmount(salaryFromSliderPercent(salaryValue[0], maxSalaryBound))}
                 </span>
               </div>
               <div className="h-px flex-1 bg-[#E5E7EB]" />
               <div className="flex flex-col items-end gap-0.5">
                 <span className="text-[11px] font-medium uppercase tracking-wider text-[#9CA3AF]">{salaryToLabel}</span>
                 <span className="text-[15px] font-semibold text-[#111827]">
-                  ${formatFilterSalaryAmount(salaryFromSliderPercent(salaryValue[1]))}
+                  ${formatFilterSalaryAmount(salaryFromSliderPercent(salaryValue[1], maxSalaryBound))}
                 </span>
               </div>
             </div>

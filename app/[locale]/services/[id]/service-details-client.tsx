@@ -2,6 +2,7 @@
 
 import Image from "next/image"
 import parse from "html-react-parser"
+import { useTranslations } from "next-intl"
 import { cn } from "@/lib/utils"
 import { Globe, ArrowLeft } from "lucide-react"
 import { Link } from "@/i18n/navigation"
@@ -19,7 +20,7 @@ export function ServiceDetailsClient({
   isAdmin?: boolean
   isFallback?: boolean
 }) {
-  const isRTL = locale === "ar"
+  const t = useTranslations("Landing.servicesPage")
 
   return (
     <main className="flex-1 bg-white pb-24 relative overflow-hidden text-start">
@@ -36,7 +37,7 @@ export function ServiceDetailsClient({
             className="inline-flex items-center gap-2 text-[#006EA8] font-semibold hover:underline transition-colors"
           >
             <ArrowLeft className="h-4 w-4 rtl:rotate-180" />
-            <span>{isRTL ? "العودة للخدمات" : "Back to Services"}</span>
+            <span>{t("backToServices")}</span>
           </Link>
         </div>
 
@@ -47,7 +48,7 @@ export function ServiceDetailsClient({
             <StaggerItem>
               <div className="inline-flex items-center gap-2 rounded-lg bg-[rgba(64,160,202,0.15)] px-4 py-2 text-[12px] leading-[1.16] font-normal text-[#40A0CA]">
                 <Image src="/footer/icon-link.svg" alt="" width={16} height={16} className="h-4 w-4 shrink-0" />
-                <span>{isRTL ? "حلول شاملة" : "Comprehensive Solutions"}</span>
+                <span>{t("eyebrow")}</span>
               </div>
             </StaggerItem>
             <div className="flex flex-col gap-6">
@@ -82,12 +83,10 @@ export function ServiceDetailsClient({
           <div className="space-y-8">
             <div>
               <h2 className="text-[24px] font-bold text-[#171717] sm:text-[28px] lg:text-[32px]">
-                {isRTL ? "المزايا المشمولة" : "Included Advantages"}
+                {t("advantagesTitle")}
               </h2>
               <p className="text-[14px] text-[#525252] sm:text-[16px] mt-2">
-                {isRTL
-                  ? "ما ستحصل عليه عند التسجيل في هذه الخدمة"
-                  : "What you receive when registering for this service"}
+                {t("advantagesDescription")}
               </p>
             </div>
 
@@ -140,9 +139,7 @@ export function ServiceDetailsClient({
               <div className="text-center py-12 border border-dashed rounded-2xl bg-gray-50 border-[#78A3BE]/40">
                 <Globe className="mx-auto h-8 w-8 text-[#78A3BE]" />
                 <p className="mt-2 text-sm text-[#9CA3AF]">
-                  {isRTL
-                    ? "لا توجد مزايا مخصصة لهذه الخدمة حالياً."
-                    : "No custom advantages currently assigned to this service."}
+                  {t("noAdvantages")}
                 </p>
               </div>
             )}

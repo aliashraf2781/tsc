@@ -31,8 +31,11 @@ export async function getAdminJobs(
   page = 1,
   locale = "ar"
 ): Promise<{ data: Job[]; meta: PaginationMeta }> {
-  const query = status ? `?status=${status}&page=${page}` : `?page=${page}`
-  const response = await api.get<unknown>(`/admin/jobs${query}`, { token, locale, next: { revalidate: 15 } })
+  // Backend exposes a dedicated GET /admin/jobs/pending endpoint for the
+  // pending queue instead of /admin/jobs?status=pending.
+  const path = status === "pending" ? "/admin/jobs/pending" : "/admin/jobs"
+  const query = status && status !== "pending" ? `?status=${status}&page=${page}` : `?page=${page}`
+  const response = await api.get<unknown>(`${path}${query}`, { token, locale, next: { revalidate: 15 } })
 
   const typed = response as
     | { data?: unknown[]; meta?: PaginationMeta }
@@ -326,6 +329,31 @@ export async function createAdminJob(
   const response = await api.post<ApiResponse<Job>>("/admin/jobs", formData, { token, locale })
   const payload = (response as any)?.data ?? response
   return payload as Job
+}
+
+export async function updateAdminJob(
+  jobId: number,
+  formData: FormData,
+  token: string,
+  locale = "ar"
+): Promise<Job> {
+  // A literal PUT with a multipart body is unreliable on Laravel-style APIs —
+  // PHP only auto-parses $_POST/$_FILES for POST requests, so fields can
+  // silently fail to bind on a true PUT (see deleteUser/suspendUser above for
+  // the same issue). Send it as POST with Laravel's `_method` override first,
+  // and only try a literal PUT if that route rejects POST outright.
+  if (!formData.has("_method")) formData.append("_method", "PUT")
+
+  try {
+    const response = await api.post<ApiResponse<Job>>(`/admin/jobs/${jobId}`, formData, { token, locale })
+    return ((response as any)?.data ?? response) as Job
+  } catch (err) {
+    if (err instanceof ApiError && (err.status === 404 || err.status === 405)) {
+      const response = await api.put<ApiResponse<Job>>(`/admin/jobs/${jobId}`, formData, { token, locale })
+      return ((response as any)?.data ?? response) as Job
+    }
+    throw err
+  }
 }
 
 async function resolveUserApiRouteId(

@@ -1,4 +1,4 @@
-import { getLocale } from "next-intl/server"
+import { getLocale, getTranslations } from "next-intl/server"
 import parse from "html-react-parser"
 import { getServices } from "@/lib/api/services/services.service"
 import { SectionShell, StaggerInView, StaggerItem } from "@/features/shared-home"
@@ -9,41 +9,29 @@ import { Link } from "@/i18n/navigation"
 
 export default async function ServicesPage() {
   const locale = await getLocale()
+  const t = await getTranslations("Landing.servicesPage")
   const services = await getServices(locale)
   const isRTL = locale === "ar"
-
-  const heroTitle = isRTL 
-    ? "نحن ندير التعقيد، وأنت تدير النجاح" 
-    : "We Manage The Complexity, You Manage The Success"
-  const heroDescription = isRTL
-    ? "من استقطاب النخبة من المواهب إلى تأمين تأشيرات العمل الاحترافية، تم تصميم خدماتنا لسد الفجوة بين المهارات العالمية والصناعة الألمانية."
-    : "From sourcing elite talents to securing professional visas our services are designed to bridge the gap between global skills and German industry."
 
   const defaultServices = [
     {
       id: 1,
-      title: isRTL ? "استقطاب المواهب الدولية" : "International Talent Sourcing",
-      description: isRTL 
-        ? "نربطك بأفضل الكفاءات العالمية المتخصصة في مجالات الرعاية الصحية والتكنولوجيا والهندسة."
-        : "Sourcing elite global professionals specialized in healthcare, IT, and engineering sectors.",
+      title: t("defaults.one.title"),
+      description: t("defaults.one.description"),
       image: undefined as string | undefined,
       features: [] as import("@/lib/api/services/services.service").ServiceFeature[],
     },
     {
       id: 2,
-      title: isRTL ? "الاعتراف بالشهادات والمؤهلات" : "Credential Recognition Support",
-      description: isRTL
-        ? "نساعدك في إنهاء إجراءات تعديل الشهادات (Anerkennung) لمطابقة المعايير الألمانية."
-        : "Comprehensive guidance through the Anerkennung process to match German standards.",
+      title: t("defaults.two.title"),
+      description: t("defaults.two.description"),
       image: undefined as string | undefined,
       features: [] as import("@/lib/api/services/services.service").ServiceFeature[],
     },
     {
       id: 3,
-      title: isRTL ? "معاملات التأشيرات والإقامة" : "Visa & Immigration Assistance",
-      description: isRTL
-        ? "ندعمك في كافة الإجراءات القانونية والمستندات المطلوبة للحصول على تأشيرة العمل السريعة."
-        : "Full documentation support and fast-track processing for work visas and residence permits.",
+      title: t("defaults.three.title"),
+      description: t("defaults.three.description"),
       image: undefined as string | undefined,
       features: [] as import("@/lib/api/services/services.service").ServiceFeature[],
     }
@@ -67,18 +55,18 @@ export default async function ServicesPage() {
             <StaggerItem>
               <div className="inline-flex items-center gap-2 rounded-lg bg-[rgba(64,160,202,0.15)] px-4 py-2 text-[12px] leading-[1.16] font-normal text-[#40A0CA]">
                 <Image src="/footer/icon-link.svg" alt="" width={16} height={16} className="h-4 w-4 shrink-0" />
-                <span>{isRTL ? "حلول شاملة" : "Comprehensive Solutions"}</span>
+                <span>{t("eyebrow")}</span>
               </div>
             </StaggerItem>
             <div className="flex flex-col gap-4">
               <StaggerItem>
                 <h1 className="max-w-[850px] font-heading text-[32px] font-bold capitalize leading-[1.3] text-[#171717] sm:text-[42px] lg:text-[52px]">
-                  {heroTitle}
+                  {t("title")}
                 </h1>
               </StaggerItem>
               <StaggerItem>
                 <p className="max-w-[800px] text-[16px] font-normal leading-[1.6] text-[#525252] sm:text-[18px]">
-                  {heroDescription}
+                  {t("description")}
                 </p>
               </StaggerItem>
             </div>
@@ -136,7 +124,7 @@ export default async function ServicesPage() {
                           {/* Link action */}
                           <div className="mt-6 flex items-center justify-between border-t border-[#78A3BE]/20 pt-4 group-hover:border-white/20">
                             <span className="text-xs font-bold uppercase tracking-wider text-[#006EA8] group-hover:text-white">
-                              {isRTL ? "استكشف التفاصيل" : "Explore Details"}
+                              {t("exploreDetails")}
                             </span>
                             {isRTL ? (
                 <ArrowUpLeft className="h-5 w-5 text-[#006EA8] transition-transform duration-300 group-hover:text-white" />

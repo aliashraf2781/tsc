@@ -513,6 +513,53 @@
         "descriptionTwo": "Durch persoenliche Begleitung und intelligente Matching-Prozesse helfen wir Kandidaten und Unternehmen, langfristig die richtige Verbindung zu finden."
       }
     },
+    "servicesPage": {
+      "eyebrow": "Umfassende Lösungen",
+      "title": "Wir übernehmen die Komplexität – Sie konzentrieren sich auf Ihren Erfolg.",
+      "description": "Von der Rekrutierung qualifizierter internationaler Fachkräfte bis zur erfolgreichen Visumsbeantragung bieten wir einen ganzheitlichen Service. Unser Ziel ist es, internationale Talente mit den Unternehmen und Branchen in Deutschland erfolgreich zusammenzubringen.",
+      "exploreDetails": "Mehr Details",
+      "notFoundTitle": "Dienstleistung nicht gefunden",
+      "backToServices": "Zurück zu den Dienstleistungen",
+      "advantagesTitle": "Enthaltene Vorteile",
+      "advantagesDescription": "Das erhalten Sie bei der Anmeldung für diese Dienstleistung",
+      "noAdvantages": "Für diese Dienstleistung sind derzeit keine individuellen Vorteile hinterlegt.",
+      "defaults": {
+        "one": {
+          "title": "Internationale Talentgewinnung",
+          "description": "Gewinnung erstklassiger internationaler Fachkräfte, spezialisiert auf Gesundheitswesen, IT und Ingenieurwesen.",
+          "features": {
+            "one": {
+              "title": "Individuelle Jobvermittlung",
+              "description": "Wir gleichen Ihr Profil mit führenden deutschen Arbeitgebern ab, spezialisiert auf das Gesundheitswesen und technische Bereiche, um Ihre ideale Rolle zu finden."
+            },
+            "two": {
+              "title": "Anerkennung von Qualifikationen",
+              "description": "Fachkundige Begleitung durch den gesamten Anerkennungsprozess, damit Ihre Qualifikationen den deutschen Berufsstandards entsprechen."
+            }
+          }
+        },
+        "two": {
+          "title": "Unterstützung bei der Anerkennung von Qualifikationen",
+          "description": "Umfassende Begleitung durch das Anerkennungsverfahren, um deutsche Standards zu erfüllen.",
+          "features": {
+            "one": {
+              "title": "Bewertung der Qualifikationen",
+              "description": "Detaillierte Prüfung akademischer und beruflicher Qualifikationen zur Bewertung der deutschen Gleichwertigkeit."
+            }
+          }
+        },
+        "three": {
+          "title": "Visa- und Einwanderungsunterstützung",
+          "description": "Vollständige Unterstützung bei Unterlagen und beschleunigte Bearbeitung von Arbeitsvisa und Aufenthaltstiteln.",
+          "features": {
+            "one": {
+              "title": "Umfassende Dokumentenunterstützung",
+              "description": "Vollständige Unterstützung bei der Vorbereitung, Übersetzung und Einreichung aller erforderlichen Dokumente sowie des offiziellen Schriftverkehrs."
+            }
+          }
+        }
+      }
+    },
     "footer": {
       "brand": "Talent Seeker",
       "description": "Dein verlässlicher Partner für Relocation und erfolgreiche Einstellungen in Deutschland.",
@@ -836,6 +883,7 @@
       "viewDetails": "Details anzeigen",
       "viewApplications": "Bewerbungen anzeigen",
       "more": "Mehr",
+      "edit": "Bearbeiten",
       "stop": "Stoppen",
       "activate": "Aktivieren",
       "delete": "Löschen",
@@ -891,6 +939,11 @@
           "companiesUnavailable": "Unternehmen konnten nicht vom Server geladen werden."
         },
         "loadError": "Stelle konnte nicht erstellt werden"
+      },
+      "editJob": {
+        "title": "Stelle bearbeiten",
+        "submit": "Änderungen speichern",
+        "loadError": "Stelle konnte nicht aktualisiert werden"
       },
       "empty": "Keine Stellen",
       "error": "Aktion fehlgeschlagen"
