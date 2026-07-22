@@ -26,7 +26,7 @@ type TestimonialsCarouselProps = {
   isRtl: boolean
 }
 
-function parseRoleParts(story: SuccessStory) {
+function parseRoleParts(story: Pick<SuccessStory, "role" | "location">) {
   if (story.location) {
     return { role: story.role, location: story.location }
   }
@@ -36,6 +36,8 @@ function parseRoleParts(story: SuccessStory) {
   }
   return { role: story.role, location: undefined }
 }
+
+type LoopStory = SuccessStory & { loopKey: string }
 
 function StoryMeta({
   role,
@@ -138,14 +140,16 @@ function MobileCarouselNav({ isRtl }: { isRtl: boolean }) {
 export function TestimonialsCarousel({ stories, labels, isRtl }: TestimonialsCarouselProps) {
   const items = Array.isArray(stories) ? stories : []
   // Embla loop needs enough slides to fill the viewport; duplicate when sparse
-  const loopItems = useMemo(() => {
+  const loopItems = useMemo((): LoopStory[] => {
     if (items.length === 0) return []
-    if (items.length >= 6) return items
+    if (items.length >= 6) {
+      return items.map((story) => ({ ...story, loopKey: String(story.id) }))
+    }
     const copies = Math.ceil(6 / items.length)
     return Array.from({ length: copies }, (_, copyIndex) =>
       items.map((story) => ({
         ...story,
-        id: `${story.id}-loop-${copyIndex}`,
+        loopKey: `${story.id}-loop-${copyIndex}`,
       }))
     ).flat()
   }, [items])
@@ -227,7 +231,7 @@ export function TestimonialsCarousel({ stories, labels, isRtl }: TestimonialsCar
                 const { role, location } = parseRoleParts(story)
                 return (
                   <CarouselItem
-                    key={story.id}
+                    key={story.loopKey}
                     className={cn(
                       "basis-auto shrink-0 pl-0",
                       isRtl ? "pe-4 sm:pe-6" : "ps-4 sm:ps-6"
