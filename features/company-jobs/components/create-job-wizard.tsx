@@ -227,7 +227,8 @@ export function CreateJobWizard({
 
   const validateExtrasForStep1 = (): boolean => {
     let ok = true
-    if (!imageFile && !imagePreview) {
+    // Admin (create + edit) doesn't require a banner image; company create still does.
+    if (!isAdminMode && !imageFile && !imagePreview) {
       setImageError(t("errors.image"))
       ok = false
     }
@@ -265,7 +266,7 @@ export function CreateJobWizard({
             return
           }
         } else if (isAdminMode) {
-          const formData = buildJobFormData({ ...buildCommonPayload(values), image: imageFile! })
+          const formData = buildJobFormDataForUpdate({ ...buildCommonPayload(values), image: imageFile })
           const result = await createAdminJobAction(formData, locale)
           if (!result.ok) {
             setSubmitError(result.message ?? tAdmin("loadError"))
@@ -488,6 +489,7 @@ export function CreateJobWizard({
                 compressFailedLabel={t("errors.imageCompress")}
                 error={imageError ?? undefined}
                 className="flex-col"
+                required={!isAdminMode}
               />
             </div>
           </>

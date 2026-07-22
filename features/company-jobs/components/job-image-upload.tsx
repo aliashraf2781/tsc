@@ -19,6 +19,7 @@ type JobImageUploadProps = {
   compressFailedLabel: string
   error?: string
   className?: string
+  required?: boolean
 }
 
 const ACCEPT = "image/jpeg,image/png,image/webp,image/jpg"
@@ -43,6 +44,7 @@ export function JobImageUpload({
   compressFailedLabel,
   error,
   className,
+  required = true,
 }: JobImageUploadProps) {
   const inputRef = useRef<HTMLInputElement>(null)
   const [localError, setLocalError] = useState<string | null>(null)
@@ -79,7 +81,9 @@ export function JobImageUpload({
     <div className={cn("flex w-full flex-col gap-4", className)}>
       <div className="flex items-center gap-0.5 text-start">
         <span className="text-base font-medium leading-[150%] text-[#262626]">{label}</span>
-        <span className="text-base font-medium leading-[150%] text-[#FF2D55]">*</span>
+        {required ? (
+          <span className="text-base font-medium leading-[150%] text-[#FF2D55]">*</span>
+        ) : null}
       </div>
 
       <div className="rounded-[16px] border border-[#E8F2FF] bg-[#F8FBFD] p-4 sm:p-5">
