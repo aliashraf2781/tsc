@@ -1,272 +1,86 @@
 "use client"
 
-import { useEffect, useRef, useState, useTransition } from "react"
-import { useForm } from "react-hook-form"
-import { zodResolver } from "@hookform/resolvers/zod"
 import { useTranslations } from "next-intl"
-import { useRouter } from "@/i18n/navigation"
-import { toast } from "sonner"
-import { PrimaryButton } from "@/components/ui/primary-button"
-import { saveCategoryAction } from "@/features/admin/actions/admin-actions"
 import type { Category } from "@/lib/api/types"
 import { extractMediaUrl, resolveImageUrl } from "@/lib/utils"
-import { Tag, ChevronDown, ChevronUp, Trash2, Layers } from "lucide-react"
-import {
-  LOCALES,
-  createCategoryFormSchema,
-  type CategoryFormValues,
-  type LocaleKey,
-} from "@/features/admin/lib/category-form-schema"
-import { mapCategoryToFormDefaults, fillLocaleFallback, slugify } from "@/features/admin/lib/category-form-utils"
-import { CategoryLocaleField } from "./category-locale-field"
-import { CategoryIconUpload } from "./category-icon-upload"
-import { CategorySubCategoriesField } from "./category-sub-categories-field"
+import { Tag, Layers, Pencil, Trash2 } from "lucide-react"
+
+function getDisplayName(category: Category | undefined, locale: string, fallback: string) {
+  if (!category) return fallback
+  const name = (category as unknown as { name?: unknown }).name
+  if (!name) return fallback
+  if (typeof name === "string") return name || fallback
+  const obj = name as Record<string, string>
+  return obj[locale] || obj.en || obj.ar || obj.de || fallback
+}
 
 export function CategoryCard({
-  id,
   index,
-  initial,
+  category,
   locale,
-  editLocale,
-  defaultExpanded,
-  onDeleteRequest,
-  onSaved,
+  onEdit,
+  onDelete,
 }: {
-  id?: number
   index: number
-  initial?: Category
+  category: Category
   locale: string
-  editLocale: LocaleKey
-  defaultExpanded?: boolean
-  onDeleteRequest: () => void
-  onSaved?: () => void
+  onEdit: () => void
+  onDelete: () => void
 }) {
   const t = useTranslations("Admin.categories")
-  const [expanded, setExpanded] = useState(!!defaultExpanded)
-  const [pending, startTransition] = useTransition()
-  const [error, setError] = useState<string | null>(null)
-  const router = useRouter()
-  const cardRef = useRef<HTMLDivElement>(null)
-  const previewUrlRef = useRef<string | null>(null)
-
-  const [iconFile, setIconFile] = useState<File | null>(null)
-  const [iconPreview, setIconPreview] = useState<string | null>(null)
-  const existingIcon = extractMediaUrl((initial as unknown as { icon?: unknown })?.icon)
-
-  const schema = createCategoryFormSchema({ nameRequired: t("errors.nameRequired") })
-
-  const {
-    register,
-    control,
-    handleSubmit,
-    watch,
-    reset,
-    formState: { errors },
-  } = useForm<CategoryFormValues>({
-    resolver: zodResolver(schema),
-    defaultValues: mapCategoryToFormDefaults(initial),
-  })
-
-  // Re-sync after create/update refresh — defaultValues only apply on first mount
-  useEffect(() => {
-    const defaults = mapCategoryToFormDefaults(initial)
-    console.log("[categories] form reset from server", {
-      categoryId: id ?? null,
-      defaults,
-    })
-    reset(defaults)
-  }, [initial, id, reset])
-
-  useEffect(() => {
-    if (defaultExpanded) {
-      cardRef.current?.scrollIntoView({ behavior: "smooth", block: "center" })
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
-
-  useEffect(() => {
-    return () => {
-      if (previewUrlRef.current) URL.revokeObjectURL(previewUrlRef.current)
-    }
-  }, [])
-
-  const watchedName = watch("name")
-  const watchedSubCategories = watch("subCategories")
-
-  function handleIconChange(file: File) {
-    if (previewUrlRef.current) URL.revokeObjectURL(previewUrlRef.current)
-    const preview = URL.createObjectURL(file)
-    previewUrlRef.current = preview
-    setIconFile(file)
-    setIconPreview(preview)
-    setError(null)
-  }
-
-  function handleIconRemove() {
-    if (previewUrlRef.current) {
-      URL.revokeObjectURL(previewUrlRef.current)
-      previewUrlRef.current = null
-    }
-    setIconFile(null)
-    setIconPreview(null)
-  }
-
-  const onSubmit = handleSubmit((values) => {
-    setError(null)
-
-    const formData = new FormData()
-    if (id) formData.append("id", String(id))
-
-    const filledName = fillLocaleFallback(values.name)
-    for (const lang of LOCALES) {
-      formData.append(`name[${lang}]`, filledName[lang])
-    }
-
-    const slug = slugify(filledName.en || filledName.de || filledName.ar || "")
-    if (slug) formData.append("slug", slug)
-
-    if (iconFile) {
-      formData.append("icon", iconFile, iconFile.name || "category-icon.png")
-    }
-
-    const subs = values.subCategories.filter((s) => Object.values(s.name).some((v) => v.trim()))
-    subs.forEach((sub, subIndex) => {
-      if (sub.subCategoryId) formData.append(`sub_categories[${subIndex}][id]`, String(sub.subCategoryId))
-      const filledSubName = fillLocaleFallback(sub.name)
-      for (const lang of LOCALES) {
-        formData.append(`sub_categories[${subIndex}][name][${lang}]`, filledSubName[lang])
-      }
-    })
-
-    // Debug: log the exact payload about to be sent
-    const loggedPayload: Record<string, string> = {}
-    formData.forEach((value, key) => {
-      loggedPayload[key] = value instanceof File ? `[File: ${value.name}, ${value.size} bytes, ${value.type}]` : String(value)
-    })
-    console.log("[categories] save request", {
-      method: id ? "UPDATE (POST /categories/:id)" : "CREATE (POST /categories)",
-      categoryId: id ?? null,
-      locale,
-      payload: loggedPayload,
-      filledName,
-      rawName: values.name,
-      subCategories: values.subCategories,
-    })
-
-    startTransition(async () => {
-      const result = await saveCategoryAction(formData, locale, id)
-      if (!result.ok) {
-        setError(result.message ?? t("errors.save"))
-        toast.error(result.message ?? t("errors.save"))
-        return
-      }
-      toast.success(t("savedSuccessfully"))
-      handleIconRemove()
-      onSaved?.()
-      router.refresh()
-    })
-  })
-
-  const previewName =
-    watchedName?.[editLocale] || watchedName?.ar || watchedName?.en || watchedName?.de || `${t("defaultName")} ${index + 1}`
-  const resolvedExisting = existingIcon ? resolveImageUrl(existingIcon) : ""
-  const iconSrc = iconPreview || resolvedExisting || null
-  const subCount = watchedSubCategories?.length ?? 0
+  const existingIcon = extractMediaUrl((category as unknown as { icon?: unknown })?.icon)
+  const iconSrc = existingIcon ? resolveImageUrl(existingIcon) : null
+  const displayName = getDisplayName(category, locale, `${t("defaultName")} ${index + 1}`)
+  const subCategories =
+    ((category as unknown as { sub_categories?: unknown[] }).sub_categories ?? []) as unknown[]
+  const subCount = subCategories.length
 
   return (
-    <div ref={cardRef} className="rounded-[12px] border border-[#E5E7EB] bg-white shadow-sm overflow-hidden">
-      <div className="flex items-center gap-3 px-4 py-3 border-b border-[#E5E7EB]">
-        <div className="flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-full border border-[#78A3BE] bg-[#F0F4F8]">
-          {iconSrc ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img src={iconSrc} alt="" className="h-5 w-5 object-contain" />
-          ) : (
-            <Tag className="h-4 w-4 text-[#78A3BE]" />
-          )}
+    <article className="group relative flex h-full flex-col overflow-hidden rounded-2xl border border-[#E5EEF5] bg-white shadow-[0_8px_24px_-12px_rgba(3,44,68,0.12)] transition-all duration-300 hover:-translate-y-0.5 hover:border-[#78A3BE]/50 hover:shadow-[0_20px_40px_-16px_rgba(0,110,168,0.28)]">
+      <div className="pointer-events-none absolute inset-x-0 top-0 h-1 bg-linear-to-r from-[#032C44] via-[#006EA8] to-[#41A0CA] opacity-90" />
+
+      <div className="flex flex-1 flex-col p-5 pt-6">
+        <div className="mb-4 flex items-start justify-between gap-3">
+          <div className="flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-2xl border border-[#D7E8F4] bg-linear-to-br from-[#F0F7FC] to-[#E5F3FD] shadow-inner">
+            {iconSrc ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={iconSrc} alt="" className="h-8 w-8 object-contain" />
+            ) : (
+              <Tag className="h-6 w-6 text-[#78A3BE]" />
+            )}
+          </div>
+
+          <div className="flex shrink-0 items-center gap-1.5">
+            <button
+              type="button"
+              onClick={onDelete}
+              className="flex h-9 w-9 items-center justify-center rounded-xl bg-red-50 text-red-400 transition-colors hover:bg-red-100 hover:text-red-600"
+              title={t("deleteCategoryTitle")}
+              aria-label={t("deleteCategoryTitle")}
+            >
+              <Trash2 className="h-4 w-4" />
+            </button>
+          </div>
         </div>
 
-        <button type="button" onClick={() => setExpanded((v) => !v)} className="flex flex-1 items-center gap-2 text-start">
-          <span className="truncate text-sm font-semibold text-[#111827]">{previewName}</span>
-          {subCount > 0 && (
-            <span className="ms-1 flex items-center gap-1 rounded-full bg-[#006EA8]/10 px-2 py-0.5 text-xs font-medium text-[#006EA8]">
-              <Layers className="h-3 w-3" />
-              {subCount}
-            </span>
-          )}
-          {expanded ? (
-            <ChevronUp className="ms-auto h-4 w-4 text-[#9CA3AF] shrink-0" />
-          ) : (
-            <ChevronDown className="ms-auto h-4 w-4 text-[#9CA3AF] shrink-0" />
-          )}
-        </button>
+        <h3 className="line-clamp-2 text-base font-bold leading-snug text-[#032C44]">{displayName}</h3>
 
-        <button
-          type="button"
-          onClick={onDeleteRequest}
-          className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-red-50 text-red-400 hover:bg-red-100 hover:text-red-600 transition-colors"
-          title={t("deleteCategoryTitle")}
-        >
-          <Trash2 className="h-4 w-4" />
-        </button>
+        <div className="mt-auto flex flex-wrap items-center gap-2 pt-4">
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-[#EBF5FB] px-2.5 py-1 text-xs font-semibold text-[#006EA8]">
+            <Layers className="h-3.5 w-3.5" />
+            {subCount} {subCount === 1 ? t("subCategory") : t("subCategories")}
+          </span>
+        </div>
       </div>
 
-      {expanded && (
-        <form onSubmit={onSubmit} className="p-4 space-y-5">
-          {error && (
-            <p className="rounded-lg border border-red-200 bg-red-50 px-4 py-2 text-sm text-red-800">{error}</p>
-          )}
-          {errors.name && (
-            <p className="rounded-lg border border-red-200 bg-red-50 px-4 py-2 text-sm text-red-800">
-              {errors.name.message}
-            </p>
-          )}
-
-          <CategoryLocaleField
-            label={t("categoryName")}
-            locale={editLocale}
-            register={register}
-            fieldPath={`name.${editLocale}`}
-          />
-
-          <CategoryIconUpload
-            iconSrc={iconSrc}
-            hasNewFile={Boolean(iconFile)}
-            labels={{
-              icon: t("icon"),
-              changeIcon: t("changeIcon"),
-              uploadIcon: t("uploadIcon"),
-              remove: t("remove"),
-            }}
-            onChange={handleIconChange}
-            onRemove={handleIconRemove}
-            onError={(message) => {
-              setError(message)
-              toast.error(message)
-            }}
-          />
-
-          <CategorySubCategoriesField
-            control={control}
-            register={register}
-            editLocale={editLocale}
-            labels={{
-              title: t("subCategories"),
-              add: t("addSub"),
-              empty: t("noSubCategories"),
-              subCategory: t("subCategory"),
-              newItem: t("newItem"),
-              name: t("name"),
-              remove: t("remove"),
-            }}
-          />
-
-          <div className="flex gap-3 border-t border-[#E5E7EB] pt-3">
-            <PrimaryButton type="submit" disabled={pending} className="h-10 rounded-lg px-6 text-sm">
-              {pending ? t("saving") : t("saveCategory")}
-            </PrimaryButton>
-          </div>
-        </form>
-      )}
-    </div>
+      <button
+        type="button"
+        onClick={onEdit}
+        className="flex w-full items-center justify-center gap-2 border-t border-[#EBF2F7] bg-[#F8FBFF] px-4 py-3 text-sm font-semibold text-[#006EA8] transition-colors hover:bg-[#EBF5FB]"
+      >
+        <Pencil className="h-3.5 w-3.5" />
+        {t("editCategory")}
+      </button>
+    </article>
   )
 }

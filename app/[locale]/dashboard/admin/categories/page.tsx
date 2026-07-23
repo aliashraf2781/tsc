@@ -2,9 +2,8 @@ import { redirect } from "next/navigation"
 import { setRequestLocale } from "next-intl/server"
 import { getSession } from "@/lib/auth-token"
 import { normalizeRole } from "@/lib/auth-token"
-import { getCategories, getCategoriesRaw } from "@/lib/api/services/categories.service"
+import { getCategoriesRaw } from "@/lib/api/services/categories.service"
 import { AdminCategoriesPanel } from "@/features/admin/components/admin-categories-panel"
-import { AdminPageLayout } from "@/features/admin/components/admin-page-layout"
 
 export default async function AdminCategoriesPage({
   params,
@@ -29,10 +28,7 @@ export default async function AdminCategoriesPage({
     getCategoriesRaw("en", session.accessToken),
     getCategoriesRaw("de", session.accessToken),
   ])
-  console.log("arList", arList)
-  console.log("enList", enList)
-  console.log("deList", deList)
-  
+
   // Build combined categories preserving per-locale raw objects
   const idSet = new Set<string>()
   for (const c of arList) if (c && c.id != null) idSet.add(String(c.id))

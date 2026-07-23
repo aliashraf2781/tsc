@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import { useTranslations } from "next-intl"
 import { useRouter } from "@/i18n/navigation"
 import { PrimaryButton } from "@/components/ui/primary-button"
@@ -9,19 +9,13 @@ import type { Category } from "@/lib/api/types"
 import { Tag, Plus } from "lucide-react"
 import { AdminPageLayout } from "./admin-page-layout"
 import { CategoryCard } from "./category-card"
-import { EDIT_LOCALES, type LocaleKey } from "@/features/admin/lib/category-form-schema"
-import { makeCategoryKey } from "@/features/admin/lib/category-form-utils"
+import { CategoryFormModal } from "./category-form-modal"
 import { ConfirmActionDialog } from "@/components/confirm-action-dialog"
 
-type CategoryEntry = {
-  key: string
+type EditingTarget = {
   id?: number
   category?: Category
-}
-
-function mapCategoriesToEntries(categories: Category[]): CategoryEntry[] {
-  return categories.map((c) => ({ key: String(c.id), id: c.id, category: c }))
-}
+} | null
 
 export function AdminCategoriesPanel({
   categories,
@@ -31,41 +25,23 @@ export function AdminCategoriesPanel({
   locale: string
 }) {
   const t = useTranslations("Admin.categories")
-  const [entries, setEntries] = useState<CategoryEntry[]>(() => mapCategoriesToEntries(categories))
-  const [editLocale, setEditLocale] = useState<LocaleKey>(EDIT_LOCALES[0])
-  const [deleteTarget, setDeleteTarget] = useState<CategoryEntry | null>(null)
+  const [editing, setEditing] = useState<EditingTarget>(null)
+  const [deleteTarget, setDeleteTarget] = useState<Category | null>(null)
   const [deletePending, setDeletePending] = useState(false)
   const [deleteError, setDeleteError] = useState<string | null>(null)
-  const [newEntryKey, setNewEntryKey] = useState<string | null>(null)
   const router = useRouter()
 
-  // Keep list in sync after create/update refresh (preserve unsaved drafts)
-  useEffect(() => {
-    setEntries((prev) => {
-      const drafts = prev.filter((e) => !e.id)
-      const serverEntries = mapCategoriesToEntries(categories)
-      const draftToKeep =
-        newEntryKey && drafts.some((d) => d.key === newEntryKey)
-          ? drafts.filter((d) => d.key === newEntryKey)
-          : []
-      return [...serverEntries, ...draftToKeep]
-    })
-  }, [categories, newEntryKey])
-
-  function addCategory() {
-    const key = makeCategoryKey()
-    setNewEntryKey(key)
-    setEntries((prev) => [...prev, { key }])
+  function openCreate() {
+    setEditing({ id: undefined, category: undefined })
   }
 
-  function handleDeleteRequest(entry: CategoryEntry) {
-    if (!entry.id) {
-      setEntries((prev) => prev.filter((e) => e.key !== entry.key))
-      if (entry.key === newEntryKey) setNewEntryKey(null)
-      return
-    }
+  function openEdit(category: Category) {
+    setEditing({ id: category.id, category })
+  }
+
+  function handleDeleteRequest(category: Category) {
     setDeleteError(null)
-    setDeleteTarget(entry)
+    setDeleteTarget(category)
   }
 
   async function confirmDelete() {
@@ -78,18 +54,11 @@ export function AdminCategoriesPanel({
         setDeleteError(result.message ?? t("deleteFailed"))
         return
       }
-      setEntries((prev) => prev.filter((e) => e.key !== deleteTarget.key))
       setDeleteTarget(null)
       router.refresh()
     } finally {
       setDeletePending(false)
     }
-  }
-
-  function handleCardSaved(entryKey: string) {
-    // Drop local draft after successful create so refreshed server list takes over
-    setEntries((prev) => prev.filter((e) => e.id || e.key !== entryKey))
-    if (entryKey === newEntryKey) setNewEntryKey(null)
   }
 
   return (
@@ -99,8 +68,8 @@ export function AdminCategoriesPanel({
       action={
         <PrimaryButton
           type="button"
-          onClick={addCategory}
-          className="w-auto sm:w-auto h-10 px-5 mx-0 rounded-lg text-sm font-semibold flex items-center justify-center gap-2"
+          onClick={openCreate}
+          className="mx-0 flex h-10 w-auto items-center justify-center gap-2 rounded-lg px-5 text-sm font-semibold sm:w-auto"
         >
           <Plus className="h-4 w-4 shrink-0" />
           <span>{t("addCategory")}</span>
@@ -127,42 +96,46 @@ export function AdminCategoriesPanel({
           onConfirm={confirmDelete}
         />
 
-        <div className="flex items-center gap-2">
-          <label className="text-xs font-medium text-[#6B7280]">{t("language")}</label>
-          {EDIT_LOCALES.map((loc) => (
-            <button
-              key={loc}
-              type="button"
-              onClick={() => setEditLocale(loc)}
-              className={`px-3 py-1.5 text-xs font-semibold rounded ${editLocale === loc ? "bg-[#006EA8] text-white" : "bg-[#EBF5FB] text-[#006EA8]"}`}
-            >
-              {loc.toUpperCase()}
-            </button>
-          ))}
-        </div>
+        <CategoryFormModal
+          open={editing !== null}
+          onOpenChange={(open) => {
+            if (!open) setEditing(null)
+          }}
+          id={editing?.id}
+          initial={editing?.category}
+          locale={locale}
+          onSaved={() => setEditing(null)}
+        />
 
-        {entries.length === 0 && (
-          <div className="rounded-[12px] border border-dashed border-[#78A3BE] bg-[#F8FBFF] py-16 text-center">
-            <Tag className="mx-auto h-10 w-10 text-[#78A3BE]" />
-            <p className="mt-3 text-sm text-[#9CA3AF]">{t("noCategories")}</p>
+        {categories.length === 0 ? (
+          <div className="rounded-2xl border border-dashed border-[#78A3BE] bg-linear-to-b from-[#F8FBFF] to-white px-6 py-16 text-center">
+            <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-[#EBF5FB]">
+              <Tag className="h-7 w-7 text-[#78A3BE]" />
+            </div>
+            <p className="mt-4 text-sm font-medium text-[#6B7280]">{t("noCategories")}</p>
+            <PrimaryButton
+              type="button"
+              onClick={openCreate}
+              className="mx-auto mt-5 flex h-10 w-auto items-center justify-center gap-2 rounded-lg px-5 text-sm font-semibold"
+            >
+              <Plus className="h-4 w-4 shrink-0" />
+              <span>{t("addCategory")}</span>
+            </PrimaryButton>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-5 xl:grid-cols-3">
+            {categories.map((category, index) => (
+              <CategoryCard
+                key={category.id}
+                index={index}
+                category={category}
+                locale={locale}
+                onEdit={() => openEdit(category)}
+                onDelete={() => handleDeleteRequest(category)}
+              />
+            ))}
           </div>
         )}
-
-        <div className="space-y-3">
-          {entries.map((entry, index) => (
-            <CategoryCard
-              key={entry.key}
-              id={entry.id}
-              index={index}
-              initial={entry.category}
-              locale={locale}
-              editLocale={editLocale}
-              defaultExpanded={!entry.id && entry.key === newEntryKey}
-              onDeleteRequest={() => handleDeleteRequest(entry)}
-              onSaved={() => handleCardSaved(entry.key)}
-            />
-          ))}
-        </div>
       </div>
     </AdminPageLayout>
   )
