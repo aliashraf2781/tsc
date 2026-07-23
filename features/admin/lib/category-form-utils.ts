@@ -13,10 +13,12 @@ function toLocalizedName(val: unknown): LocalizedName {
   if (!val) return emptyLocalizedName()
   if (typeof val === "string") return { ar: val, en: val, de: val }
   const obj = val as Record<string, string>
+  // Keep locales independent so edit fields show the real stored value
+  // (do not copy en→de/ar when a translation is missing).
   return {
-    ar: obj.ar ?? obj.name ?? obj.en ?? obj.de ?? "",
-    en: obj.en ?? obj.name ?? obj.ar ?? obj.de ?? "",
-    de: obj.de ?? obj.name ?? obj.ar ?? obj.en ?? "",
+    ar: typeof obj.ar === "string" ? obj.ar : "",
+    en: typeof obj.en === "string" ? obj.en : "",
+    de: typeof obj.de === "string" ? obj.de : "",
   }
 }
 

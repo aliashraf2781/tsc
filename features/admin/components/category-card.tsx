@@ -60,11 +60,22 @@ export function CategoryCard({
     control,
     handleSubmit,
     watch,
+    reset,
     formState: { errors },
   } = useForm<CategoryFormValues>({
     resolver: zodResolver(schema),
     defaultValues: mapCategoryToFormDefaults(initial),
   })
+
+  // Re-sync after create/update refresh — defaultValues only apply on first mount
+  useEffect(() => {
+    const defaults = mapCategoryToFormDefaults(initial)
+    console.log("[categories] form reset from server", {
+      categoryId: id ?? null,
+      defaults,
+    })
+    reset(defaults)
+  }, [initial, id, reset])
 
   useEffect(() => {
     if (defaultExpanded) {
@@ -125,6 +136,21 @@ export function CategoryCard({
       for (const lang of LOCALES) {
         formData.append(`sub_categories[${subIndex}][name][${lang}]`, filledSubName[lang])
       }
+    })
+
+    // Debug: log the exact payload about to be sent
+    const loggedPayload: Record<string, string> = {}
+    formData.forEach((value, key) => {
+      loggedPayload[key] = value instanceof File ? `[File: ${value.name}, ${value.size} bytes, ${value.type}]` : String(value)
+    })
+    console.log("[categories] save request", {
+      method: id ? "UPDATE (POST /categories/:id)" : "CREATE (POST /categories)",
+      categoryId: id ?? null,
+      locale,
+      payload: loggedPayload,
+      filledName,
+      rawName: values.name,
+      subCategories: values.subCategories,
     })
 
     startTransition(async () => {

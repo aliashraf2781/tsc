@@ -29,7 +29,10 @@ export default async function AdminCategoriesPage({
     getCategoriesRaw("en", session.accessToken),
     getCategoriesRaw("de", session.accessToken),
   ])
-
+  console.log("arList", arList)
+  console.log("enList", enList)
+  console.log("deList", deList)
+  
   // Build combined categories preserving per-locale raw objects
   const idSet = new Set<string>()
   for (const c of arList) if (c && c.id != null) idSet.add(String(c.id))

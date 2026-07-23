@@ -386,6 +386,21 @@ export async function saveCategoryAction(
   locale: string,
   categoryId?: number
 ) {
+  // Next.js action tracer prints FormData as {} — dump real fields here
+  const payload: Record<string, string> = {}
+  formData.forEach((value, key) => {
+    payload[key] =
+      value instanceof File
+        ? `[File: ${value.name}, ${value.size} bytes, ${value.type}]`
+        : String(value)
+  })
+  console.log("[categories] saveCategoryAction payload", {
+    categoryId: categoryId ?? null,
+    locale,
+    op: categoryId ? "update" : "create",
+    payload,
+  })
+
   try {
     const { token } = await requireAdmin(locale)
     if (categoryId) {
